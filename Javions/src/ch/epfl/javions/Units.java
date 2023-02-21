@@ -1,16 +1,13 @@
 package ch.epfl.javions;
 
-
-
-
 public final class Units {
     private Units(){}
 
     public static final double CENTI = 1e-2;
     public static final double KILO = 1e3;
 
-    public static class Angles{
-        private Angles(){}
+    public static class Angle{
+        private Angle(){}
         public static final double RADIAN = 1;
         public static final double TURN = 2*Math.PI* RADIAN;
         public static final double DEGREE = TURN/360;
