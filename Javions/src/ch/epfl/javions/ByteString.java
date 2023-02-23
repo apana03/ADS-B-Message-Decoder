@@ -40,7 +40,7 @@ public final class ByteString {
             throw new IllegalArgumentException();
         }
         long result = 0;
-        for (int i = toIndex - 1; i >= fromIndex; i--) {
+        for (int i = 0; i < toIndex; i++) {
             result <<= 8;
             result |= (byteString[i] & 0xFF);
         }

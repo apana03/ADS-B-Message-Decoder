@@ -67,6 +67,9 @@ class ByteStringTest {
     void byteStringBytesInRangeReadsBytesInCorrectOrder() {
         var bytes = new byte[]{0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE};
         var byteString = new ByteString(bytes);
+        long number = byteString.bytesInRange(0, bytes.length);
+        String hexString = Long. toHexString(number);
+        System. out. println(hexString); // a.
         assertEquals(0x123456789ABCDEL, byteString.bytesInRange(0, bytes.length));
     }
 
