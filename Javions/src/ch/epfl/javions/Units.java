@@ -37,16 +37,16 @@ public final class Units {
         public static final double KILOMETER_PER_HOUR = Length.KILOMETER / Time.HOUR;
     }
 
-    static double convert(double value, double fromUnit, double toUnit)
+    public static double convert(double value, double fromUnit, double toUnit)
     {
         double convertedValue = value * (toUnit / fromUnit);
         return convertedValue;
     }
-    static double convertFrom(double value, double fromUnit){
+    public static double convertFrom(double value, double fromUnit){
         double convertedValue = value * ( 1.00 / fromUnit);
         return convertedValue;
     }
-    static double convertTo(double value, double toUnit)
+    public static double convertTo(double value, double toUnit)
     {
         double convertedValue = value * toUnit;
         return convertedValue;

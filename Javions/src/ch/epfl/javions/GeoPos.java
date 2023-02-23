@@ -14,10 +14,10 @@ public record GeoPos(int longitudeT32, int latitudeT32)
         }
         return true;
     }
-    double longitude(){
+    public double longitude(){
         return Units.convertFrom(longitudeT32, Units.Angle.T32);
     }
-    double latitude(){
+    public double latitude(){
         return Units.convertFrom(latitudeT32, Units.Angle.T32);
     }
     public String toString(){

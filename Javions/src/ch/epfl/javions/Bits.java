@@ -2,7 +2,7 @@ package ch.epfl.javions;
 
 public class Bits {
     private Bits(){}
-    static int extractUInt(long value, int start, int size)
+    public static int extractUInt(long value, int start, int size)
     {
         if( size <= 0 || size >= 32 )
             throw new IllegalArgumentException();
@@ -10,7 +10,7 @@ public class Bits {
             throw new IllegalArgumentException();
         return (int) (( (1 << size) - 1 ) & ( value >> (start - 1)));
     }
-    static boolean testBit( long value, int index ){
+    public static boolean testBit(long value, int index){
         if( (value & (1 << index)) != 0 )
             return true;
         return false;
