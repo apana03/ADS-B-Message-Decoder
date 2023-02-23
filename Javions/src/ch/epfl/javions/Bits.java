@@ -4,11 +4,11 @@ public class Bits {
     private Bits(){}
     public static int extractUInt(long value, int start, int size)
     {
-        if( size <= 0 || size >= 32 )///
+        if( size <= 0 || size >= 32 )
             throw new IllegalArgumentException();
         if( start < 0 || start >= 64 || (start + size - 1) >= 64)
             throw new IndexOutOfBoundsException();
-        return (int) (( (1 << size) - 1 ) & ( value >> 64 - start - size - 1));
+        return (int) (( (1 << size) - 1 ) & ( value >>> start));
     }
     public static boolean testBit(long value, int index){
         if( index < 0 || index >= 64 )
