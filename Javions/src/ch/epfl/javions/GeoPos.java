@@ -8,7 +8,7 @@ public record GeoPos(int longitudeT32, int latitudeT32)
     }
     public static boolean isValidLatitudeT32(int latitudeT32)
     {
-        if( latitudeT32 < -(2^30) || latitudeT32 > (2^30) )
+        if( latitudeT32 < -1073741824 || latitudeT32 > 1073741824 )
         {
             return false;
         }
