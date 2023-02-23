@@ -4,7 +4,7 @@ public class Bits {
     private Bits(){}
     public static int extractUInt(long value, int start, int size)
     {
-        if( size <= 0 || size >= 32 )
+        if( size <= 0 || size >= 32 )///
             throw new IllegalArgumentException();
         if( start < 0 || start >= 64 || (start + size - 1) >= 64)
             throw new IndexOutOfBoundsException();
