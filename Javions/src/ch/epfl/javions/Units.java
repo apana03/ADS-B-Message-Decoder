@@ -39,16 +39,16 @@ public final class Units {
 
     public static double convert(double value, double fromUnit, double toUnit)
     {
-        double convertedValue = value * (toUnit / fromUnit);
+        double convertedValue = value * (fromUnit / toUnit);
         return convertedValue;
     }
     public static double convertFrom(double value, double fromUnit){
-        double convertedValue = value * ( 1.00 / fromUnit);
+        double convertedValue = value * fromUnit;
         return convertedValue;
     }
     public static double convertTo(double value, double toUnit)
     {
-        double convertedValue = value * toUnit;
+        double convertedValue = value *  (1.00 / toUnit);
         return convertedValue;
     }
 }
