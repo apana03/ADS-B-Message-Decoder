@@ -1,7 +1,30 @@
 package ch.epfl.javions;
 
+/**
+ *contains methods to extract a subset of the 64 bits
+ * from a value of type long
+ *
+ * @author Andrei Pana
+ * @author David Fota
+ */
+
 public class Bits {
     private Bits(){}
+
+    /**
+     * extracts from the 64-bit vector "value" the range of "size" bits
+     * which it interprets as an unsigned value
+     * @param value
+     *            the value
+     * @param start
+     *            start index
+     * @param size
+     *            size of the vector
+     * @throws IllegalArgumentException if the size is not strictly greater than 0 and strictly less than 32
+     * @throws IndexOutOfBoundsException if the range described by start and size is not entirely between 0 (inclusive) and 64 (exclusive)
+     *
+     * @return the wanted vector
+     */
     public static int extractUInt(long value, int start, int size)
     {
         if( size <= 0 || size >= 32 )
@@ -10,6 +33,14 @@ public class Bits {
             throw new IndexOutOfBoundsException();
         return (int) (( (1 << size) - 1 ) & ( value >>> start));
     }
+
+    /**
+     * @returns true iff the given index value bit is 1
+     * @param index
+     * @param value
+     * @throws IndexOutOfBoundsException if if the index is not between 0 (inclusive) and 64 (exclusive).
+     *
+     */
     public static boolean testBit(long value, int index){
         if( index < 0 || index >= 64 )
             throw new IndexOutOfBoundsException();

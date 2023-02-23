@@ -4,12 +4,27 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.HexFormat;
 
+/**
+ * Represents a sequence of Bytes
+ *
+ * @author Andrei Pana
+ * @author David Fota
+ */
 public final class ByteString {
     private byte[] byteString;
     public ByteString(byte[] bytes){
         byteString = bytes.clone();
     }
 
+    /**
+     *@returns the byte string
+     * whose string passed as argument is the hexadecimal
+     * representation
+     * @param hexString
+     *            the string containing the hexadecimal number
+     * @throws IllegalArgumentException if the given string  is not of even length
+     * @throws NumberFormatException if it contains a character that is not a hexadecimal digit
+     */
     public static ByteString ofHexadecimalString(String hexString){
         HexFormat hf = HexFormat.of().withUpperCase();
         if(hexString.length()%2!=0){
@@ -25,14 +40,33 @@ public final class ByteString {
         return byteString;
     }
 
+    /**
+     *@returns the size of the ByteString
+     */
     public int size(){
         return byteString.length;
     }
 
+
+    /**
+     *@returns the unsigned byte at the given index
+     * @param index
+     *        the index
+     */
     public int byteAt(int index){
         return byteString[index] & 0xFF;
     }
 
+    /**
+     *@returns the bytes between the indexes fromIndex (inclusive)
+     * and toIndex (excluded) as a value of type long
+     * @param fromIndex start index
+     * @param toIndex end index
+     * @throws IndexOutOfBoundsException if the range described by fromIndex and toIndex
+     * is not entirely between 0 and the size of the string
+     * @throws IllegalArgumentException if the difference between toIndex and fromIndex is not strictly less
+     * than the number of bytes contained in a long type value
+     */
     public long bytesInRange(int fromIndex, int toIndex){
         Objects.checkFromToIndex(fromIndex, toIndex , byteString.length);
         int numBytes = toIndex - fromIndex;
