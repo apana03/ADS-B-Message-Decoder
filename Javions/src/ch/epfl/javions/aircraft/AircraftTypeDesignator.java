@@ -1,19 +1,19 @@
-package ch.epfl.javions.Aircraft;
+package ch.epfl.javions.aircraft;
 
 import java.util.regex.Pattern;
 
 /**
- *Defines the regular expression for the Aircraft description
+ *Defines the regular expression for the Aircraft Type Designator
  *
  * @author Andrei Pana
  * @author David Fota
  */
 
-public record AircraftDescription(String string) {
+public record AircraftTypeDesignator(String string) {
 
-    static Pattern er = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
+    static Pattern er = Pattern.compile("[A-Z0-9]{2,4}");
 
-    public AircraftDescription {
+    public AircraftTypeDesignator {
         if(!er.matcher(string).matches()){
             if(!string.isEmpty()){
                 throw new IllegalArgumentException();

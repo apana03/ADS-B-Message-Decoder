@@ -1,4 +1,4 @@
-package ch.epfl.javions.Aircraft;
+package ch.epfl.javions.aircraft;
 
 /**
  *Represents the wake turbulence category of an aircraft

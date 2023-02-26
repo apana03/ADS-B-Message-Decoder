@@ -20,7 +20,7 @@ public class WebMercator {
      *
      */
     public static double x(int zoomLevel, double longitude){
-        return (Math.scalb(1,8+zoomLevel))*(Units.convertTo( longitude, Units.Angle.TURN ) + 0.5 );
+        return( Math.scalb(1,8+zoomLevel) ) * ( Units.convertTo( longitude, Units.Angle.TURN ) + 0.5 );
     }
 
     /**
