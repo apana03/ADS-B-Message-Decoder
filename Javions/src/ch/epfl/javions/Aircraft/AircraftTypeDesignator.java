@@ -15,7 +15,9 @@ public record AircraftTypeDesignator(String string) {
 
     public AircraftTypeDesignator {
         if(!er.matcher(string).matches()){
-            throw new IllegalArgumentException();
+            if(!string.isEmpty()){
+                throw new IllegalArgumentException();
+            }
         }
     }
 }

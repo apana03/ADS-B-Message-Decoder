@@ -1,19 +1,19 @@
-package ch.epfl.javions.Aircraft;
+package ch.epfl.javions.adsb;
 
 import java.util.regex.Pattern;
 
 /**
- *Defines the regular expression for the Aircraft description
+ *Defines the regular expression for Call Sign
  *
  * @author Andrei Pana
  * @author David Fota
  */
 
-public record AircraftDescription(String string) {
+public record CallSign(String string) {
 
-    static Pattern er = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
+    static Pattern er = Pattern.compile("[A-Z0-9 ]{0,8}");
 
-    public AircraftDescription {
+    public CallSign {
         if(!er.matcher(string).matches()){
             if(!string.isEmpty()){
                 throw new IllegalArgumentException();
