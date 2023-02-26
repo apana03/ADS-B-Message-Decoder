@@ -1,4 +1,4 @@
-package ch.epfl.javions;
+package ch.epfl.javions.Aircraft;
 
 import java.util.regex.Pattern;
 
