@@ -9,8 +9,8 @@ import java.util.Objects;
  * @author David Fota
  */
 
-public record AircraftData(AircraftRegistration registration, AircraftDescription description,
-                           AircraftTypeDesignator typeDesignator, String model,
+public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator,
+                           String model,AircraftDescription description,
                            WakeTurbulenceCategory wakeTurbulenceCategory)
 {
     public AircraftData

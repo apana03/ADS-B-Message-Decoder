@@ -13,7 +13,7 @@ public final class Crc24 {
      */
     public static int GENERATOR = 16774153;
 
-    Crc24(int generator){
+    public Crc24(int generator){
 
     }
 
@@ -24,7 +24,7 @@ public final class Crc24 {
      */
    // public static int crc(byte[] bytes){
      //   crc_bitwise(GENERATOR,bytes);
-    //}//
+    /}//
 
     private static int[] crc_bitwise(int generator, byte[]bytes) {
         int leastSignificantBits = generator & 0xFFFFFF;
