@@ -2,8 +2,6 @@ package ch.epfl.javions.aircraft;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.zip.ZipFile;
 
 /**
@@ -25,7 +23,7 @@ public class AircraftDatabase
      */
     public AircraftDatabase(String fileName)
     {
-        if( fileName != null && new File(fileName).exists())
+        if( fileName == null && !(new File(fileName).exists()))
             throw new NullPointerException();
         else
             this.fileName = fileName;
