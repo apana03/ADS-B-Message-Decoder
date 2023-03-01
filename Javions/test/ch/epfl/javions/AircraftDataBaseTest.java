@@ -26,8 +26,8 @@ public class AircraftDataBaseTest {
         assertTrue(()->{
             try {
                 return Objects.equals(database.get(new IcaoAddress("A4A8FF")),
-                        new AircraftData(new AircraftRegistration("N4LX"), new AircraftDescription("L1P")
-                                                        , new AircraftTypeDesignator("PTS2"), "PITTS S-2 Special", WakeTurbulenceCategory.LIGHT));
+                        new AircraftData(new AircraftRegistration("N4LX"), new AircraftTypeDesignator("PTS2")
+                                                                                , "PITTS S-2 Special", new AircraftDescription("L1P"), WakeTurbulenceCategory.LIGHT));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -35,8 +35,8 @@ public class AircraftDataBaseTest {
         assertTrue(()->{
             try {
                 return Objects.equals(database.get(new IcaoAddress("A4AAFF")),
-                        new AircraftData(new AircraftRegistration("N40HH"), new AircraftDescription("")
-                                                        , new AircraftTypeDesignator(""), "", WakeTurbulenceCategory.UNKNOWN));
+                        new AircraftData(new AircraftRegistration("N40HH"), new AircraftTypeDesignator("")
+                                                                                , "", new AircraftDescription(""), WakeTurbulenceCategory.UNKNOWN));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
