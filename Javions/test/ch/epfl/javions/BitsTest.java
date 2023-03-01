@@ -23,7 +23,6 @@ class BitsTest {
         var v = 0xFEDCBA9876543210L;
         for (var i = 0; i < 16; i += 1) {
             var n = Bits.extractUInt(v, i * 4, 4);
-
             assertEquals(i, n);
         }
     }
