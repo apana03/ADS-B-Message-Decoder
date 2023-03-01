@@ -97,3 +97,4 @@ final class SignatureChecks_2 {
     ch.epfl.javions.aircraft.AircraftData v14;
     ch.epfl.javions.aircraft.AircraftDatabase v15;
 }
+

@@ -2,6 +2,7 @@ package ch.epfl.javions.aircraft;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.zip.ZipFile;
 
 /**
@@ -23,10 +24,7 @@ public class AircraftDatabase
      */
     public AircraftDatabase(String fileName)
     {
-        if( fileName == null && !(new File(fileName).exists()))
-            throw new NullPointerException();
-        else
-            this.fileName = fileName;
+        this.fileName = Objects.requireNonNull(fileName);
     }
     /**
      *@returns the desired aircraft's data, which is
@@ -56,8 +54,8 @@ public class AircraftDatabase
                         {
                             data = l.split(",", -1);
                             finalData = new AircraftData(new AircraftRegistration(data[1]),
-                                    new AircraftDescription(data[4]), new AircraftTypeDesignator(data[2]),
-                                    data[3], WakeTurbulenceCategory.of(data[5]));
+                                    new AircraftTypeDesignator(data[2]), data[3],
+                                    new AircraftDescription(data[4]), WakeTurbulenceCategory.of(data[5]));
                             return finalData;
                         }
                     }

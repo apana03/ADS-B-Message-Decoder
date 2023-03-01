@@ -1,6 +1,7 @@
 package ch.epfl.javions;
 
 import ch.epfl.javions.aircraft.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class AircraftDataBaseTest {
 
     @Test
     void checkThrowsOnWrongFile(){
-        assertThrows(NullPointerException.class,()->new AircraftDatabase("/aircraft1.zip"));
+        assertThrows(NullPointerException.class,()->new AircraftDatabase(null));
     }
 
     @Test
