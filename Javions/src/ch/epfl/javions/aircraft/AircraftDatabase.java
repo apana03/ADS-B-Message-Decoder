@@ -2,6 +2,8 @@ package ch.epfl.javions.aircraft;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipFile;
 
 /**
@@ -14,7 +16,7 @@ public class AircraftDatabase
     String fileName, name;
     String[] data;
     AircraftData finalData;
-    char[] hashMap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'};
+    char[] hashMap = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     /**
      * @param fileName
      *        the string corresponding to the name of the file
@@ -23,7 +25,7 @@ public class AircraftDatabase
      */
     public AircraftDatabase(String fileName)
     {
-        if( fileName == null )
+        if( fileName != null && new File(fileName).exists())
             throw new NullPointerException();
         else
             this.fileName = fileName;
@@ -43,18 +45,18 @@ public class AircraftDatabase
         for(char c1 : hashMap)
             for(char c2 : hashMap)
             {
-                name = c1 + c2 + ".csv";
+                name = "" + c1 + c2 + ".csv";
                 try (ZipFile z = new ZipFile(d);
                      InputStream s = z.getInputStream(z.getEntry(name));
                      Reader r = new InputStreamReader(s, StandardCharsets.UTF_8);
                      BufferedReader b = new BufferedReader(r))
                 {
                     String l = "";
-                    while ((l = b.readLine()).compareTo(address.string()) <= 0)
+                    while ((l = b.readLine()).compareTo(address.string()) <= 0 || l.startsWith(address.string()))
                     {
                         if (l.startsWith(address.string()))
                         {
-                            data = l.split(",");
+                            data = l.split(",", -1);
                             finalData = new AircraftData(new AircraftRegistration(data[1]),
                                     new AircraftDescription(data[4]), new AircraftTypeDesignator(data[2]),
                                     data[3], WakeTurbulenceCategory.of(data[5]));
