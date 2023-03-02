@@ -22,4 +22,18 @@ public class Crc24Test {
         System.out.println(HexFormat.of().toHexDigits(crc24.crc(mOnly)));
         assertEquals(c, crc24.crc(mOnly));
     }
+
+    @Test
+    void CalculationIsCorrect(){
+        Crc24 crc24 = new Crc24(Crc24.GENERATOR);
+        String mS = "8D495293F82300020049B8";
+        String cS = "111203";
+        int c = Integer.parseInt(cS, 16); // == 0x035DB8
+
+        byte[] mAndC = HexFormat.of().parseHex(mS + cS);
+        assertEquals(0, crc24.crc(mAndC));
+
+        byte[] mOnly = HexFormat.of().parseHex(mS);
+        assertEquals(c, crc24.crc(mOnly));
+    }
 }
