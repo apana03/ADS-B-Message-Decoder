@@ -7,7 +7,7 @@ package ch.epfl.javions.aircraft;
  * @author David Fota
  */
 
-public enum WakeTurbulenceCategory {
+ enum WakeTurbulenceCategory {
     LIGHT,
     MEDIUM,
     HEAVY,

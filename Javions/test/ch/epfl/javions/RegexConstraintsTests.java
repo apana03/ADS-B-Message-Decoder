@@ -16,6 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class RegexConstraintsTests {
     @Test
+    public void testInvalidIcaoAddress() {
+        String invalidIcaoAddress = "ABCDEFG";
+        assertThrows(IllegalArgumentException.class, () -> new IcaoAddress(invalidIcaoAddress));
+    }
+
+    @Test
+    public void testNullIcaoAddress() {
+        assertThrows(NullPointerException.class, () -> new IcaoAddress(null));
+    }
+    @Test
     void IcaoAddressConstraints() {
         assertThrows(IllegalArgumentException.class, () -> new IcaoAddress(""));
         assertThrows(IllegalArgumentException.class, () -> new IcaoAddress("4B1814J"));
