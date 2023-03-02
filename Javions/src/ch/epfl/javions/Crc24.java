@@ -13,9 +13,11 @@ public final class Crc24 {
      */
     public static int GENERATOR = 16774153;
     private int generator;
+    private int table[] =  new int[256];
 
     public Crc24(int generator){
         this.generator = generator & 0xFFFFFF;
+        this.table = buildTable(this.generator);
     }
 
     /**
@@ -24,7 +26,11 @@ public final class Crc24 {
      * @return the CRC24
      */
    public int crc(byte[] bytes) {
-       return crc_bitwise(generator, bytes);
+       int crc = 0;
+       for(byte b:bytes){
+           crc = ((crc << 8) | (b & 0xFF)) ^ table[getMostSignificantByte(crc)];
+       }
+       return crc & 0xFFFFFF;
    }
 
     /*private  static int crc_bitwise(int generator, byte[]bytes) {
@@ -62,13 +68,17 @@ public final class Crc24 {
 
 
 
-private static int[] buildTable(int generator){
-        byte bytes[] = new byte[256];
-        for(int i =0; i<256;i++){
-            bytes[i] = (byte)i;
+    private static int[] buildTable(int generator){
+        int table[] = new int[256];
+        for(int i=0; i<256;i++){
+            table[i] =  crc_bitwise(generator, new byte[]{(byte)(i&0xFF)});
         }
-        return new int[2];
+        return table;
     }
+    private static char getMostSignificantByte(int value) {
+        return (char) ((value >> 24) & 0xFF);
+    }
+
 
 
 
