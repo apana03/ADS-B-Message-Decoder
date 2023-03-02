@@ -14,8 +14,8 @@ public class Crc24Test {
     @Test
     void crcbitwiseCalculatesCRC24Correctly(){
         Crc24 crc24 = new Crc24(Crc24.GENERATOR);
-        String mS = "8D4D2286EA428867291C08";
-        String cS = "EE2EC6";
+        String mS = "8D392AE499107FB5C00439";
+        String cS = "035DB8";
         int c = Integer.parseInt(cS, 16); // == 0xEE2EC6
         byte[] mOnly = HexFormat.of().parseHex(mS);
         System.out.println(HexFormat.of().toHexDigits(c));
