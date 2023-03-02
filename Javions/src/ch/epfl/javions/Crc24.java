@@ -33,8 +33,9 @@ public final class Crc24 {
        return crc & 0xFFFFFF;
    }
 
-    /*private  static int crc_bitwise(int generator, byte[]bytes) {
-        int table[] = new int[]{0, generator};
+    private  int crc_bitwise(int generator, byte[]bytes) {
+        int leastSignificantBits = generator & 0xFFFFFF;
+        int table[] = new int[]{0, leastSignificantBits};
         int crc = 0;
         for (byte b : bytes) {
             for (int i = 1; i <8; i <<= 1) {
@@ -43,24 +44,10 @@ public final class Crc24 {
             }
         }
         for(int j = 0; j< 3;j++){
+            byte b = 0;
             for(int i = 1 ; i < 8 ; i<<=1) {
-                int bit = 0;
+                int bit = b&i;
                 crc = ((crc << 1) | bit) ^ table[(crc & 4194304) >> 22];
-            }
-        }
-        return crc & 0xFFFFFF;
-    }
-
-     */
-    private static int crc_bitwise(int generator, byte[] data) {
-        int crc = 0x000000;
-        for (byte b : data) {
-            crc ^= (b & 0xFF) << 16;
-            for (int i = 0; i < 8; i++) {
-                crc <<= 1;
-                if ((crc & 0x1000000) != 0) {
-                    crc ^= generator;
-                }
             }
         }
         return crc & 0xFFFFFF;

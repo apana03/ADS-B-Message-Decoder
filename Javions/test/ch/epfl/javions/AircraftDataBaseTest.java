@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AircraftDataBaseTest {
     @Test
     void checkDoesNotThrow(){
-        AircraftDatabase database=new AircraftDatabase("/aircraft.zip");
+        AircraftDatabase database=new AircraftDatabase("/Users/davidfota/Documents/GitHub/Projet-PPOO/out/production/javions_skeleton/aircraft.zip");
         assertDoesNotThrow(()->database.get(new IcaoAddress("0087BB")));
         assertDoesNotThrow(()->database.get(new IcaoAddress("A4A8FF")));
     }
@@ -23,7 +23,7 @@ public class AircraftDataBaseTest {
 
     @Test
     void checkReturnValues(){
-        AircraftDatabase database=new AircraftDatabase("/aircraft.zip");
+        AircraftDatabase database=new AircraftDatabase("/Users/davidfota/Documents/GitHub/Projet-PPOO/out/production/javions_skeleton/aircraft.zip");
         assertTrue(()->{
             try {
                 return Objects.equals(database.get(new IcaoAddress("A4A8FF")),
