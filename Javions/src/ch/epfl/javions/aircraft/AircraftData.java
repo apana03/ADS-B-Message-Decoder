@@ -6,10 +6,10 @@ import java.util.Objects;
  *Defines the regular expression for the Aircraft Data
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 
-public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator,
+    public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator,
                            String model,AircraftDescription description,
                            WakeTurbulenceCategory wakeTurbulenceCategory)
 {

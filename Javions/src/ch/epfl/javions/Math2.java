@@ -4,7 +4,7 @@ package ch.epfl.javions;
  *Offers static methods to make various calculations
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 public final class Math2 {
     private Math2(){}

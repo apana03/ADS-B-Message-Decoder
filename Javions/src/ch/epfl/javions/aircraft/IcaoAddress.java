@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
  *Defines the regular expression for Icao adress
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 
 public record IcaoAddress(String string) {

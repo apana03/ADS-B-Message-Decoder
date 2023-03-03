@@ -4,7 +4,7 @@ package ch.epfl.javions;
  *Definition of various units
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 public final class Units {
     private Units(){}

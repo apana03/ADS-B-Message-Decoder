@@ -8,7 +8,7 @@ import java.util.HexFormat;
  * Represents a sequence of Bytes
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 public final class ByteString {
     private byte[] byteString;
@@ -80,7 +80,6 @@ public final class ByteString {
         }
         return result;
     }
-
     @Override
     public boolean equals(Object thatO) {
         if (thatO instanceof ByteString that) {
@@ -98,12 +97,10 @@ public final class ByteString {
             return false;
         }
     }
-
     @Override
     public int hashCode() {
         return Arrays.hashCode(byteString);
     }
-
     @Override
     public String toString() {
         HexFormat hf = HexFormat.of().withUpperCase();

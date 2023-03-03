@@ -5,7 +5,7 @@ package ch.epfl.javions;
  *  according to the WebMercator projection
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 
 public class WebMercator {

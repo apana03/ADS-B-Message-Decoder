@@ -5,7 +5,7 @@ package ch.epfl.javions;
  * from a value of type long
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 
 public class Bits {

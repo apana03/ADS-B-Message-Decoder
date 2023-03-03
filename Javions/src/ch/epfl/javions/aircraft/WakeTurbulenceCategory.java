@@ -4,7 +4,7 @@ package ch.epfl.javions.aircraft;
  *Represents the wake turbulence category of an aircraft
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 
 public enum WakeTurbulenceCategory {

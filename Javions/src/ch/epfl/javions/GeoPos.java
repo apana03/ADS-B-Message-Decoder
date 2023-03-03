@@ -4,7 +4,7 @@ package ch.epfl.javions;
  *Represents geographical positions
  *
  * @author Andrei Pana
- * @author David Fota
+ * @author David Fota 355816
  */
 
 public record GeoPos(int longitudeT32, int latitudeT32)
