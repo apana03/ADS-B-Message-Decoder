@@ -4,7 +4,7 @@ package ch.epfl.javions;
  *contains methods to extract a subset of the 64 bits
  * from a value of type long
  *
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 

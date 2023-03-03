@@ -1,7 +1,7 @@
 package ch.epfl.javions;
 
 /**
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  * Date: 01/03/2023
  * represents a calculator of Crc of 24 bits

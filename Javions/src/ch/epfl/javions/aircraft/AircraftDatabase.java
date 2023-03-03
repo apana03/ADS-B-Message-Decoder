@@ -8,7 +8,7 @@ import java.util.zip.ZipFile;
 /**
  * Represents an aircraft database
  * @author David Fota 355816
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  */
 public class AircraftDatabase
 {

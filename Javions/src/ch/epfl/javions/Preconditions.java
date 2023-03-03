@@ -1,7 +1,7 @@
 package ch.epfl.javions;
 /**
  *Represents the preconditions
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 public final class Preconditions {

@@ -3,7 +3,7 @@ package ch.epfl.javions;
 /**
  *Definition of various units
  *
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 public final class Units {

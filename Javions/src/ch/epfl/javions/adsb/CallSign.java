@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  *Defines the regular expression for Call Sign
  *
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 

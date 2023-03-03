@@ -3,7 +3,7 @@ package ch.epfl.javions.aircraft;
 /**
  *Represents the wake turbulence category of an aircraft
  *
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 

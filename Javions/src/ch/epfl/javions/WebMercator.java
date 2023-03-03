@@ -4,7 +4,7 @@ package ch.epfl.javions;
  *contains (static) methods to project geographical coordinates
  *  according to the WebMercator projection
  *
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 

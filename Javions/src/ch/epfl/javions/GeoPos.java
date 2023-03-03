@@ -3,7 +3,7 @@ package ch.epfl.javions;
 /**
  *Represents geographical positions
  *
- * @author Andrei Pana
+ * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 
