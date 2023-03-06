@@ -32,9 +32,9 @@ public final class Submit {
     // CONFIGURATION
     // -------------
     // Jeton du premier membre du groupe
-    private static final String TOKEN_1 = "Phiel8Sh";
+    private static final String TOKEN_1 = "CheeG1ze";
     // Jeton du second membre (identique au premier pour les personnes travaillant seules)
-    private static final String TOKEN_2 = "eja9Keex";
+    private static final String TOKEN_2 = "ee5Cohng";
     // -------------
 
     private static final String ZIP_ENTRY_NAME_PREFIX = "Javions/";

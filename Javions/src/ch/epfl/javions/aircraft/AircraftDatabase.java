@@ -48,8 +48,10 @@ public class AircraftDatabase
                      BufferedReader b = new BufferedReader(r))
                 {
                     String l = "";
-                    while ((l = b.readLine()).compareTo(address.string()) <= 0 || l.startsWith(address.string()))
+                    while ((l = b.readLine()) != null)
                     {
+                        if(l.compareTo(address.string()) > 0 && !l.startsWith(address.string()))
+                            break;
                         if (l.startsWith(address.string()))
                         {
                             data = l.split(",", -1);

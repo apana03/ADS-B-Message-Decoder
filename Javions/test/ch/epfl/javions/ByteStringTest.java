@@ -69,7 +69,6 @@ class ByteStringTest {
         var byteString = new ByteString(bytes);
         long number = byteString.bytesInRange(0, bytes.length);
         String hexString = Long. toHexString(number);
-        System. out. println(hexString); // a.
         assertEquals(0x123456789ABCDEL, byteString.bytesInRange(0, bytes.length));
     }
 

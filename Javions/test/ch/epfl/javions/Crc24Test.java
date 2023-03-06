@@ -18,8 +18,6 @@ public class Crc24Test {
         String cS = "035DB8";
         int c = Integer.parseInt(cS, 16); // == 0xEE2EC6
         byte[] mOnly = HexFormat.of().parseHex(mS);
-        System.out.println(HexFormat.of().toHexDigits(c));
-        System.out.println(HexFormat.of().toHexDigits(crc24.crc(mOnly)));
         assertEquals(c, crc24.crc(mOnly));
     }
 
