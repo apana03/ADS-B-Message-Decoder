@@ -8,6 +8,7 @@ public final class SamplesDecoder
 {
     InputStream stream;
     int batchSize;
+    byte[] octets;
     public SamplesDecoder(InputStream stream, int batchSize)
     {
         if(batchSize <= 0)
@@ -21,20 +22,14 @@ public final class SamplesDecoder
     {
         if( batch.length != batchSize)
             throw new IllegalArgumentException();
-        Reader r = new InputStreamReader(stream, StandardCharsets.UTF_8);
-        BufferedReader b = new BufferedReader(r);
-        String l = "";
-        for( int i = 0; i < batchSize; i+=2)
+        octets = stream.readNBytes(batchSize*2);
+        for( int i = 0; i < batchSize; i++)
         {
-            l = "";
-            for (int j = 0; j < 16; j++)
-            {
-                l += (char)b.read();
-            }
-            byte[] sample = HexFormat.of().parseHex(l);
-            batch[i] = (short) (0 | (sample[3]<<8));
-            batch[i] |= (sample[1]<<4 | sample[0]);
+            batch[i] = (short) ((short) 0 | ((octets[2*i + 1] & 0x00001111) << 8));
+            batch[i] |= octets[2*i];
         }
+        if(octets.length < batchSize*2)
+           return (int) Math.floor(octets.length/2);
         return batchSize;
     }
 }
