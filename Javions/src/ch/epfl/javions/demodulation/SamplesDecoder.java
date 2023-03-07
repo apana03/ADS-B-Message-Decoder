@@ -1,5 +1,7 @@
 package ch.epfl.javions.demodulation;
 
+import ch.epfl.javions.Preconditions;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
@@ -11,8 +13,7 @@ public final class SamplesDecoder
     byte[] octets;
     public SamplesDecoder(InputStream stream, int batchSize)
     {
-        if(batchSize <= 0)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(batchSize > 0);
         if(stream == null)
             throw new NullPointerException();
         this.stream = stream;
@@ -20,8 +21,7 @@ public final class SamplesDecoder
     }
     public int readBatch(short[] batch) throws IOException
     {
-        if( batch.length != batchSize)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(batchSize == batch.length);
         octets = stream.readNBytes(batchSize*2);
         for( int i = 0; i < batchSize; i++)
         {
