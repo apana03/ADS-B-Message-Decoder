@@ -42,7 +42,7 @@ public class PowerComputer
      * @throws IllegalArgumentException if the size of the table
      * passed as argument is not equal to the size of a batch
      */
-    public int readBatch( int batch[] ) throws IOException
+    public int readBatch(int[] batch) throws IOException
     {
         Preconditions.checkArgument( batchSize == batch.length);
         decoder.readBatch(signedBatch);

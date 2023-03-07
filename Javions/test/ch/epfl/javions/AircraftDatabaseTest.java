@@ -22,7 +22,6 @@ public class AircraftDatabaseTest {
         var aircraftFileName = System.getenv("JAVIONS_AIRCRAFT_DATABASE");
         if (aircraftFileName != null)
             return new AircraftDatabase(aircraftFileName);
-
         throw new Error("Could not find aircraft database");
     }
 
