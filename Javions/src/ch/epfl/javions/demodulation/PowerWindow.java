@@ -49,7 +49,7 @@ public final class PowerWindow {
         if(i<0 && i>=windowSize){
             throw new IndexOutOfBoundsException();
         }
-
+        return  1;
     }
 
     void advance() throws IOException{
