@@ -60,6 +60,6 @@ public class PowerComputer
         }
         for(int i = 0; i < 8; i++)
             last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
-        return batchSize;
+        return batchSize;//
     }
 }
