@@ -18,4 +18,5 @@ public record IcaoAddress(String string) {
             throw new IllegalArgumentException();
         }
     }
+
 }

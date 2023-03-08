@@ -43,7 +43,8 @@ public final class Crc24 {
        {
            crc = ((crc << 8)) ^ table[getMostSignificantByte(crc)];
        }
-       return crc & 0xFFFFFF;
+       return crc_bitwise(generator,bytes);
+       //return crc & 0xFFFFFF;
    }
     /**
      * Calculates the crc using the basic bitwise method
