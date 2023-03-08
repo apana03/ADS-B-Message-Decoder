@@ -15,6 +15,7 @@ public final class PowerWindow {
 
     private int windowSize;
     private long position = 0;
+    private long samplesDecoded =0;
     private int[] batch1;
     private int[] batch2;
 
@@ -27,7 +28,7 @@ public final class PowerWindow {
         batch1 = new int[windowSize];
         batch2 = new int[windowSize];
         powerComputer = new PowerComputer(stream,windowSize);
-        powerComputer.readBatch(batch1);
+        samplesDecoded+=powerComputer.readBatch(batch1);
     }
 
     /**
@@ -42,30 +43,44 @@ public final class PowerWindow {
     }
 
     public boolean isFull() {
-        return true;
+        return (samplesDecoded>=position);
     }
 
     int get(int i){
         if(i<0 && i>=windowSize){
             throw new IndexOutOfBoundsException();
         }
-        return  1;
+        int positionStart = (int) position%windowSize;
+        if(positionStart == 0){
+            return batch1[i];
+        }else{
+            if(positionStart+i<=windowSize){
+                return batch1[i];
+            }else{
+                return batch2[(positionStart+i)%windowSize];
+            }
+        }
     }
 
     void advance() throws IOException{
         if(position == 0){
-            powerComputer.readBatch(batch2);
+            samplesDecoded+=powerComputer.readBatch(batch2);
         }
         position++;
         if(position%windowSize == 0){
             batch1 = batch2;
-            powerComputer.readBatch(batch2);
+            samplesDecoded+=powerComputer.readBatch(batch2);
         }
     }
 
     void advanceBy(int offset) throws IOException{
         Preconditions.checkArgument(offset>=0);
-
+        if(position == 0){
+            samplesDecoded+=powerComputer.readBatch(batch2);
+        }
+        for(int i = 0 ;i<offset;i++){
+            advance();
+        }
     }
 
 
