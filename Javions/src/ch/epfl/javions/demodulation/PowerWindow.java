@@ -46,7 +46,7 @@ public final class PowerWindow {
         return (samplesDecoded>=position);
     }
 
-    int get(int i){
+    public int get(int i){
         if(i<0 && i>=windowSize){
             throw new IndexOutOfBoundsException();
         }
@@ -62,7 +62,7 @@ public final class PowerWindow {
         }
     }
 
-    void advance() throws IOException{
+    public void advance() throws IOException{
         if(position == 0){
             samplesDecoded+=powerComputer.readBatch(batch2);
         }
@@ -73,7 +73,7 @@ public final class PowerWindow {
         }
     }
 
-    void advanceBy(int offset) throws IOException{
+    public void advanceBy(int offset) throws IOException{
         Preconditions.checkArgument(offset>=0);
         if(position == 0){
             samplesDecoded+=powerComputer.readBatch(batch2);
