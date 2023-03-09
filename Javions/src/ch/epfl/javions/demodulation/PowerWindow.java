@@ -43,7 +43,7 @@ public final class PowerWindow {
     }
 
     public boolean isFull() {
-        return (samplesDecoded>=position);
+        return (samplesDecoded>=position+windowSize);
     }
 
     public int get(int i){
