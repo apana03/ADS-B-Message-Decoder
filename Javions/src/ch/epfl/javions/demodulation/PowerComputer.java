@@ -45,13 +45,14 @@ public class PowerComputer
     public int readBatch( int[] batch ) throws IOException
     {
         Preconditions.checkArgument( batchSize == batch.length);
+        signedBatchPrevious = new short[signedBatchPrevious.length];
         int decoded = decoder.readBatch(signedBatchPrevious);
         short[] signedBatchCurrent = new short[signedBatchPrevious.length + 8];
         int count = 0;
         System.arraycopy(last8Bytes, 0, signedBatchCurrent, 0, 8);
         for( int i = 0; i < signedBatchPrevious.length; i++ )
             signedBatchCurrent[i + 8] = signedBatchPrevious[i];
-        for( int i = 8; i < signedBatchCurrent.length; i += 2 )
+        for( int i = 8, k = 1; k <= decoded/2; i += 2, k++)
         {
             for(int j = 0; j < 8; j++)
                 if( i + 1 - j >= 0)
