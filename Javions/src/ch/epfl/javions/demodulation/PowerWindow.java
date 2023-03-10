@@ -40,14 +40,30 @@ public final class PowerWindow {
         return windowSize;
     }
 
+    /**
+     * returns the current position of the window relative to the start of the stream of power values, which is initially 0 and is incremented with each call to advance
+     * @return the position
+     */
     public long position(){
         return position;
     }
 
+    /**
+     * eturns true iff the window is full, ie. that it contains as many samples as its size; this is always true, except when the end of the sample stream has been reached, and the window passes it
+     * @return if the window is full or not
+     */
     public boolean isFull() {
 
         return (samplesDecoded >= position+windowSize);
     }
+
+    /**
+     *returns the power sample at the given index of the window
+     * @hrows IndexOutOfBoundsException if that index is not between 0 (inclusive) and window size (excluded)
+     * @param  i
+     *        the index
+     * @return the power of the window at the given index
+     */
 
     public int get(int i){
         if(i < 0 || i >= windowSize){
@@ -56,10 +72,16 @@ public final class PowerWindow {
         int positionStart = (int) position % WINDOW_MAX_SIZE ;
             if(positionStart + i < WINDOW_MAX_SIZE){
                 return batch1[positionStart + i];
-            }else{
+            }
+            else{
                 return batch2[(positionStart + i)%WINDOW_MAX_SIZE];
             }
     }
+
+    /**
+     * advances the window by one sample
+     * @throws IOException
+     */
 
     public void advance() throws IOException{
         if(position == 0){
@@ -69,10 +91,19 @@ public final class PowerWindow {
             position++;
             if(position % WINDOW_MAX_SIZE == 0){
                 batch1 = batch2;
+                batch2 = new int[WINDOW_MAX_SIZE];
                 samplesDecoded+=powerComputer.readBatch(batch2);
             }
         }
     }
+
+    /**
+     * advance the window by the given number of samples, as if the advance method had been called the given number of times
+     * @throw IllegalArgumentException if this number is not positive or zero
+     * @param offset
+     *          the given number of samples
+     * @throws IOException
+     */
 
     public void advanceBy(int offset) throws IOException{
         Preconditions.checkArgument(offset>=0);
