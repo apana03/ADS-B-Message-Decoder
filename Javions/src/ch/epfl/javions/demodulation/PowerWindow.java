@@ -40,7 +40,7 @@ public final class PowerWindow {
         return windowSize;
     }
 
-    long position(){
+    public long position(){
         return position;
     }
 
@@ -55,10 +55,11 @@ public final class PowerWindow {
         }
         int positionStart = (int) position%WINDOW_MAX_SIZE ;
             if(positionStart+i<WINDOW_MAX_SIZE){
-                System.out.println("Primu");
+                if(positionStart+i==2000){
+                    System.out.println(batch1[positionStart+i]);
+                }
                 return batch1[positionStart+i];
             }else{
-                System.out.println("Al doilea");
                 return batch2[(positionStart+i)%WINDOW_MAX_SIZE];
             }
     }
