@@ -45,7 +45,7 @@ public class PowerComputer
     public int readBatch( int[] batch ) throws IOException
     {
         Preconditions.checkArgument( batchSize == batch.length);
-        decoder.readBatch(signedBatchPrevious);
+        int decoded = decoder.readBatch(signedBatchPrevious);
         short[] signedBatchCurrent = new short[signedBatchPrevious.length + 8];
         int count = 0;
         System.arraycopy(last8Bytes, 0, signedBatchCurrent, 0, 8);
@@ -62,6 +62,6 @@ public class PowerComputer
         }
         for(int i = 0; i < 8; i++)
             last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
-        return count;
+        return decoded/2;
     }
 }

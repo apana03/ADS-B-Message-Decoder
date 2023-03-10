@@ -107,7 +107,7 @@ public class PowerWindowTest
 
     }
     @Test
-    public void getWorksInSecondTable()throws IOException{
+    public void getWorksInFirstTable()throws IOException{
         InputStream stream = new FileInputStream("Javions/resources/samples.bin");
         PowerWindow window = new PowerWindow(stream,4);
         window.advance();
