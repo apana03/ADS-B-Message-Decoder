@@ -90,14 +90,15 @@ public class PowerWindowTest
         int k = 0;
         PowerWindow powerWindow = new PowerWindow(stream, 1200);
         while (powerWindow.isFull()) {
+            System.out.println("Isfull");
             for (int i = 0; i < powerWindow.size(); i++)
             {
                 powers[k++] = powerWindow.get(i);
-                System.out.println(k);
 
             }
-            System.out.println("Advance");
+
             powerWindow.advance();
+            System.out.println("Advance");
         }
         for (int i = 0; i < powerWindow.size(); i++) {
             powers[k++] = powerWindow.get(i);
