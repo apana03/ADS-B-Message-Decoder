@@ -47,6 +47,7 @@ public class PowerComputer
         Preconditions.checkArgument( batchSize == batch.length);
         decoder.readBatch(signedBatchPrevious);
         short[] signedBatchCurrent = new short[signedBatchPrevious.length + 8];
+        int count = 0;
         System.arraycopy(last8Bytes, 0, signedBatchCurrent, 0, 8);
         for( int i = 0; i < signedBatchPrevious.length; i++ )
             signedBatchCurrent[i + 8] = signedBatchPrevious[i];
@@ -57,9 +58,10 @@ public class PowerComputer
                     samples[j] = signedBatchCurrent[i + 1 - j];
             batch[(i - 8)/2] = (int) (Math.pow((- samples[0] + samples[2] - samples[4] + samples[6]), 2) +
                     Math.pow(- samples[1] + samples[3] - samples[5] + samples[7], 2));
+            count++;
         }
         for(int i = 0; i < 8; i++)
             last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
-        return batchSize;
+        return count;
     }
 }

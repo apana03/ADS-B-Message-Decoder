@@ -45,7 +45,7 @@ public final class PowerWindow {
     }
 
     public boolean isFull() {
-        return (samplesDecoded>=position+windowSize);
+        return (samplesDecoded > position+windowSize);
     }
 
     public int get(int i){
@@ -65,7 +65,7 @@ public final class PowerWindow {
             samplesDecoded+=powerComputer.readBatch(batch2);
         }
         position++;
-        if(position%WINDOW_MAX_SIZE == 0){
+        if(position % WINDOW_MAX_SIZE == 0){
             batch1 = batch2;
             samplesDecoded+=powerComputer.readBatch(batch2);
         }
