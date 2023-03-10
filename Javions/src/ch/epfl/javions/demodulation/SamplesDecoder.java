@@ -57,8 +57,6 @@ public final class SamplesDecoder
                 batch[i] |= octets[2 * i];
             }
         }
-        if(octets.length < batchSize*2)
-           return (int) Math.floor(octets.length/2);
-        return batchSize;
+        return octets.length/2;
     }
 }

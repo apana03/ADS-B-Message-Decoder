@@ -46,21 +46,18 @@ public final class PowerWindow {
 
     public boolean isFull() {
 
-        return (samplesDecoded > position+windowSize);
+        return (samplesDecoded >= position+windowSize);
     }
 
     public int get(int i){
-        if(i<0 || i>=windowSize){
+        if(i < 0 || i >= windowSize){
             throw new IndexOutOfBoundsException();
         }
-        int positionStart = (int) position%WINDOW_MAX_SIZE ;
-            if(positionStart+i<WINDOW_MAX_SIZE){
-                if(positionStart+i==2000){
-                    System.out.println(batch1[positionStart+i]);
-                }
-                return batch1[positionStart+i];
+        int positionStart = (int) position % WINDOW_MAX_SIZE ;
+            if(positionStart + i < WINDOW_MAX_SIZE){
+                return batch1[positionStart + i];
             }else{
-                return batch2[(positionStart+i)%WINDOW_MAX_SIZE];
+                return batch2[(positionStart + i)%WINDOW_MAX_SIZE];
             }
     }
 
@@ -79,7 +76,7 @@ public final class PowerWindow {
 
     public void advanceBy(int offset) throws IOException{
         Preconditions.checkArgument(offset>=0);
-        for(int i = 0 ;i<offset;i++){
+        for(int i = 0 ;i < offset;i++){
             advance();
         }
     }
