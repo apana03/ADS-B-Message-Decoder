@@ -55,8 +55,10 @@ public final class PowerWindow {
         }
         int positionStart = (int) position%WINDOW_MAX_SIZE ;
             if(positionStart+i<WINDOW_MAX_SIZE){
+                System.out.println("Primu");
                 return batch1[positionStart+i];
             }else{
+                System.out.println("Al doilea");
                 return batch2[(positionStart+i)%WINDOW_MAX_SIZE];
             }
     }
