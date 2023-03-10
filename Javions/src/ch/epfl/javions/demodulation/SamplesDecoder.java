@@ -51,8 +51,11 @@ public final class SamplesDecoder
         octets = stream.readNBytes(batchSize*2);
         for( int i = 0; i < batchSize; i++)
         {
-            batch[i] = (short) ((short) 0 | ((octets[2*i + 1] & 0x00001111) << 8));
-            batch[i] |= octets[2*i];
+            if(2*i + 1 < octets.length)
+            {
+                batch[i] = (short) ((short) 0 | ((octets[2 * i + 1] & 0x00001111) << 8));
+                batch[i] |= octets[2 * i];
+            }
         }
         if(octets.length < batchSize*2)
            return (int) Math.floor(octets.length/2);
