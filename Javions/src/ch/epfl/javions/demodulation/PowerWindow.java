@@ -64,7 +64,7 @@ public final class PowerWindow {
 
     public void advance() throws IOException{
         if(position == 0){
-            samplesDecoded+=powerComputer.readBatch(batch2);
+            //samplesDecoded+=powerComputer.readBatch(batch2);
             position++;
         }else{
             position++;

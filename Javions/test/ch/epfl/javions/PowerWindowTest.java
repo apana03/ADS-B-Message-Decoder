@@ -91,7 +91,8 @@ public class PowerWindowTest
         while (powerWindow.isFull()) {
             for (int i = 0; i < powerWindow.size(); i++)
             {
-                    powers[k++] = powerWindow.get(i);
+                powers[k++] = powerWindow.get(i);
+                System.out.println(powers[k]);
             }
             powerWindow.advance();
         }
