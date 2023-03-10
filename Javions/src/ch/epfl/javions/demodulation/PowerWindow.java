@@ -45,8 +45,7 @@ public final class PowerWindow {
     }
 
     public boolean isFull() {
-        System.out.println(samplesDecoded);
-        System.out.println(position+windowSize);
+
         return (samplesDecoded > position+windowSize);
     }
 
@@ -56,7 +55,7 @@ public final class PowerWindow {
         }
         int positionStart = (int) position%WINDOW_MAX_SIZE ;
             if(positionStart+i<WINDOW_MAX_SIZE){
-                return batch1[i];
+                return batch1[positionStart+i];
             }else{
                 return batch2[(positionStart+i)%WINDOW_MAX_SIZE];
             }
@@ -64,7 +63,7 @@ public final class PowerWindow {
 
     public void advance() throws IOException{
         if(position == 0){
-            //samplesDecoded+=powerComputer.readBatch(batch2);
+            samplesDecoded+=powerComputer.readBatch(batch2);
             position++;
         }else{
             position++;
