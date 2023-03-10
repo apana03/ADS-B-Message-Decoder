@@ -49,7 +49,7 @@ public final class PowerWindow {
     }
 
     public int get(int i){
-        if(i<0 && i>=windowSize){
+        if(i<0 || i>=windowSize){
             throw new IndexOutOfBoundsException();
         }
         int positionStart = (int) position%WINDOW_MAX_SIZE ;
@@ -80,6 +80,4 @@ public final class PowerWindow {
             advance();
         }
     }
-
-
 }

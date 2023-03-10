@@ -24,7 +24,7 @@ public class PowerComputer
      */
     public PowerComputer(InputStream stream, int batchSize)
     {
-        Preconditions.checkArgument((batchSize * 4) % 8 == 0 && batchSize > 0);
+        Preconditions.checkArgument(batchSize % 8 == 0 && batchSize > 0);
         SamplesDecoder decoder = new SamplesDecoder(stream, batchSize*2);
         this.decoder = decoder;
         this.batchSize = batchSize;
@@ -60,6 +60,6 @@ public class PowerComputer
         }
         for(int i = 0; i < 8; i++)
             last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
-        return batchSize;//
+        return batchSize;
     }
 }

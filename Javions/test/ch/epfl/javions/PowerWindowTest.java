@@ -4,9 +4,7 @@ import ch.epfl.javions.demodulation.PowerWindow;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.net.URLDecoder;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -34,7 +32,7 @@ public class PowerWindowTest
     void testAdvanceByNegativeOffset() throws IOException {
         // Test with negative offset in advanceBy method
         InputStream stream = new ByteArrayInputStream(new byte[1000]);
-        PowerWindow window = new PowerWindow(stream, 10);
+        PowerWindow window = new PowerWindow(stream, 8);
         assertThrows(IllegalArgumentException.class, () -> window.advanceBy(-1));
     }
 
@@ -43,7 +41,7 @@ public class PowerWindowTest
     void testGetInvalidIndex() throws IOException {
         // Test with invalid index in get method
         InputStream stream = new ByteArrayInputStream(new byte[1000]);
-        PowerWindow window = new PowerWindow(stream, 10);
+        PowerWindow window = new PowerWindow(stream, 8);
         assertThrows(IndexOutOfBoundsException.class, () -> window.get(10));
     }
 
@@ -53,7 +51,7 @@ public class PowerWindowTest
     public void testConstructorThrowsIllegalArgumentExceptionWhenWindowSizeIsNegative() {
         assertThrows(IllegalArgumentException.class, () -> new PowerWindow(inputStream, -1));
     }
-//
+
 
     // Test que le constructeur lève IllegalArgumentException lorsque la taille de la fenêtre est supérieure à 2^16
     @Test
@@ -65,7 +63,7 @@ public class PowerWindowTest
     // Test que la méthode advanceBy lève IllegalArgumentException lorsque l'offset est négatif
     @Test
     public void testAdvanceByThrowsIllegalArgumentExceptionWhenOffsetIsNegative() throws IOException {
-        PowerWindow window = new PowerWindow(inputStream, 10);
+        PowerWindow window = new PowerWindow(inputStream, 8);
         assertThrows(IllegalArgumentException.class, () -> window.advanceBy(-1));
     }
 
@@ -73,7 +71,7 @@ public class PowerWindowTest
     // Test que la méthode get lève IndexOutOfBoundsException lorsque l'index est inférieur à 0
     @Test
     public void testGetThrowsIndexOutOfBoundsExceptionWhenIndexIsNegative() throws IOException {
-        PowerWindow window = new PowerWindow(inputStream, 10);
+        PowerWindow window = new PowerWindow(inputStream, 8);
         assertThrows(IndexOutOfBoundsException.class, () -> window.get(-1));
     }
 
@@ -81,20 +79,19 @@ public class PowerWindowTest
     // Test que la méthode get lève IndexOutOfBoundsException lorsque l'index est supérieur ou égal à la taille de la fenêtre
     @Test
     public void testGetThrowsIndexOutOfBoundsExceptionWhenIndexIsGreaterThanWindowSize() throws IOException {
-        PowerWindow window = new PowerWindow(inputStream, 10);
+        PowerWindow window = new PowerWindow(inputStream, 8);
         assertThrows(IndexOutOfBoundsException.class, () -> window.get(11));
     }
-
     @Test
     void testCaLumea() throws IOException {
-        String d = URLDecoder.decode(getClass().getResource("/samples.bin").getFile(), UTF_8);
-        InputStream stream = new FileInputStream(d);
+        InputStream stream = new FileInputStream("Javions/resources/samples.bin");
         int[] powers = new int[2400];
         int k = 0;
         PowerWindow powerWindow = new PowerWindow(stream, 1200);
         while (powerWindow.isFull()) {
-            for (int i = 0; i < powerWindow.size(); i++) {
-                powers[k++] = powerWindow.get(i);
+            for (int i = 0; i < powerWindow.size(); i++)
+            {
+                    powers[k++] = powerWindow.get(i);
             }
             powerWindow.advance();
         }
@@ -106,5 +103,4 @@ public class PowerWindowTest
         assertArrayEquals(powers, expectedPowers);
 
     }
-
 }
