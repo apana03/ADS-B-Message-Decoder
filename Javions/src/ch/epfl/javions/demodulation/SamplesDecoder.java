@@ -1,5 +1,6 @@
 package ch.epfl.javions.demodulation;
 
+import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Preconditions;
 
 import java.io.*;
@@ -49,13 +50,10 @@ public final class SamplesDecoder
     {
         Preconditions.checkArgument(batchSize == batch.length);
         octets = stream.readNBytes(batchSize*2);
-        for( int i = 0; i < batchSize; i++)
+        for( int i = 0; i < octets.length; i+=2)
         {
-            if(2*i + 1 < octets.length)
-            {
-                batch[i] = (short) ((short) 0 | ((octets[2 * i + 1] & 0x00001111) << 8));
-                batch[i] |= octets[2 * i];
-            }
+            var bytes = new ByteString(new byte[]{octets[i+1], octets[i]});
+            batch[i/2] = (short) (bytes.bytesInRange(0, 2) - 2048);
         }
         return octets.length/2;
     }
