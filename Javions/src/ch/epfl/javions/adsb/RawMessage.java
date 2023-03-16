@@ -27,13 +27,13 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
         }
     }
 
-    static int size(byte byte0){
+    public static int size(byte byte0){
         byte0 =(byte) ((byte0 & 0b11111000)>>3);
         return (byte0 == 17) ? LENGTH : 0;
     }
 
-    static int typeCode(long payload){
-        return Bits.extractUInt(payload,50,5);
+    public static int typeCode(long payload){
+        return Bits.extractUInt(payload,51,5);
     }
 
     public int downLinkFormat(){
