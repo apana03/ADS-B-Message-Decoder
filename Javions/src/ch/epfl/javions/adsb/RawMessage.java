@@ -19,8 +19,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     static RawMessage of(long timeStampNs, byte[] bytes){
-        byte[] messageCrc = new byte[]{bytes[11],bytes[12],bytes[13]};
-        if(crc24.crc(messageCrc)!=0){
+        if(crc24.crc(bytes)!=0){
             return null;
         }else{
             return new RawMessage(timeStampNs, new ByteString(bytes));
