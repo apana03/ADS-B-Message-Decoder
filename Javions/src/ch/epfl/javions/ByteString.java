@@ -74,7 +74,7 @@ public final class ByteString {
             throw new IllegalArgumentException();
         }
         long result = 0;
-        for (int i = 0; i < toIndex; i++) {
+        for (int i = fromIndex; i < toIndex; i++) {
             result <<= 8;
             result |= (byteString[i] & 0xFF);
         }

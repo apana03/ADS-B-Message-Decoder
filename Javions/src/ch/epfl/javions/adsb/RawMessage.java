@@ -8,6 +8,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.HexFormat;
 
+
 public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
@@ -43,12 +44,12 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public IcaoAddress icaoAddress(){
-        int icao = (int) bytes.bytesInRange(1,3);
-        return new IcaoAddress(Integer.toHexString(icao));
+        int icao = (int) bytes.bytesInRange(1,4);
+        return new IcaoAddress(Integer.toHexString(icao).toUpperCase());
     }
 
     public long payload(){
-        return bytes.bytesInRange(4,10);
+        return bytes.bytesInRange(4,11);
     }
 
     public int typeCode(){
