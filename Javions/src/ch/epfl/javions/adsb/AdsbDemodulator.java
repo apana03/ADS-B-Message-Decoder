@@ -18,7 +18,7 @@ public class AdsbDemodulator
     }
     public RawMessage nextMessage() throws IOException
     {
-        long horodatage = 0;
+        long horodatage;
         int sumPAfter, sumV;
         byte[] byteArray;
         while(window.isFull())

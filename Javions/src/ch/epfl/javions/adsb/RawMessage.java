@@ -12,14 +12,13 @@ import java.util.HexFormat;
 public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
-
+    static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
     public RawMessage{
         Preconditions.checkArgument(timeStampNs>=0);
         Preconditions.checkArgument(bytes.size() == LENGTH);
     }
 
     static RawMessage of(long timeStampNs, byte[] bytes){
-        Crc24 crc24 = new Crc24(Crc24.GENERATOR);
         byte[] messageCrc = new byte[]{bytes[11],bytes[12],bytes[13]};
         if(crc24.crc(messageCrc)!=0){
             return null;
