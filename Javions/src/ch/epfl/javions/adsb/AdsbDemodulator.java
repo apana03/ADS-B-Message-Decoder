@@ -8,41 +8,51 @@ import java.io.InputStream;
 
 public class AdsbDemodulator
 {
-    PowerWindow window, window1;
+    PowerWindow window;
+    int sumPCurrent, sumPPrevious;
     public AdsbDemodulator(InputStream samplesStream) throws IOException
     {
         window = new PowerWindow(samplesStream, 1200);
+        sumPCurrent = window.get(0) + window.get(10) + window.get(35) + window.get(45);
+        sumPPrevious = 0;
     }
-    RawMessage nextMessage() throws IOException
+    public RawMessage nextMessage() throws IOException
     {
         long horodatage = 0;
-        byte[] byteArray = new byte[12];
-        window1 = window;
-        int[] sumV = new int[1200], sumP = new int[1200];
-        for(int i = 0; i < 1200; i++)
+        int sumPAfter, sumV;
+        byte[] byteArray;
+        while(window.isFull())
         {
-            sumP[i] = window1.get(0) + window1.get(10) + window1.get(35) + window1.get(45);
-            sumV[i] = window1.get(5) + window1.get(15) + window1.get(20) + window1.get(25)
-                    + window1.get(30) + window1.get(40);
-            window1.advanceBy(1);
-        }
-        for(int i = 1; i < 1200; i++)
-        {
-            if( sumP[i] > sumP[i-1] && sumP[i] > sumP[i+1] && sumP[i] >= sumV[i] )
+            sumPAfter = window.get(1) + window.get(11) + window.get(36) + window.get(46);
+            byteArray = new byte[14];
+            if( sumPCurrent > sumPPrevious && sumPCurrent > sumPAfter )
             {
-                window.advanceBy(i);
-                horodatage = i/10;
+                sumV = window.get(5) + window.get(15) + window.get(20) + window.get(25)
+                        + window.get(30) + window.get(40);
+                if(sumPCurrent >= 2 * sumV)
+                {
+                    for (int i = 0; i < 112; i += 8)
+                    {
+                        for (int j = 0; j < 8; j++)
+                            if (window.get(80 + 10 * (i + j)) >= window.get(85 + 10 * (i + j)))
+                                byteArray[i >>> 3] |= (1 << (7 - j));
+                    }
+                    horodatage = window.position() * 100;
+                    var message = RawMessage.of(horodatage, byteArray);
+                    if (message != null && message.downLinkFormat() == 17)
+                    {
+                        window.advanceBy(1199);
+                        sumPPrevious = window.get(0) + window.get(10) + window.get(35) + window.get(45);
+                        sumPCurrent = window.get(1) + window.get(11) + window.get(36) + window.get(46);
+                        window.advance();
+                        return message;
+                    }
+                }
             }
+            sumPPrevious = sumPCurrent;
+            sumPCurrent = sumPAfter;
+            window.advance();
         }
-        for( int i = 0; i < 112; i += 8 )
-        {
-            for( int j = 0; j < 8; j++ )
-                if( window.get(80 + 10 * i) >= window.get(85 + 10 * i) )
-                    byteArray[i / 8] |= (1 << j);
-        }
-        ByteString message = new ByteString(byteArray);
-        if(horodatage != 0)
-            return new RawMessage(horodatage, message);
-        else return null;
+        return null;
     }
 }
