@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SamplesDecoderTest
+class SamplesDecoderTest
 {
     FileInputStream stream;
     public SamplesDecoderTest() throws FileNotFoundException
