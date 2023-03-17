@@ -20,6 +20,7 @@ public final class PowerWindow {
     private long samplesDecoded =0;
     private int[] batch1;
     private int[] batch2;
+    private int index = 0;
 
     private PowerComputer powerComputer;
 
@@ -53,8 +54,7 @@ public final class PowerWindow {
      * @return if the window is full or not
      */
     public boolean isFull() {
-
-        return (samplesDecoded >= position+windowSize);
+        return (samplesDecoded >= position + windowSize);
     }
 
     /**
@@ -69,13 +69,9 @@ public final class PowerWindow {
         if(i < 0 || i >= windowSize){
             throw new IndexOutOfBoundsException();
         }
-        int positionStart = (int) position % WINDOW_MAX_SIZE ;
-            if(positionStart + i < WINDOW_MAX_SIZE){
-                return batch1[positionStart + i];
-            }
-            else{
-                return batch2[(positionStart + i)%WINDOW_MAX_SIZE];
-            }
+        if( i + index < WINDOW_MAX_SIZE )
+            return batch1[index + i];
+        else return batch2[i+index-WINDOW_MAX_SIZE];
     }
 
     /**
@@ -84,17 +80,17 @@ public final class PowerWindow {
      */
 
     public void advance() throws IOException{
-        if(position == 0){
-            samplesDecoded+=powerComputer.readBatch(batch2);
             position++;
-        }else{
-            position++;
-            if(position % WINDOW_MAX_SIZE == 0){
-                batch1 = batch2;
-                batch2 = new int[WINDOW_MAX_SIZE];
+            index++;
+            if(index + windowSize - 1 == WINDOW_MAX_SIZE){
                 samplesDecoded+=powerComputer.readBatch(batch2);
             }
-        }
+            if(index >= WINDOW_MAX_SIZE){
+                int[] aux = batch2;
+                batch2 = batch1;
+                batch1 = aux;
+                index = 0;
+            }
     }
 
     /**

@@ -105,4 +105,67 @@ public class RawMessageTest {
 
         assertEquals(expected, actual);
     }
+    @Test
+    public void Constructeur() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            RawMessage test = new RawMessage(-1, new ByteString(new byte[14]));
+        });
+    }
+
+
+    // Taille ByteString mauvaise
+    @Test
+    public void Constructeur1() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            RawMessage test = new RawMessage(2, new ByteString(new byte[1]));
+        });
+    }
+
+
+    @Test
+    public void Constructeur2() {
+        assertDoesNotThrow(() -> {new RawMessage(2, new ByteString(new byte[14]));
+        });
+    }
+
+    @Test
+    void SizeTest(){
+        byte test1 = 70; byte test2 = 0b01000110; byte test3 = 0x46; byte test4 = (byte) 0x8D;
+        int Test1 = RawMessage.size(test1);
+        int Test2 = RawMessage.size(test2);
+        int Test3 = RawMessage.size(test3);
+        int Test4 = RawMessage.size(test4);
+        assertEquals(0, Test1); assertEquals(0,Test2); assertEquals(0,Test3);
+        assertEquals(14,Test4);
+    }
+
+
+    @Test void AllMethodsInOneTest(){
+        String message = "8D4B17E5F8210002004BB8B1F1AC";
+        ByteString byteString = ByteString.ofHexadecimalString(message); int timestamps = 0;
+        RawMessage test = new RawMessage(timestamps , byteString);
+        IcaoAddress icao = test.icaoAddress();
+        int typecode = test.typeCode();
+        int df = test.downLinkFormat();
+        long payload = test.payload();
+        int typecode2 = RawMessage.typeCode(payload);
+        assertEquals( "4B17E5",icao.string());
+        assertEquals(17,df);
+        assertEquals(31,typecode);
+        assertEquals(31,typecode2);
+        String message2 = "8D49529958B302E6E15FA352306B";
+        ByteString byteString2 = ByteString.ofHexadecimalString(message2);
+        int timestamps2 = 0;
+        RawMessage test2 = new RawMessage(timestamps2 , byteString2);
+        IcaoAddress icao2 = test2.icaoAddress();
+        int typecode22 = test2.typeCode();
+        int df2 = test2.downLinkFormat();
+        long payload2 = test2.payload();
+        int typecode222 = RawMessage.typeCode(payload2);
+        assertEquals( "495299",icao2.string());
+        assertEquals(17,df2);
+        assertEquals(11,typecode22);
+        assertEquals(11,typecode222);
+    }
+
 }

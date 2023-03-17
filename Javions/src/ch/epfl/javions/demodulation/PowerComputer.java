@@ -14,6 +14,7 @@ public class PowerComputer
     private short[] signedBatchPrevious;
     private short[] samples = new short[8];
     private short[] last8Bytes = new short[8];
+    private short[] signedBatchCurrent;
     private int batchSize;
     /**
      * @param stream, batchSize
@@ -29,6 +30,7 @@ public class PowerComputer
         this.decoder = decoder;
         this.batchSize = batchSize;
         signedBatchPrevious = new short[batchSize*2];
+        signedBatchCurrent = new short[batchSize*2 + 8];
     }
     /**
      * @param batch
@@ -45,21 +47,16 @@ public class PowerComputer
     public int readBatch( int[] batch ) throws IOException
     {
         Preconditions.checkArgument( batchSize == batch.length);
-        signedBatchPrevious = new short[signedBatchPrevious.length];
         int decoded = decoder.readBatch(signedBatchPrevious);
-        short[] signedBatchCurrent = new short[signedBatchPrevious.length + 8];
-        int count = 0;
         System.arraycopy(last8Bytes, 0, signedBatchCurrent, 0, 8);
-        for( int i = 0; i < signedBatchPrevious.length; i++ )
-            signedBatchCurrent[i + 8] = signedBatchPrevious[i];
+        System.arraycopy(signedBatchPrevious, 0, signedBatchCurrent, 8, batchSize*2);
         for( int i = 8, k = 1; k <= decoded/2; i += 2, k++)
         {
             for(int j = 0; j < 8; j++)
-                if( i + 1 - j >= 0)
+                if( i + 1 - j >= 0 )
                     samples[j] = signedBatchCurrent[i + 1 - j];
-            batch[(i - 8)/2] = (int) (Math.pow((- samples[0] + samples[2] - samples[4] + samples[6]), 2) +
-                    Math.pow(- samples[1] + samples[3] - samples[5] + samples[7], 2));
-            count++;
+            batch[(i - 8)/2] = (- samples[0] + samples[2] - samples[4] + samples[6]) * (- samples[0] + samples[2] - samples[4] + samples[6]) +
+                    (- samples[1] + samples[3] - samples[5] + samples[7]) * (- samples[1] + samples[3] - samples[5] + samples[7]);
         }
         for(int i = 0; i < 8; i++)
             last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
