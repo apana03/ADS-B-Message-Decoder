@@ -18,8 +18,8 @@ public final class PrintRawMessages {
             while ((m = d.nextMessage()) != null) {
                 System.out.println(m);
                 count++;
-
             }
+            System.out.println(count);
         }
     }
 }
