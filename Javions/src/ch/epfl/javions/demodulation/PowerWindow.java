@@ -17,7 +17,7 @@ public final class PowerWindow {
 
     private int windowSize;
     private long position = 0;
-    private long samplesDecoded =0;
+    private long samplesDecoded = 0;
     private int[] batch1;
     private int[] batch2;
     private int index = 0;
@@ -50,7 +50,7 @@ public final class PowerWindow {
     }
 
     /**
-     * eturns true iff the window is full, ie. that it contains as many samples as its size; this is always true, except when the end of the sample stream has been reached, and the window passes it
+     * returns true iff the window is full, ie. that it contains as many samples as its size; this is always true, except when the end of the sample stream has been reached, and the window passes it
      * @return if the window is full or not
      */
     public boolean isFull() {
@@ -71,7 +71,7 @@ public final class PowerWindow {
         }
         if( i + index < WINDOW_MAX_SIZE )
             return batch1[index + i];
-        else return batch2[i+index-WINDOW_MAX_SIZE];
+        else return batch2[i + index - WINDOW_MAX_SIZE];
     }
 
     /**
