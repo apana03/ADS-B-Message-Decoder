@@ -18,6 +18,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
     static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
+
+    private static HexFormat hf = HexFormat.of().withUpperCase();
+
     public RawMessage{
         Preconditions.checkArgument(timeStampNs>=0);
         Preconditions.checkArgument(bytes.size() == LENGTH);
@@ -63,8 +66,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return Icao Adress
      */
     public IcaoAddress icaoAddress(){
-        int icao = (int) bytes.bytesInRange(1,4);
-        return new IcaoAddress(Integer.toHexString(icao).toUpperCase());
+        long icao = bytes.bytesInRange(1,4);
+        return new IcaoAddress(hf.toHexDigits(icao,6));
     }
     /**
      *Defines the payload of the message
