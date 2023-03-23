@@ -6,9 +6,6 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y) implements Message {
 
-    private static int z0 =60;
-    private static int z1 = 59;
-
     public AirbornePositionMessage{
         if(icaoAddress == null){
             throw new NullPointerException();
@@ -30,6 +27,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         double convertedAltitude;
         if(((altitude>>4)&1) == 1){
             altitude = ((altitude & 0b111111100000)>>1) + (altitude & 0b000000001111);
+            altitude = -1000 + altitude*25;
             convertedAltitude = Units.convert(altitude, Units.Length.FOOT, Units.Length.METER);
         }else{
             int untangledAlt = 0;
