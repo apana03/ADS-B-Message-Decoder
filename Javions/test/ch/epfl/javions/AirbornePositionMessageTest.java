@@ -32,6 +32,13 @@ public class AirbornePositionMessageTest {
     private final static ByteString bytes3 = new ByteString(tab3);
     private final static long timeStamp3 = 138560100;
     private static final RawMessage message3 = new RawMessage(timeStamp3, bytes3);
+
+    private final static byte [] tab4 = hf.parseHex("8DAE02C85864A5F5DD4975A1A3F5");
+    private final static ByteString bytes4 = new ByteString(tab4);
+    private final static long timeStamp4 = 138560100;
+    private static final RawMessage message4 = new RawMessage(timeStamp4, bytes4);
+
+
 /*
    @Test
    void ExempleDuProfAdsbDemodulator() throws IOException {
@@ -117,6 +124,13 @@ public class AirbornePositionMessageTest {
         assertEquals(expectedParity, PositionMessage1.parity());
         assertEquals(expectedX, PositionMessage1.x());
         assertEquals(expectedY, PositionMessage1.y());
+    }
+
+    @Test
+    void ofWorksOnKnownValues4()
+    {
+        double expectedAlt = 7315.200000000001;
+        assertEquals(expectedAlt,AirbornePositionMessage.of(message4).altitude());
     }
 
 
