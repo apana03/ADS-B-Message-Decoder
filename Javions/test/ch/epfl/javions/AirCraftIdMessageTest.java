@@ -25,7 +25,7 @@ public class AirCraftIdMessageTest {
             if (m.typeCode() >= 1 && m.typeCode() <= 4) {
                 var aux = AircraftIdentificationMessage.of(m);
                 if (aux != null)
-                    System.out.println(aux + " " + m);
+                    System.out.println(aux);
                 mesCreated++;
             }
         }

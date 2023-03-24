@@ -11,11 +11,11 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @author David Fota 355816
  */
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAdress,
-                                            int category, CallSign callsign) implements Message
+                                            int category, CallSign callSign) implements Message
 {
     public AircraftIdentificationMessage {
         Preconditions.checkArgument(timeStampNs >= 0);
-        if( icaoAdress == null || callsign == null )
+        if( icaoAdress == null || callSign == null )
             throw new NullPointerException();
     }
     /**
