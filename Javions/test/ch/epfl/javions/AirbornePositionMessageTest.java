@@ -3,14 +3,22 @@ package ch.epfl.javions;
 
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.AirbornePositionMessage;
+import ch.epfl.javions.adsb.AircraftIdentificationMessage;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import ch.epfl.javions.demodulation.AdsbDemodulator;
 import org.junit.jupiter.api.Test;
 
 
+import javax.sound.sampled.spi.AudioFileReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.HexFormat;
 
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -32,29 +40,6 @@ public class AirbornePositionMessageTest {
     private final static ByteString bytes3 = new ByteString(tab3);
     private final static long timeStamp3 = 138560100;
     private static final RawMessage message3 = new RawMessage(timeStamp3, bytes3);
-/*
-   @Test
-   void ExempleDuProfAdsbDemodulator() throws IOException {
-
-
-       String f = "resources/samples_20230304_1442.bin";
-       try (InputStream s = new FileInputStream(f)) {
-
-
-           AdsbDemodulator d = new AdsbDemodulator(s);
-           RawMessage m;
-           while ((m = d.nextMessage()) != null) {
-               AirbornePositionMessage e = AirbornePositionMessage.of(m);
-               System.out.println(e.timeStampNs());
-               System.out.println(e.icaoAddress());
-               System.out.println(e.altitude());
-               System.out.println(e.parity());
-               System.out.println(e.x());
-               System.out.println(e.y());
-           }
-       }
-   }
-*/
 
 
     @Test
@@ -236,5 +221,22 @@ public class AirbornePositionMessageTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new AirbornePositionMessage(System.nanoTime(), icaoAddress, 1000.0, 0, 0.5, 1.5);
         });
+    }
+    @Test
+    void testFirst5Values() throws IOException {
+        String f = URLDecoder.decode(getClass().getResource("/samples_20230304_1442.bin").getFile(), UTF_8);
+        InputStream stream = new FileInputStream(f);
+        AdsbDemodulator d = new AdsbDemodulator(stream);
+        RawMessage m;
+        int mesCreated = 0;
+        while ((m = d.nextMessage()) != null) {
+            if (m.typeCode() >= 1 && m.typeCode() <= 4) {
+                var aux = AirbornePositionMessage.of(m);
+                if (aux != null)
+                    System.out.println(aux + " " + m);
+                mesCreated++;
+            }
+        }
+        System.out.println(mesCreated);
     }
 }
