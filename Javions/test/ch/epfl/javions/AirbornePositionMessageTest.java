@@ -23,19 +23,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AirbornePositionMessageTest {
     private final static HexFormat hf = HexFormat.of();
-    private final static byte [] tab1 = hf.parseHex("8D49529958B302E6E15FA352306B");
+    private final static byte[] tab1 = hf.parseHex("8D49529958B302E6E15FA352306B");
     private final static ByteString bytes1 = new ByteString(tab1);
     private final static long timeStamp1 = 75898000;
     private static final RawMessage message = new RawMessage(timeStamp1, bytes1);
 
 
-    private final static byte [] tab2 = hf.parseHex("8D4241A9601B32DA4367C4C3965E");
+    private final static byte[] tab2 = hf.parseHex("8D4241A9601B32DA4367C4C3965E");
     private final static ByteString bytes2 = new ByteString(tab2);
     private final static long timeStamp2 = 116538700;
     private static final RawMessage message2 = new RawMessage(timeStamp2, bytes2);
 
 
-    private final static byte [] tab3 = hf.parseHex("8D4D222860B985F7F53FAB33CE76");
+    private final static byte[] tab3 = hf.parseHex("8D4D222860B985F7F53FAB33CE76");
     private final static ByteString bytes3 = new ByteString(tab3);
     private final static long timeStamp3 = 138560100;
     private static final RawMessage message3 = new RawMessage(timeStamp3, bytes3);
@@ -65,8 +65,7 @@ public class AirbornePositionMessageTest {
 
 
     @Test
-    void ofWorksOnKnownValues1()
-    {
+    void ofWorksOnKnownValues1() {
         AirbornePositionMessage PositionMessage = AirbornePositionMessage.of(message);
         int expectedTimstamp = 75898000;
         IcaoAddress expectedICAO = new IcaoAddress("495299");
@@ -86,8 +85,7 @@ public class AirbornePositionMessageTest {
 
 
     @Test
-    void ofWorksOnKnownValues2()
-    {
+    void ofWorksOnKnownValues2() {
         AirbornePositionMessage PositionMessage1 = AirbornePositionMessage.of(message2);
         int expectedTimeStampNs = 116538700;
         IcaoAddress expectedICAO = new IcaoAddress("4241A9");
@@ -107,8 +105,7 @@ public class AirbornePositionMessageTest {
 
 
     @Test
-    void ofWorksOnKnownValues3()
-    {
+    void ofWorksOnKnownValues3() {
         AirbornePositionMessage PositionMessage1 = AirbornePositionMessage.of(message3);
         int expectedTimeStampNs = 138560100;
         IcaoAddress expectedICAO = new IcaoAddress("4D2228");
@@ -203,8 +200,6 @@ public class AirbornePositionMessageTest {
     }
 
 
-
-
     @Test
     void testConstructorWithInvalidArguments() {
         IcaoAddress icaoAddress = new IcaoAddress("123456");
@@ -244,6 +239,7 @@ public class AirbornePositionMessageTest {
             new AirbornePositionMessage(System.nanoTime(), icaoAddress, 1000.0, 0, 0.5, 1.5);
         });
     }
+
     @Test
     void testFirst5Values() throws IOException {
         String f = URLDecoder.decode(getClass().getResource("/samples_20230304_1442.bin").getFile(), UTF_8);
@@ -252,10 +248,11 @@ public class AirbornePositionMessageTest {
         RawMessage m;
         int mesCreated = 0;
         while ((m = d.nextMessage()) != null) {
-            if (m.typeCode() >= 1 && m.typeCode() <= 4) {
+            if (m.typeCode() >= 9 && m.typeCode() <= 18 || m.typeCode() >= 20 && m.typeCode() <= 22) {
                 var aux = AirbornePositionMessage.of(m);
-                if (aux != null)
-                    System.out.println(aux + " " + m);
+                if (aux != null) {
+                    System.out.println(aux);
+                }
                 mesCreated++;
             }
         }
