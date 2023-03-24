@@ -4,8 +4,24 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 
+/**
+ *represents a decoder of the CPR position
+ *
+ * @author Andrei Pana 361249
+ * @author David Fota 355816
+ */
+
+
 public class CprDecoder
 {
+
+    /**
+     * which returns the geographical position corresponding to the given normalized local positions —
+     * @param x0 and y0 being the local longitude and latitude of an even message,
+     * @param x1 and y1 those of an odd message — knowing that the most recent positions are those of mostRecent index (0 or 1);
+     * @returns null if the latitude of the decoded position is invalid (i.e. between ±90°) or if the position cannot be determined due to a change in latitude band or the decoded positions
+     * @throws IllegalArgumentException if mostRecent is not 0 or 1.
+    * */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent )
     {
         Preconditions.checkArgument(mostRecent == 0 || mostRecent == 1);
@@ -35,7 +51,7 @@ public class CprDecoder
             }else{ return null; }
         }
     }
-    public static boolean isLatValid( double lat )
+    private static boolean isLatValid( double lat )
     {
         return Units.convert(lat, Units.Angle.TURN, Units.Angle.DEGREE) >= -90 &&
                 Units.convert(lat, Units.Angle.TURN, Units.Angle.DEGREE) <= 90;
