@@ -4,8 +4,21 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+
+/**
+ *represents an ADS-B in-flight positioning message
+ *
+ * @author Andrei Pana 361249
+ * @author David Fota 355816
+ */
+
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y) implements Message {
 
+    /**
+     * the constructor of the class
+     * @throws NullPointerException if the IcaoAdress is null
+     * @throws IllegalArgumentException if timeStamp is strictly less than 0, or parity is different from 0 or 1, or x or y are not between 0 (included) and 1 (excluded)
+    * */
     public AirbornePositionMessage{
         if(icaoAddress == null){
             throw new NullPointerException();
@@ -16,6 +29,11 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         Preconditions.checkArgument(y>=0 && y<1);
     }
 
+    /**
+     * method that creates an AircraftPositionMessage from a RawMessage
+     * @param rawMessage the raw message
+    * @returns the in-flight positioning message corresponding to the given raw message, or null if the altitude it contains is invalid
+    */
     public static AirbornePositionMessage of(RawMessage rawMessage){
         long payload = rawMessage.payload();
         int lon_cpr = (int) payload & 0b11111111111111111;
