@@ -4,7 +4,12 @@ import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
-
+/**
+ *represents an ADS-B in-flight identification message
+ *
+ * @author Andrei Pana 361249
+ * @author David Fota 355816
+ */
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAdress,
                                             int category, CallSign callsign) implements Message
 {
@@ -13,6 +18,11 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         if( icaoAdress == null || callsign == null )
             throw new NullPointerException();
     }
+    /**
+     * method that creates an AircraftIdentificationMessage from a RawMessage
+     * @param rawMessage the raw message
+     * @returns the in-flight positioning message corresponding to the given raw message, or null if the altitude it contains is invalid
+     */
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
         long me = rawMessage.payload();
         StringBuilder callString = new StringBuilder();
