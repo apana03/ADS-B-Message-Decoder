@@ -109,7 +109,7 @@ public class CprDecoderTest {
         assertEquals(expectedLon1, pos.longitude(), 1e-9);
         mostRecent = 2;
         int finalMostRecent = mostRecent;
-        //assertThrows(IllegalArgumentException.class, () -> {CprDecoder.decodePosition(x0, y0, x1, y1, finalMostRecent);});
+        //assertThrows(IllegalArgumentException.class, () -> {CprDecoder.decodePosition(x0, y0, x1, y1, finalMostRecent)});
     }
 
     @Test
@@ -155,7 +155,7 @@ public class CprDecoderTest {
         assertEquals(Units.convertFrom(7.475166, Units.Angle.DEGREE), pos.longitude(), 1e-7);
         mostRecent = 2;
         int finalMostRecent = mostRecent;
-        //assertThrows(IllegalArgumentException.class, () -> CprDecoder.decodePosition(x0, y0, x1, y1, finalMostRecent));
+        //assertThrows(IllegalArgumentException.class, () -> {CprDecoder.decodePosition(x0, y0, x1, y1, finalMostRecent)});
     }
 
     private void assertThrows(Class<IllegalArgumentException> illegalArgumentExceptionClass, Object o) {
@@ -163,7 +163,7 @@ public class CprDecoderTest {
 
     @Test
     public void ArgumentTest() {
-        //assertThrows(IllegalArgumentException.class, () -> CprDecoder.decodePosition(0, 0, 0, 0, 5));
+        //assertThrows(IllegalArgumentException.class, () -> {CprDecoder.decodePosition(0, 0, 0, 0, 5)});
     }
 
     @Test

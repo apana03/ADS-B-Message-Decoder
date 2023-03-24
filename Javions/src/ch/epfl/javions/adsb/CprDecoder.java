@@ -22,6 +22,8 @@ public class CprDecoder
      * @returns null if the latitude of the decoded position is invalid (i.e. between ±90°) or if the position cannot be determined due to a change in latitude band or the decoded positions
      * @throws IllegalArgumentException if mostRecent is not 0 or 1.
     * */
+    private static final double DELTA0 = 1d/60;
+    private static final double DELTA1 = 1d/59;
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent )
     {
         Preconditions.checkArgument(mostRecent == 0 || mostRecent == 1);
@@ -35,12 +37,10 @@ public class CprDecoder
             zLat1 = zLat;
         }
         double lat0, lat1;
-        lat0 = 1d/60 * (zLat0 + y0);
-        if(lat0 >= 0.5)
-            lat0--;
-        lat1 = 1d/59 * (zLat1 + y1);
-        if(lat1 >= 0.5)
-            lat1--;
+        lat0 = DELTA0 * (zLat0 + y0);
+        lat0 = checkLongOrLat(lat0);
+        lat1 = DELTA1 * (zLat1 + y1);
+        lat1 = checkLongOrLat(lat1);
         double a = Math.acos(1 - ((1 - Math.cos(2 * Math.PI * 1d/60)) /
                 (Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)) * Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)))));
         int ZLong0 = (int) Math.floor( 2*Math.PI / a);
@@ -70,5 +70,11 @@ public class CprDecoder
     private static boolean isLatValid( double lat )
     {
         return GeoPos.isValidLatitudeT32((int)Math.rint(Units.convert(lat, Units.Angle.TURN, Units.Angle.T32)));
+    }
+    private static double checkLongOrLat(double a)
+    {
+        if(a >= 0.5)
+            a--;
+        return a;
     }
 }
