@@ -17,7 +17,7 @@ public record AirborneVelocityMessage(long timeStampNs,
         Preconditions.checkArgument(trackOrHeading>=0);
     }
 
-    AirborneVelocityMessage of(RawMessage rawMessage){
+    public static AirborneVelocityMessage of(RawMessage rawMessage){
         long payload = rawMessage.payload();
         int st = Bits.extractUInt(payload,48,3);
         int stBits = Bits.extractUInt(payload , 21 ,22 );
