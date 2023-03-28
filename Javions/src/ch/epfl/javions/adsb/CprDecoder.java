@@ -18,8 +18,10 @@ public class CprDecoder
     /**
      * which returns the geographical position corresponding to the given normalized local positions —
      * @param x0 and y0 being the local longitude and latitude of an even message,
-     * @param x1 and y1 those of an odd message — knowing that the most recent positions are those of mostRecent index (0 or 1);
-     * @returns null if the latitude of the decoded position is invalid (i.e. between ±90°) or if the position cannot be determined due to a change in latitude band or the decoded positions
+     * @param x1 and y1 those of an odd message — knowing that the most recent positions are those of
+     *           mostRecent index (0 or 1);
+     * @returns null if the latitude of the decoded position is invalid (i.e. between ±90°)
+     * or if the position cannot be determined due to a change in latitude band or the decoded positions
      * @throws IllegalArgumentException if mostRecent is not 0 or 1.
     * */
     private static final double DELTA0 = 1d/60;
@@ -41,29 +43,24 @@ public class CprDecoder
         lat0 = checkLongOrLat(lat0);
         lat1 = DELTA1 * (zLat1 + y1);
         lat1 = checkLongOrLat(lat1);
-        double a = Math.acos(1 - ((1 - Math.cos(2 * Math.PI * 1d/60)) /
-                (Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)) * Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)))));
+        double a = calculateA(lat0);
         int ZLong0 = (int) Math.floor( 2*Math.PI / a);
         int ZLong1 = ZLong0 - 1;
         int zLong = (int) Math.rint(x0 * ZLong1 - x1 * ZLong0);
         double long0 = 1d/ZLong0 * (zLong + x0);
-        if(long0 >= 0.5)
-            long0--;
+        long0 = checkLongOrLat(long0);
         double long1 = 1d/ZLong1 * (zLong + x1);
-        if(long1 >= 0.5)
-            long1--;
+        long1 = checkLongOrLat(long1);
         if(mostRecent == 0)
         {
             if (isLatValid(lat0)) {
-                return new GeoPos((int)Math.rint(Units.convert(long0, Units.Angle.TURN, Units.Angle.T32)),
-                        (int)Math.rint(Units.convert(lat0, Units.Angle.TURN, Units.Angle.T32)));
+                return createGeoPos(long0, lat0);
             }else{ return null; }
         }
         else
         {
             if (isLatValid(lat1)) {
-                return new GeoPos( (int) Math.rint(Units.convert(long1, Units.Angle.TURN, Units.Angle.T32)),
-                        (int) Math.rint(Units.convert(lat1, Units.Angle.TURN, Units.Angle.T32) ));
+                return createGeoPos(long1, lat1);
             }else{ return null; }
         }
     }
@@ -76,5 +73,13 @@ public class CprDecoder
         if(a >= 0.5)
             a--;
         return a;
+    }
+    private static GeoPos createGeoPos(double a, double b){
+        return new GeoPos((int)Math.rint(Units.convert(a, Units.Angle.TURN, Units.Angle.T32)),
+                (int)Math.rint(Units.convert(b, Units.Angle.TURN, Units.Angle.T32)));
+    }
+    private static double calculateA(double lat0){
+        return Math.acos(1 - ((1 - Math.cos(2 * Math.PI * DELTA0)) /
+                (Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)) * Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)))));
     }
 }

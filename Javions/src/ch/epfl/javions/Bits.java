@@ -20,8 +20,11 @@ public class Bits {
      *            start index
      * @param size
      *            size of the vector
-     * @throws IllegalArgumentException if the size is not strictly greater than 0 and strictly less than 32
-     * @throws IndexOutOfBoundsException if the range described by start and size is not entirely between 0 (inclusive) and 64 (exclusive)
+     * @throws IllegalArgumentException if the size is not
+     * strictly greater than 0 and strictly less than 32
+     * @throws IndexOutOfBoundsException if the range described
+     * by start and size is not entirely
+     * between 0 (inclusive) and 64 (exclusive)
      *
      * @return the wanted vector
      */
@@ -38,7 +41,8 @@ public class Bits {
      * @returns true iff the given index value bit is 1
      * @param index
      * @param value
-     * @throws IndexOutOfBoundsException if if the index is not between 0 (inclusive) and 64 (exclusive).
+     * @throws IndexOutOfBoundsException if the index is
+     * not between 0 (inclusive) and 64 (exclusive).
      *
      */
     public static boolean testBit(long value, int index){
