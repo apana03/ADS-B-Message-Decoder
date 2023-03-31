@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class AicraftStateSetterTest {
+    AircraftStateAccumulator<AircraftState> a = new AircraftStateAccumulator<>(new AircraftState());
     @Test
     public void test() throws IOException {
         String f = "Javions/resources/samples_20230304_1442.bin";
@@ -20,12 +21,17 @@ public class AicraftStateSetterTest {
         try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);
             RawMessage m;
-            AircraftStateAccumulator<AircraftState> a = new AircraftStateAccumulator<>(new AircraftState());
             while ((m = d.nextMessage()) != null) {
                 if (!m.icaoAddress().equals(expectedAddress)) continue;
                 Message pm = MessageParser.parse(m);
                 if (pm != null) a.update(pm);
             }
         }
+    }
+    @Test
+    public void test1() throws IOException{
+        var message1 = RawMessage.of(100, ByteString.ofHexadecimalString("8D4B17E5F8210002004BB8B1F1AC").getBytes());
+        Message pm = MessageParser.parse(message1);
+        a.update(pm);
     }
 }

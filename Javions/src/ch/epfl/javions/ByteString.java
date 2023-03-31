@@ -107,4 +107,7 @@ public final class ByteString {
         return hf.formatHex(byteString);
     }
 
+    public byte[] getBytes() {
+        return byteString;
+    }
 }

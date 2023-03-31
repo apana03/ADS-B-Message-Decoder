@@ -40,14 +40,15 @@ public record AirborneVelocityMessage(long timeStampNs,
                     return null;
                 }
 
-                vns = (dns > 0) ? (--vns) : (--vns)*(-1) ;
-                vew = (dew > 0) ? (--vew) : (--vew)*(-1) ;
+                vns = (dns == 0) ? (--vns) : (--vns)*(-1) ;
+                vew = (dew == 0) ? (--vew) : (--vew)*(-1) ;
 
-                speed = Math.sqrt( Math.pow ( vns , 2 ) + Math.scalb( vew , 2 ) );
-                speed = (st == 1) ? Units.convertFrom( speed, Units.Speed.KNOT):
+                speed = Math.sqrt( Math.pow ( vns , 2 ) + Math.pow( vew , 2 ) );
+                speed = (st == 1) ? Units.convertFrom( speed, Units.Speed.KNOT) :
                         Units.convertFrom(4*speed, Units.Speed.KNOT);
 
                 trackOrHeading = Math.atan2( vns , vew );
+                trackOrHeading = Math.PI / 2 - trackOrHeading;
                 trackOrHeading = (trackOrHeading<0) ? trackOrHeading + Math.PI*2 : trackOrHeading;
 
                 return new AirborneVelocityMessage(rawMessage.timeStampNs(),
@@ -64,7 +65,7 @@ public record AirborneVelocityMessage(long timeStampNs,
                 if(sh == 0){
                     return null;
                 }
-
+                as--;
                 speed = (st == 3) ? Units.convertFrom( as, Units.Speed.KNOT):
                         Units.convertFrom(4 * as, Units.Speed.KNOT);
 

@@ -22,26 +22,26 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter>
                 stateSetter.setCategory(aim.category());
                 stateSetter.setCallSign(aim.callSign());
             }
-            case AirbornePositionMessage aim -> {
-                stateSetter.setAltitude(aim.altitude());
-                if(aim.parity() == 0)
+            case AirbornePositionMessage apm -> {
+                stateSetter.setAltitude(apm.altitude());
+                if(apm.parity() == 0)
                     {
-                        if( lastOddMessage != null && aim.timeStampNs() - lastOddMessage.timeStampNs() <= 10 * NANO)
-                            stateSetter.setPosition(CprDecoder.decodePosition(aim.x(), aim.y(),
+                        if( lastOddMessage != null && apm.timeStampNs() - lastOddMessage.timeStampNs() <= 10 * NANO)
+                            stateSetter.setPosition(CprDecoder.decodePosition(apm.x(), apm.y(),
                                     lastOddMessage.x(), lastOddMessage.y(), 0));
-                        lastEvenMessage = aim;
+                        lastEvenMessage = apm;
                     }
                     else
                     {
-                        if( lastEvenMessage != null && aim.timeStampNs() - lastEvenMessage.timeStampNs() <= 10 * NANO)
+                        if( lastEvenMessage != null && apm.timeStampNs() - lastEvenMessage.timeStampNs() <= 10 * NANO)
                             stateSetter.setPosition(CprDecoder.decodePosition(lastEvenMessage.x(),
-                                    lastEvenMessage.y(), aim.x(), aim.y(), 1));
-                        lastOddMessage = aim;
+                                    lastEvenMessage.y(), apm.x(), apm.y(), 1));
+                        lastOddMessage = apm;
                     }
                 }
-            case AirborneVelocityMessage aim -> {
-                stateSetter.setVelocity(aim.speed());
-                stateSetter.setTrackOrHeading(aim.trackOrHeading());
+            case AirborneVelocityMessage avm -> {
+                stateSetter.setVelocity(avm.speed());
+                stateSetter.setTrackOrHeading(avm.trackOrHeading());
             }
             default -> System.out.println("Unexpected value!");
         }

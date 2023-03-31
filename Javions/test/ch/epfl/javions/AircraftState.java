@@ -32,7 +32,7 @@ public class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setVelocity(double velocity) {
-
+        System.out.println("velocity : " + velocity);
     }
 
     @Override
