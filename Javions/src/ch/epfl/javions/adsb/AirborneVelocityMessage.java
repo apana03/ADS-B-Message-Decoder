@@ -62,7 +62,7 @@ public record AirborneVelocityMessage(long timeStampNs,
                 int hdg = Bits.extractUInt(stBits, 11, 10);
                 int sh = Bits.extractUInt(stBits, 21, 1);
 
-                if(sh == 0){
+                if(sh == 0 || as == 0){
                     return null;
                 }
                 as--;
