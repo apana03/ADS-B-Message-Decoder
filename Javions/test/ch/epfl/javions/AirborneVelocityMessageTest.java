@@ -19,7 +19,7 @@ class AirborneVelocityMessageTest
         RawMessage rm1 = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994409800838175B284F"));
         RawMessage rm2 = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994400140838175B284F"));
         RawMessage rm3 = new RawMessage(0, ByteString.ofHexadecimalString("8D4850209C4609800838175B284F"));
-        RawMessage rm4 = new RawMessage(0, ByteString.ofHexadecimalString("8D4850209C4409940838175B284F"));
+        RawMessage rm4 = new RawMessage(0, ByteString.ofHexadecimalString("8bfffffffffffffffbffffffffff"));
 
         assertNull(AirborneVelocityMessage.of(rm1));
         assertNull(AirborneVelocityMessage.of(rm2));
