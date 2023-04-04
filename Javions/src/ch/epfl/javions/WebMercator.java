@@ -1,37 +1,34 @@
 package ch.epfl.javions;
 
 /**
- *contains (static) methods to project geographical coordinates
- *  according to the WebMercator projection
+ * contains (static) methods to project geographical coordinates
+ * according to the WebMercator projection
  *
  * @author Andrei Pana 361249
  * @author David Fota 355816
  */
 
 public class WebMercator {
-    private WebMercator(){}
-
-    /**
-     *@returns the x coordinate corresponding to the given longitude
-     *  (in radians) at the given zoom level
-     *
-     * @param zoomLevel given zoom level
-     * @param longitude the longitude
-     *
-     */
-    public static double x(int zoomLevel, double longitude){
-        return( Math.scalb(1,8+zoomLevel) ) * ( Units.convertTo( longitude, Units.Angle.TURN ) + 0.5 );
+    private WebMercator() {
     }
 
     /**
-     *@returns the y coordinate corresponding to the given latitude
-     *  (in radians) at the given zoom level
-     *
      * @param zoomLevel given zoom level
-     * @param latitude the latitude
-     *
+     * @param longitude the longitude
+     * @returns the x coordinate corresponding to the given longitude
+     * (in radians) at the given zoom level
      */
-    public static double y(int zoomLevel, double latitude){
-        return( Math.scalb(1,8+zoomLevel) ) * ( ( - ( ( Math2.asinh( Math.tan( latitude ) ) ) / ( 2 * Math.PI ) ) ) + 0.5);
+    public static double x(int zoomLevel, double longitude) {
+        return (Math.scalb(1, 8 + zoomLevel)) * (Units.convertTo(longitude, Units.Angle.TURN) + 0.5);
+    }
+
+    /**
+     * @param zoomLevel given zoom level
+     * @param latitude  the latitude
+     * @returns the y coordinate corresponding to the given latitude
+     * (in radians) at the given zoom level
+     */
+    public static double y(int zoomLevel, double latitude) {
+        return (Math.scalb(1, 8 + zoomLevel)) * ((-((Math2.asinh(Math.tan(latitude))) / (2 * Math.PI))) + 0.5);
     }
 }

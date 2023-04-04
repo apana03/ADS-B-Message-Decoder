@@ -12,63 +12,62 @@ import java.util.HexFormat;
  */
 public final class ByteString {
     private byte[] byteString;
-    public ByteString(byte[] bytes){
+
+    public ByteString(byte[] bytes) {
         byteString = bytes.clone();
     }
 
     /**
-     *@returns the byte string
+     * @param hexString the string containing the hexadecimal number
+     * @throws IllegalArgumentException if the given string  is not of even length
+     * @throws NumberFormatException    if it contains a character that is not a hexadecimal digit
+     * @returns the byte string
      * whose string passed as argument is the hexadecimal
      * representation
-     * @param hexString
-     *            the string containing the hexadecimal number
-     * @throws IllegalArgumentException if the given string  is not of even length
-     * @throws NumberFormatException if it contains a character that is not a hexadecimal digit
      */
-    public static ByteString ofHexadecimalString(String hexString){
+    public static ByteString ofHexadecimalString(String hexString) {
         HexFormat hf = HexFormat.of().withUpperCase();
-        if(hexString.length()%2!=0){
+        if (hexString.length() % 2 != 0) {
             throw new IllegalArgumentException();
         }
-        for(int i=0;i<hexString.length();i++){
-            if(!HexFormat.isHexDigit(hexString.charAt(i))){
+        for (int i = 0; i < hexString.length(); i++) {
+            if (!HexFormat.isHexDigit(hexString.charAt(i))) {
                 throw new NumberFormatException();
             }
         }
         byte[] bytes = hf.parseHex(hexString);
-        ByteString byteString  = new ByteString(bytes);
+        ByteString byteString = new ByteString(bytes);
         return byteString;
     }
 
     /**
-     *@returns the size of the ByteString
+     * @returns the size of the ByteString
      */
-    public int size(){
+    public int size() {
         return byteString.length;
     }
 
 
     /**
-     *@returns the unsigned byte at the given index
-     * @param index
-     *        the index
+     * @param index the index
+     * @returns the unsigned byte at the given index
      */
-    public int byteAt(int index){
+    public int byteAt(int index) {
         return byteString[index] & 0xFF;
     }
 
     /**
-     *@returns the bytes between the indexes fromIndex (inclusive)
-     * and toIndex (excluded) as a value of type long
      * @param fromIndex start index
-     * @param toIndex end index
+     * @param toIndex   end index
      * @throws IndexOutOfBoundsException if the range described by fromIndex and toIndex
-     * is not entirely between 0 and the size of the string
-     * @throws IllegalArgumentException if the difference between toIndex and fromIndex is not strictly less
-     * than the number of bytes contained in a long type value
+     *                                   is not entirely between 0 and the size of the string
+     * @throws IllegalArgumentException  if the difference between toIndex and fromIndex is not strictly less
+     *                                   than the number of bytes contained in a long type value
+     * @returns the bytes between the indexes fromIndex (inclusive)
+     * and toIndex (excluded) as a value of type long
      */
-    public long bytesInRange(int fromIndex, int toIndex){
-        Objects.checkFromToIndex(fromIndex, toIndex , byteString.length);
+    public long bytesInRange(int fromIndex, int toIndex) {
+        Objects.checkFromToIndex(fromIndex, toIndex, byteString.length);
         int numBytes = toIndex - fromIndex;
         if (numBytes > Long.BYTES) {
             throw new IllegalArgumentException();
@@ -80,27 +79,30 @@ public final class ByteString {
         }
         return result;
     }
+
     @Override
     public boolean equals(Object thatO) {
         if (thatO instanceof ByteString that) {
-            if(this.size() == that.size()){
-                for(int i = 0; i<this.size();i++){
-                    if(this.byteAt(i)!=that.byteAt(i)){
+            if (this.size() == that.size()) {
+                for (int i = 0; i < this.size(); i++) {
+                    if (this.byteAt(i) != that.byteAt(i)) {
                         return false;
                     }
                 }
                 return true;
-            }else{
+            } else {
                 return false;
             }
-        } else{
+        } else {
             return false;
         }
     }
+
     @Override
     public int hashCode() {
         return Arrays.hashCode(byteString);
     }
+
     @Override
     public String toString() {
         HexFormat hf = HexFormat.of().withUpperCase();

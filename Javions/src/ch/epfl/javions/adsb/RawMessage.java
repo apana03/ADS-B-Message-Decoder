@@ -9,7 +9,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 import java.util.HexFormat;
 
 /**
- *Represents a Raw Message
+ * Represents a Raw Message
  *
  * @author Andrei Pana 361249
  * @author David Fota 355816
@@ -21,66 +21,78 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     private static HexFormat hf = HexFormat.of().withUpperCase();
 
-    public RawMessage{
-        Preconditions.checkArgument(timeStampNs>=0);
+    public RawMessage {
+        Preconditions.checkArgument(timeStampNs >= 0);
         Preconditions.checkArgument(bytes.size() == LENGTH);
     }
+
     /**
-     *Generates the message
+     * Generates the message
+     *
      * @param timeStampNs
      * @param bytes
      * @return the generated Raw Message
      */
-    public static RawMessage of(long timeStampNs, byte[] bytes){
-        if(crc24.crc(bytes)!=0){
+    public static RawMessage of(long timeStampNs, byte[] bytes) {
+        if (crc24.crc(bytes) != 0) {
             return null;
-        }else{
+        } else {
             return new RawMessage(timeStampNs, new ByteString(bytes));
         }
     }
+
     /**
      * Calculates the size of the message
+     *
      * @param byte0
      * @return size of the message
      */
-    public static int size(byte byte0){
-        byte0 =(byte) ((byte0 & 0b11111000)>>3);
+    public static int size(byte byte0) {
+        byte0 = (byte) ((byte0 & 0b11111000) >> 3);
         return (byte0 == 17) ? LENGTH : 0;
     }
+
     /**
-     *Calculates the type code
+     * Calculates the type code
+     *
      * @param payload
      * @return the extracted type code
      */
-    public static int typeCode(long payload){
-        return Bits.extractUInt(payload,51,5);
+    public static int typeCode(long payload) {
+        return Bits.extractUInt(payload, 51, 5);
     }
 
-    public int downLinkFormat(){
+    public int downLinkFormat() {
         int df = bytes.byteAt(0);
-        df = (df & 0b11111000)>>3;
+        df = (df & 0b11111000) >> 3;
         return df;
     }
+
     /**
-     *Defines the Icao Adress in the message
+     * Defines the Icao Adress in the message
+     *
      * @return Icao Adress
      */
-    public IcaoAddress icaoAddress(){
-        long icao = bytes.bytesInRange(1,4);
-        return new IcaoAddress(hf.toHexDigits(icao,6));
+    public IcaoAddress icaoAddress() {
+        long icao = bytes.bytesInRange(1, 4);
+        return new IcaoAddress(hf.toHexDigits(icao, 6));
     }
+
     /**
-     *Defines the payload of the message
+     * Defines the payload of the message
+     *
      * @return payload
      */
-    public long payload(){
-        return bytes.bytesInRange(4,11);
+    public long payload() {
+        return bytes.bytesInRange(4, 11);
     }
+
     /**
-     *Defines the typeCode of the message
+     * Defines the typeCode of the message
+     *
      * @return typeCode
      */
-    public int typeCode(){
+    public int typeCode() {
         return typeCode(payload());
     }
 }

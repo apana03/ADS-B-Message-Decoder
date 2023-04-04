@@ -7,53 +7,47 @@ import java.util.zip.ZipFile;
 
 /**
  * Represents an aircraft database
+ *
  * @author David Fota 355816
  * @author Andrei Pana 361249
  */
-public class AircraftDatabase
-{
+public class AircraftDatabase {
     private String fileName, name;
     private String[] data;
     private AircraftData finalData;
     private String d;
     private char[] hashMap = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
     /**
-     * @param fileName
-     *        the string corresponding to the name of the file
-     *        in which the database is stored
+     * @param fileName the string corresponding to the name of the file
+     *                 in which the database is stored
      * @throws NullPointerException if the string is null or invalid
      */
-    public AircraftDatabase(String fileName)
-    {
+    public AircraftDatabase(String fileName) {
         this.fileName = Objects.requireNonNull(fileName);
     }
+
     /**
-     *@returns the desired aircraft's data, which is
-     *         extracted from the database
-     *@param address
-     *         corresponds to the ICAO address of the aircraft
-     *         we are looking for
-     * This method iterates on every file present in the database
-     * in order to find and extract the required information
+     * @param address corresponds to the ICAO address of the aircraft
+     *                we are looking for
+     *                This method iterates on every file present in the database
+     *                in order to find and extract the required information
+     * @returns the desired aircraft's data, which is
+     * extracted from the database
      */
-    public AircraftData get(IcaoAddress address) throws IOException
-    {
-        for(char c1 : hashMap)
-            for(char c2 : hashMap)
-            {
+    public AircraftData get(IcaoAddress address) throws IOException {
+        for (char c1 : hashMap)
+            for (char c2 : hashMap) {
                 name = "" + c1 + c2 + ".csv";
                 try (ZipFile z = new ZipFile(fileName);
                      InputStream s = z.getInputStream(z.getEntry(name));
                      Reader r = new InputStreamReader(s, StandardCharsets.UTF_8);
-                     BufferedReader b = new BufferedReader(r))
-                {
+                     BufferedReader b = new BufferedReader(r)) {
                     String l = "";
-                    while ((l = b.readLine()) != null)
-                    {
-                        if(l.compareTo(address.string()) > 0 && !l.startsWith(address.string()))
+                    while ((l = b.readLine()) != null) {
+                        if (l.compareTo(address.string()) > 0 && !l.startsWith(address.string()))
                             break;
-                        if (l.startsWith(address.string()))
-                        {
+                        if (l.startsWith(address.string())) {
                             data = l.split(",", -1);
                             finalData = new AircraftData(new AircraftRegistration(data[1]),
                                     new AircraftTypeDesignator(data[2]), data[3],
