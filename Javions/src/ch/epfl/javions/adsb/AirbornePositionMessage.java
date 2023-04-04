@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
@@ -14,12 +15,14 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                       double altitude, int parity, double x, double y) implements Message {
 
-    private static final int LAT_AND_LONG_MASK = 0b11111111111111111;
-    private static final int ALTITUDE_MASK = 0b111111111111;
     private static final int ALTITUDE_MOST_SIG_7BITS = 0b111111100000;
     private static final int ALTITUDE_LEAST_SIG_4BITS = 0b000000001111;
     private static final int GRAY_LEAST_SIG_BITS_MASK = ((1 << 4) - 1);
     private static final int GRAY_MOST_SIG_BITS_MASK = 0b111111111000;
+    private static final int ALT_START = 36, ALT_LENGTH = 12;
+    private static final int FORMAT_START = 34, FORMAT_LENGTH = 1;
+    private static final int LAT_CPR_START = 17, LAT_CPR_LENGTH = 17;
+    private static final int LONG_CPR_START = 0, LONG_CPR_LENGTH = 17;
 
 
     /**
@@ -47,52 +50,31 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         long payload = rawMessage.payload();
-        int lon_cpr = (int) payload & LAT_AND_LONG_MASK;
-        int lat_cpr = (int) ((payload >> 17) & LAT_AND_LONG_MASK);
-        int format = (int) ((payload >> 34) & 1);
-        int altitude = (int) ((payload >> 36) & ALTITUDE_MASK);
+        int lon_cpr = Bits.extractUInt(payload, LONG_CPR_START, LONG_CPR_LENGTH);
+        int lat_cpr = Bits.extractUInt(payload, LAT_CPR_START, LAT_CPR_LENGTH);
+        int format = Bits.extractUInt(payload, FORMAT_START, FORMAT_LENGTH);
+        int altitude = Bits.extractUInt(payload, ALT_START, ALT_LENGTH);
         double x = Math.scalb(lon_cpr, -17);
         double y = Math.scalb(lat_cpr, -17);
         double convertedAltitude;
+
         if (((altitude >> 4) & 1) == 1) {
-            altitude = ((altitude & ALTITUDE_MOST_SIG_7BITS) >> 1) + (altitude & ALTITUDE_LEAST_SIG_4BITS);
-            altitude = -1000 + altitude * 25;
-            convertedAltitude = Units.convert(altitude, Units.Length.FOOT, Units.Length.METER);
+            convertedAltitude = convertAltitude(altitude);
         } else {
-            int untangledAlt = 0;
-            int var = 0;
-            for (int i = 0; i <= 4; i += 2) {
-                untangledAlt += ((altitude & (1 << i)) >> i) << (9 + var);
-                untangledAlt += ((altitude & (1 << i + 1)) >> i + 1) << (3 + var);
-                var++;
-            }
-            var = 0;
-            for (int i = 6; i <= 10; i += 2) {
-                untangledAlt += ((altitude & (1 << i)) >> i) << (6 + var);
-                untangledAlt += ((altitude & (1 << i + 1)) >> i + 1) << (var);
-                var++;
-            }
+
+            int untangledAlt = untangleAltitude(altitude);
+
             int grayLeastSigBits = untangledAlt & GRAY_LEAST_SIG_BITS_MASK;
             int grayMostSigBits = (untangledAlt & GRAY_MOST_SIG_BITS_MASK) >> 3;
-            int leastSig = 0;
-            int mostSig = 0;
-            for (int i = 0; i < 3; i++) {
-                leastSig = leastSig ^ (grayLeastSigBits >> i);
-            }
-            for (int i = 0; i < 9; i++) {
-                mostSig = mostSig ^ (grayMostSigBits >> i);
-            }
-            if (leastSig == 0 || leastSig == 5 || leastSig == 6) {
-                return null;
-            }
-            if (leastSig == 7) {
-                leastSig = 5;
-            }
-            if (mostSig % 2 == 1) {
-                leastSig = 6 - leastSig;
-            }
-            altitude = -1300 + (mostSig * 500) + (leastSig * 100);
-            convertedAltitude = Units.convert(altitude, Units.Length.FOOT, Units.Length.METER);
+
+            int mostSig = decodeGrayMostSigBits(grayMostSigBits);
+            int leastSig = decodeGrayLeastSigBits(grayLeastSigBits);
+
+            if (leastSig == 0 || leastSig == 5 || leastSig == 6) return null;
+
+            convertedAltitude = computeAltitude(leastSig, mostSig);
+
+
         }
 
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
@@ -102,4 +84,48 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                 x,
                 y);
     }
+
+    private static double convertAltitude(int altitude) {
+        altitude = ((altitude & ALTITUDE_MOST_SIG_7BITS) >> 1) + (altitude & ALTITUDE_LEAST_SIG_4BITS);
+        altitude = -1000 + altitude * 25;
+        return Units.convert(altitude, Units.Length.FOOT, Units.Length.METER);
+    }
+
+    private static int untangleAltitude(int altitude) {
+        int untangledAlt = 0;
+        int var = 0;
+        for (int i = 0; i <= 4; i += 2) {
+            untangledAlt += ((altitude & (1 << i)) >> i) << (9 + var);
+            untangledAlt += ((altitude & (1 << i + 1)) >> i + 1) << (3 + var);
+            var++;
+        }
+        var = 0;
+        for (int i = 6; i <= 10; i += 2) {
+            untangledAlt += ((altitude & (1 << i)) >> i) << (6 + var);
+            untangledAlt += ((altitude & (1 << i + 1)) >> i + 1) << (var);
+            var++;
+        }
+        return untangledAlt;
+    }
+
+    private static int decodeGrayMostSigBits(int grayMostSigBits) {
+        int mostSig = 0;
+        for (int i = 0; i < 9; i++) mostSig = mostSig ^ (grayMostSigBits >> i);
+        return mostSig;
+    }
+
+    private static int decodeGrayLeastSigBits(int grayLeastSigBits) {
+        int leastSig = 0;
+        for (int i = 0; i < 3; i++) leastSig = leastSig ^ (grayLeastSigBits >> i);
+        return leastSig;
+    }
+
+    private static double computeAltitude(int leastSig, int mostSig) {
+        if (leastSig == 7) leastSig = 5;
+        if (mostSig % 2 != 0) leastSig = 6 - leastSig;
+
+        int altitude = -1300 + (mostSig * 500) + (leastSig * 100);
+        return Units.convert(altitude, Units.Length.FOOT, Units.Length.METER);
+    }
+
 }
