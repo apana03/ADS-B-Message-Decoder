@@ -54,10 +54,7 @@ public record AirborneVelocityMessage(long timeStampNs,
                 vns = (dns == 0) ? (--vns) : (--vns) * (-1);
                 vew = (dew == 0) ? (--vew) : (--vew) * (-1);
 
-                speed = Math.sqrt(Math.pow(vns, 2) + Math.pow(vew, 2));
-                speed = (st == 1) ? Units.convertFrom(speed, Units.Speed.KNOT) :
-                        Units.convertFrom(4 * speed, Units.Speed.KNOT);
-
+                speed = vectorsToSpeed(st, vns, vew);
                 trackOrHeading = getTrack(vns, vew);
 
                 return new AirborneVelocityMessage(rawMessage.timeStampNs(),
@@ -75,9 +72,9 @@ public record AirborneVelocityMessage(long timeStampNs,
                     return null;
                 }
                 as--;
-                speed = (st == 3) ? Units.convertFrom(as, Units.Speed.KNOT) :
-                        Units.convertFrom(4 * as, Units.Speed.KNOT);
 
+
+                speed = asToSpeed(st, as);
                 trackOrHeading = getHeading(hdg);
 
                 return new AirborneVelocityMessage(rawMessage.timeStampNs(),
@@ -88,16 +85,30 @@ public record AirborneVelocityMessage(long timeStampNs,
         return null;
     }
 
-    private static double getHeading(int hdg){
+
+    private static double getHeading(int hdg) {
         double heading = hdg / Math.scalb(1, 10);
         heading = Units.convertFrom(heading, Units.Angle.TURN);
         return heading;
     }
 
-    private static double getTrack(int vns, int vew){
+    private static double getTrack(int vns, int vew) {
         double track = Math.atan2(vew, vns);
         track = (track < 0) ? track + Math.PI * 2 : track;
         return track;
+    }
+
+    private static double vectorsToSpeed(int st, int vns, int vew) {
+        double speed = Math.sqrt(Math.pow(vns, 2) + Math.pow(vew, 2));
+        speed = (st == 1) ? Units.convertFrom(speed, Units.Speed.KNOT) :
+                Units.convertFrom(4 * speed, Units.Speed.KNOT);
+        return speed;
+    }
+
+    private static double asToSpeed(int st, int as) {
+        double speed = (st == 3) ? Units.convertFrom(as, Units.Speed.KNOT) :
+                Units.convertFrom(4 * as, Units.Speed.KNOT);
+        return speed;
     }
 
 
