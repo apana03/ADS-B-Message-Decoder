@@ -5,7 +5,7 @@ import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
 /**
- * represents an ADS-B in-flight positioning message
+ * represents  an ADS-B in-flight positioning message
  *
  * @author Andrei Pana 361249
  * @author David Fota 355816
