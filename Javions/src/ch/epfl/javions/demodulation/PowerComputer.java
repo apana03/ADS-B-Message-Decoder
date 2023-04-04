@@ -48,17 +48,19 @@ public class PowerComputer {
      */
     public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batchSize == batch.length);
-        int decoded = decoder.readBatch(signedBatchPrevious);
+        int decoded = decoder.readBatch(signedBatchPrevious), a, b;
         for (int i = 8, k = 1; k <= decoded / 2; i += 2, k++) {
             for (int j = 0; j < 8; j++)
                 if (i + 1 - j - 8 >= 0)
                     samples[j] = signedBatchPrevious[i + 1 - j - 8];
-                else samples[j] = last8Bytes[i + 1 - j];
+                else
+                    samples[j] = last8Bytes[i + 1 - j];
             batch[(i - 8) / 2] = (-samples[0] + samples[2] - samples[4] + samples[6]) *
                     (-samples[0] + samples[2] - samples[4] + samples[6]) +
                     (-samples[1] + samples[3] - samples[5] + samples[7]) *
-                            (-samples[1] + samples[3] - samples[5] + samples[7]);
+                    (-samples[1] + samples[3] - samples[5] + samples[7]);
         }
+
         for (int i = 0; i < 8; i++)
             last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
         return decoded / 2;

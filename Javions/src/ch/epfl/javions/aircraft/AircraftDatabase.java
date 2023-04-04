@@ -16,7 +16,7 @@ public class AircraftDatabase {
     private String[] data;
     private AircraftData finalData;
     private String d;
-    private char[] hashMap = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
      * @param fileName the string corresponding to the name of the file
@@ -36,8 +36,8 @@ public class AircraftDatabase {
      * extracted from the database
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        for (char c1 : hashMap)
-            for (char c2 : hashMap) {
+        for (char c1 : map)
+            for (char c2 : map) {
                 name = "" + c1 + c2 + ".csv";
                 try (ZipFile z = new ZipFile(fileName);
                      InputStream s = z.getInputStream(z.getEntry(name));

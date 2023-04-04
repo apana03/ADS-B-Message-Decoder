@@ -28,10 +28,4 @@ public class AicraftStateSetterTest {
             }
         }
     }
-    @Test
-    public void test1() throws IOException{
-        var message1 = RawMessage.of(100, ByteString.ofHexadecimalString("8D4B17E5F8210002004BB8B1F1AC").getBytes());
-        Message pm = MessageParser.parse(message1);
-        a.update(pm);
-    }
 }
