@@ -14,7 +14,7 @@ import java.util.HexFormat;
  * @author Andrei Pana 361249
  * @author David Fota 355816
  */
-public record RawMessage(long timeStampNs, ByteString bytes) {//
+public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
     private static final int MOST_SIG_5BITS_MASK = 0b11111000;
