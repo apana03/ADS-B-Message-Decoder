@@ -26,23 +26,22 @@ public class CprDecoder {
      */
     private static final double DELTA0 = 1d / 60;
     private static final double DELTA1 = 1d / 59;
+    private static final int LATITUDE_ZONES_0 = 60;
+    private static final int LATITUDE_ZONES_1 = 59;
 
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 0 || mostRecent == 1);
         int zLat0, zLat1, zLong0, zLong1;
-        int zLat = (int) Math.rint(y0 * 59 - y1 * 60);
+        int zLat = (int) Math.rint(y0 * LATITUDE_ZONES_1 - y1 * LATITUDE_ZONES_0);
         if (zLat < 0) {
-            zLat0 = zLat + 60;
-            zLat1 = zLat + 59;
+            zLat0 = zLat + LATITUDE_ZONES_0;
+            zLat1 = zLat + LATITUDE_ZONES_1;
         } else {
             zLat0 = zLat;
             zLat1 = zLat;
         }
-        double lat0, lat1;
-        lat0 = DELTA0 * (zLat0 + y0);
-        lat0 = checkLongOrLat(lat0);
-        lat1 = DELTA1 * (zLat1 + y1);
-        lat1 = checkLongOrLat(lat1);
+        double lat0 = computeLatitude(zLat0, y0, DELTA0);
+        double lat1 = computeLatitude(zLat1, y1, DELTA1);
         double a = computeA(lat0);
         if (checkIfBandChanged(a, computeA(lat1)) && !Double.isNaN(a))
             return null;
@@ -54,10 +53,8 @@ public class CprDecoder {
             zLong1 = zLong0 - 1;
         }
         int zLong = (int) Math.rint(x0 * zLong1 - x1 * zLong0);
-        double long0 = 1d / zLong0 * (zLong + x0);
-        long0 = checkLongOrLat(long0);
-        double long1 = 1d / zLong1 * (zLong + x1);
-        long1 = checkLongOrLat(long1);
+        double long0 = computeLongitude(zLong0, zLong, x0);
+        double long1 = computeLatitude(zLong1, zLong, x1);
         if (mostRecent == 0) {
             if (isLatValid(lat0)) {
                 return createGeoPos(long0, lat0);
@@ -72,7 +69,16 @@ public class CprDecoder {
             }
         }
     }
-
+    private static double computeLatitude(int zLat, double y, double delta){
+        double lat = delta * (zLat + y);
+        lat = checkLongOrLat(lat);
+        return lat;
+    }
+    private static double computeLongitude(int zLongx, int zLong, double x){
+        double longitude = 1d / zLongx * (zLong + x);
+        longitude = checkLongOrLat(longitude);
+        return longitude;
+    }
     private static boolean isLatValid(double lat) {
         return GeoPos.isValidLatitudeT32((int) Math.rint(Units.convert(lat, Units.Angle.TURN, Units.Angle.T32)));
     }

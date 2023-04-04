@@ -2,7 +2,6 @@ package ch.epfl.javions.adsb;
 
 public class MessageParser {
 
-
     public static Message parse(RawMessage rawMessage) {
 
         int typecode = rawMessage.typeCode();
