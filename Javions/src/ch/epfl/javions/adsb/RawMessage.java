@@ -18,6 +18,10 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
     private static final int MOST_SIG_5BITS_MASK = 0b11111000;
+
+    private static final int ICAO_START = 1, ICAO_END = 4;
+    private static final int ME_START = 4, ME_END = 11;
+    private static final int TYPECODE_START = 51, TYPECODE_LENGTH = 5;
     private static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
 
     private static HexFormat hf = HexFormat.of().withUpperCase();
@@ -60,7 +64,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return the extracted type code
      */
     public static int typeCode(long payload) {
-        return Bits.extractUInt(payload, 51, 5);
+        return Bits.extractUInt(payload, TYPECODE_START, TYPECODE_LENGTH);
     }
 
     public int downLinkFormat() {
@@ -75,7 +79,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return Icao Adress
      */
     public IcaoAddress icaoAddress() {
-        long icao = bytes.bytesInRange(1, 4);
+        long icao = bytes.bytesInRange(ICAO_START, ICAO_END);
         return new IcaoAddress(hf.toHexDigits(icao, 6));
     }
 
@@ -85,7 +89,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return payload
      */
     public long payload() {
-        return bytes.bytesInRange(4, 11);
+        return bytes.bytesInRange(ME_START, ME_END);
     }
 
     /**
