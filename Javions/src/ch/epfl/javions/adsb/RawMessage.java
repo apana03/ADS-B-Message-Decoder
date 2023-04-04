@@ -17,7 +17,8 @@ import java.util.HexFormat;
 public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
-    static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
+    private static final int MOST_SIG_5BITS_MASK = 0b11111000;
+    private static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
 
     private static HexFormat hf = HexFormat.of().withUpperCase();
 
@@ -48,7 +49,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return size of the message
      */
     public static int size(byte byte0) {
-        byte0 = (byte) ((byte0 & 0b11111000) >> 3);
+        byte0 = (byte) ((byte0 & MOST_SIG_5BITS_MASK) >> 3);
         return (byte0 == 17) ? LENGTH : 0;
     }
 
@@ -64,7 +65,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public int downLinkFormat() {
         int df = bytes.byteAt(0);
-        df = (df & 0b11111000) >> 3;
+        df = (df & MOST_SIG_5BITS_MASK) >> 3;
         return df;
     }
 
