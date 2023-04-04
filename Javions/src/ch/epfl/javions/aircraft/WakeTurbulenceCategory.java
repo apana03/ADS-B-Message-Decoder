@@ -15,7 +15,7 @@ public enum WakeTurbulenceCategory {
 
     /**
      * @param s the string
-     * @returns the wake turbulence category corresponding to the given string
+     * @return the wake turbulence category corresponding to the given string
      */
     public static WakeTurbulenceCategory of(String s) {
         switch (s) {
