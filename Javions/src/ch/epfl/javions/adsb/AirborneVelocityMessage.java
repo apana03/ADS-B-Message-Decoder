@@ -5,13 +5,13 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.Objects;
+
 public record AirborneVelocityMessage(long timeStampNs,
                                       IcaoAddress icaoAddress,
                                       double speed, double trackOrHeading)implements Message {
     public AirborneVelocityMessage{
-        if(icaoAddress == null){
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument(timeStampNs >=0);
         Preconditions.checkArgument(speed>=0);
         Preconditions.checkArgument(trackOrHeading>=0);
