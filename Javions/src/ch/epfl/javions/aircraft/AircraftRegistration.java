@@ -13,6 +13,12 @@ public record AircraftRegistration(String string) {
 
     static Pattern er = Pattern.compile("[A-Z0-9 .?/_+-]+");
 
+    /**
+     * the compact constructor of the class
+     *
+     * @throws IllegalArgumentException if the string does not respect the regular expression
+     */
+
     public AircraftRegistration {
         if (!er.matcher(string).matches()) {
             throw new IllegalArgumentException();

@@ -15,6 +15,7 @@ public final class Units {
      */
     public static final double CENTI = 1e-2;
     public static final double KILO = 1e3;
+    public static final double NANO = 1e-9;
 
     /**
      * Angle related units
@@ -40,6 +41,7 @@ public final class Units {
         public static final double SECOND = 1;
         public static final double MINUTE = 60 * SECOND;
         public static final double HOUR = 60 * MINUTE;
+        public static final double NANOSECOND = NANO * SECOND;
     }
 
     /**

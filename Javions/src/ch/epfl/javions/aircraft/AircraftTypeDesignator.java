@@ -15,6 +15,11 @@ public record AircraftTypeDesignator(String string) {
 
     static Pattern er = Pattern.compile("[A-Z0-9]{2,4}");
 
+    /**
+     * the compact constructor of the class
+     *
+     * @throws IllegalArgumentException if the string does not respect the regular expression
+     */
     public AircraftTypeDesignator {
         if (!er.matcher(string).matches()) {
             Preconditions.checkArgument(string.isEmpty());

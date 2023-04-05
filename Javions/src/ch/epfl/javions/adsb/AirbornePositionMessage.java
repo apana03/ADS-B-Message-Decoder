@@ -26,7 +26,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     /**
-     * the constructor of the class
+     * the compact constructor of the class
      *
      * @throws NullPointerException     if the IcaoAdress is null
      * @throws IllegalArgumentException if timeStamp is strictly less than 0,
