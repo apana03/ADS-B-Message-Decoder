@@ -12,6 +12,11 @@ import java.util.Objects;
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator,
                            String model, AircraftDescription description,
                            WakeTurbulenceCategory wakeTurbulenceCategory) {
+    /**
+     * the compact constructor of the class
+     *
+     * @throws NullPointerException if one of the classes parameters is null
+     */
     public AircraftData {
         Objects.requireNonNull(registration);
         Objects.requireNonNull(description);

@@ -18,6 +18,12 @@ public class AdsbDemodulator {
     int sumPCurrent, sumPPrevious;
     final int WINDOW_SIZE = 1200;
 
+    /**
+     * the constructor of the class
+     *
+     * @param samplesStream
+     *          the input stream consisting of samples
+     */
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         window = new PowerWindow(samplesStream, WINDOW_SIZE);
         sumPCurrent = messageCurrent();

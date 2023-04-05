@@ -24,7 +24,14 @@ public final class PowerWindow {
 
     private PowerComputer powerComputer;
 
-
+    /**
+     * the constructor of the class
+     *
+     * @param stream
+     *      the input stream
+     * @param windowSize
+     *      the size of the window
+     */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         Preconditions.checkArgument(windowSize > 0 && windowSize <= WINDOW_MAX_SIZE);
         this.windowSize = windowSize;

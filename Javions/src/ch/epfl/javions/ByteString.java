@@ -13,6 +13,12 @@ import java.util.HexFormat;
 public final class ByteString {
     private byte[] byteString;
 
+    /**
+     * the constructor of the class
+     *
+     * @param bytes
+     *      the bytes array which will help build the byteString
+     */
     public ByteString(byte[] bytes) {
         byteString = bytes.clone();
     }

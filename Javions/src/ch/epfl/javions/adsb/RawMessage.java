@@ -23,9 +23,14 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final int ME_START = 4, ME_END = 11;
     private static final int TYPECODE_START = 51, TYPECODE_LENGTH = 5;
     private static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
-
     private static HexFormat hf = HexFormat.of().withUpperCase();
 
+    /**
+     * the compact constructor of the class
+     *
+     * @throws IllegalArgumentException if the time stamp is negative
+     * @throws IllegalArgumentException if the size of the message is not valid
+     */
     public RawMessage {
         Preconditions.checkArgument(timeStampNs >= 0);
         Preconditions.checkArgument(bytes.size() == LENGTH);

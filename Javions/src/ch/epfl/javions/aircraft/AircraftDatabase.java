@@ -19,6 +19,8 @@ public class AircraftDatabase {
     private char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
+     * The constructor of the class
+     *
      * @param fileName the string corresponding to the name of the file
      *                 in which the database is stored
      * @throws NullPointerException if the string is null or invalid

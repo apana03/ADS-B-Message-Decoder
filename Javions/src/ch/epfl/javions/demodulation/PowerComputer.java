@@ -20,6 +20,8 @@ public class PowerComputer {
     private int batchSize;
 
     /**
+     * The constructor of the class
+     *
      * @param stream, batchSize
      *                The input stream received by the decoder
      *                Size of the batch that is to be computed
