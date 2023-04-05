@@ -2,20 +2,46 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 
+/**
+ * Represents an "aircraft state accumulator",
+ * i.e. an object accumulating ADS-B messages originating from a single aircraft
+ * in order to determine its state over time
+ *
+ * @author Andrei Pana 361249
+ * @author David Fota 355816
+ */
+
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     final T stateSetter;
     final static long NANO = (long) Math.pow(10, 9);
     AirbornePositionMessage lastEvenMessage, lastOddMessage;
 
+    /**
+     * Public constructor
+     * @param stateSetter
+     *
+     * @return an aircraft state accumulator associated with the given modifiable state
+     * @throws NullPointerException if it is null.
+     */
     public AircraftStateAccumulator(T stateSetter) {
         this.stateSetter = stateSetter;
         if (stateSetter == null)
             throw new NullPointerException();
     }
 
+    /**
+     * @return the modifiable state of the aircraft passed to its constructor
+     */
+
     public T stateSetter() {
         return stateSetter;
     }
+
+    /**
+     * updates the editable status according to the given message
+     * @param message
+     *      the message
+     */
 
     public void update(Message message) {
         GeoPos position;

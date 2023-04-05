@@ -5,6 +5,13 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+/**
+ * Represents a message transmitting the in flight speed of an airplane
+ *
+ * @author Andrei Pana 361249
+ * @author David Fota 355816
+ */
+
 public record AirborneVelocityMessage(long timeStampNs,
                                       IcaoAddress icaoAddress,
                                       double speed, double trackOrHeading) implements Message {
@@ -19,6 +26,14 @@ public record AirborneVelocityMessage(long timeStampNs,
     private static final int HDG_START = 11, HDG_LENGTH = 10;
     private static final int AS_START = 0, AS_LENGTH = 10;
 
+
+    /**
+     * Compact constructor
+     *
+     * @throws NullPointerException if icaoAddress is null
+     * @throws IllegalArgumentException if timeStampNs, speed or trackOrHeading are strictly negative.
+     */
+
     public AirborneVelocityMessage {
         if (icaoAddress == null) {
             throw new NullPointerException();
@@ -27,6 +42,15 @@ public record AirborneVelocityMessage(long timeStampNs,
         Preconditions.checkArgument(speed >= 0);
         Preconditions.checkArgument(trackOrHeading >= 0);
     }
+
+    /**
+     * Makes it possible to construct a flight speed message from a raw message
+     *
+     * @param rawMessage
+     *          the raw message
+     * @return the flight speed message corresponding to the given raw message,
+     *                  or null if the subtype is invalid, or if the speed or direction of travel cannot be determined
+     */
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
         long payload = rawMessage.payload();
