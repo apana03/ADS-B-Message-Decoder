@@ -22,7 +22,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @param latitudeT32 the given latitude
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
-        if (latitudeT32 < MAX_VALID_LATITUDE || latitudeT32 > MIN_VALID_LATITUDE) {
+        if (latitudeT32 < MIN_VALID_LATITUDE || latitudeT32 > MAX_VALID_LATITUDE) {
             return false;
         }
         return true;

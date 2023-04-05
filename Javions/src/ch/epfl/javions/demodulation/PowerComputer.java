@@ -11,12 +11,11 @@ import java.io.InputStream;
  * @author David Fota 355816
  * @author Andrei Pana 361249
  */
-public class PowerComputer {
+public final class PowerComputer {
     private SamplesDecoder decoder;
-    private short[] signedBatchPrevious;
+    private short[] signedBatch;
     private short[] samples = new short[8];
-    private short[] last8Bytes = new short[8];
-    private short[] signedBatchCurrent;
+    private int[] current8bytes = new int[8];
     private int batchSize;
 
     /**
@@ -33,8 +32,7 @@ public class PowerComputer {
         SamplesDecoder decoder = new SamplesDecoder(stream, batchSize * 2);
         this.decoder = decoder;
         this.batchSize = batchSize;
-        signedBatchPrevious = new short[batchSize * 2];
-        signedBatchCurrent = new short[batchSize * 2 + 8];
+        signedBatch = new short[batchSize * 2];
     }
 
     /**
@@ -49,22 +47,21 @@ public class PowerComputer {
      *                                  passed as argument is not equal to the size of a batch
      */
     public int readBatch(int[] batch) throws IOException {
-        Preconditions.checkArgument(batchSize == batch.length);
-        int decoded = decoder.readBatch(signedBatchPrevious), a, b;
-        for (int i = 8, k = 1; k <= decoded / 2; i += 2, k++) {
-            for (int j = 0; j < 8; j++)
-                if (i + 1 - j - 8 >= 0)
-                    samples[j] = signedBatchPrevious[i + 1 - j - 8];
-                else
-                    samples[j] = last8Bytes[i + 1 - j];
-            batch[(i - 8) / 2] = (-samples[0] + samples[2] - samples[4] + samples[6]) *
-                    (-samples[0] + samples[2] - samples[4] + samples[6]) +
-                    (-samples[1] + samples[3] - samples[5] + samples[7]) *
-                    (-samples[1] + samples[3] - samples[5] + samples[7]);
+        Preconditions.checkArgument(batch.length == batchSize);
+        int count = decoder.readBatch(signedBatch);
+        for (int i = 0, j = 0; i < count; i += 2, j += 2)
+        {
+            if( j == 8 )
+                j = 0;
+            current8bytes[j] = signedBatch[i];
+            current8bytes[j + 1] = signedBatch[i + 1];
+            batch[i / 2] = squareComputation(current8bytes);
         }
-
-        for (int i = 0; i < 8; i++)
-            last8Bytes[i] = signedBatchPrevious[signedBatchPrevious.length - 8 + i];
-        return decoded / 2;
+        return count / 2;
+    }
+    private int squareComputation(int[] current8bytes) {
+        int a = current8bytes[0] - current8bytes[2] + current8bytes[4] - current8bytes[6];
+        int b = current8bytes[1] - current8bytes[3] + current8bytes[5] - current8bytes[7];
+        return a * a + b * b;
     }
 }

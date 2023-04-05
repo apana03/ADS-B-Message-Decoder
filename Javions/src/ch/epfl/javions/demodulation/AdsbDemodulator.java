@@ -6,6 +6,7 @@ import ch.epfl.javions.demodulation.PowerWindow;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Represents an ADSB Demodulator
@@ -15,15 +16,15 @@ import java.io.InputStream;
  */
 public class AdsbDemodulator {
     PowerWindow window;
-    int sumPCurrent, sumPPrevious;
-    final int WINDOW_SIZE = 1200;
+    private int sumPCurrent, sumPPrevious, sumPAfter, sumV;
+    byte[] byteArray = new byte[14];
+    private final int NANO_PER_POS = 100;
+    private final int WINDOW_SIZE = 1200;
+    private final int PREAMBULE_SIZE = 80;
+    private final int[] messageValleyIndexes = {5, 15, 20, 25, 30, 40};
+    private final int[] messageAfterIndexes = {1, 11, 36, 46};
+    private final int[] messageCurrentIndexes = {0, 10, 35, 45};
 
-    /**
-     * the constructor of the class
-     *
-     * @param samplesStream
-     *          the input stream consisting of samples
-     */
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         window = new PowerWindow(samplesStream, WINDOW_SIZE);
         sumPCurrent = messageCurrent();
@@ -37,21 +38,19 @@ public class AdsbDemodulator {
      */
     public RawMessage nextMessage() throws IOException {
         long horodatage;
-        int sumPAfter, sumV;
-        byte[] byteArray = new byte[14];
         while (window.isFull()) {
             sumPAfter = messageAfter();
-            if (sumPCurrent > sumPPrevious && sumPCurrent > sumPAfter) {
+            if (isEligibleForSumValleyCalculation()) {
                 sumV = messageValley();
-                if (sumPCurrent >= 2 * sumV) {
-                    for (int i = 0; i < 112; i += 8) {
-                        byte b = 0;
-                        for (int j = 0; j < 8; j++)
-                            if (window.get(80 + 10 * (i + j)) >= window.get(85 + 10 * (i + j)))
-                                b |= (1 << (7 - j));
-                        byteArray[i >>> 3] = b;
+                if (isValid()) {
+                    Arrays.fill(byteArray, (byte) 0);
+                    for (int i = 0; i < 112; i += Long.BYTES) {
+                        for (int j = 0; j < Long.BYTES; j++)
+                            if (window.get(PREAMBULE_SIZE + 10 * (i + j))
+                                    >= window.get(PREAMBULE_SIZE + 5 + 10 * (i + j)))
+                                byteArray[i >>> 3] |= (1 << (7 - j));
                     }
-                    horodatage = window.position() * 100;
+                    horodatage = window.position() * NANO_PER_POS;
                     var message = RawMessage.of(horodatage, byteArray);
                     if (message != null && message.downLinkFormat() == 17) {
                         window.advanceBy(WINDOW_SIZE - 1);
@@ -70,15 +69,29 @@ public class AdsbDemodulator {
     }
 
     private int messageValley() {
-        return window.get(5) + window.get(15) + window.get(20) + window.get(25) + window.get(30)
-                + window.get(40);
+        int s = 0;
+        for( int i : messageValleyIndexes)
+            s += window.get(i);
+        return s;
     }
 
     private int messageAfter() {
-        return window.get(1) + window.get(11) + window.get(36) + window.get(46);
+        int s = 0;
+        for( int i : messageAfterIndexes)
+            s += window.get(i);
+        return s;
     }
 
     private int messageCurrent() {
-        return window.get(0) + window.get(10) + window.get(35) + window.get(45);
+        int s = 0;
+        for( int i : messageCurrentIndexes)
+            s += window.get(i);
+        return s;
+    }
+    private boolean isEligibleForSumValleyCalculation(){
+        return sumPCurrent > sumPPrevious && sumPCurrent > sumPAfter;
+    }
+    private boolean isValid(){
+        return sumPCurrent >= 2 * sumV;
     }
 }

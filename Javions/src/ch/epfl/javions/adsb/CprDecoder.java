@@ -40,8 +40,9 @@ public class CprDecoder {
             zLat0 = zLat;
             zLat1 = zLat;
         }
-        double lat0 = computeLatitude(zLat0, y0, DELTA0);
-        double lat1 = computeLatitude(zLat1, y1, DELTA1);
+        double lat0, lat1;
+        lat0 = computeLatitude(zLat0, y0, DELTA0);
+        lat1 = computeLatitude(zLat1, y1, DELTA1);
         double a = computeA(lat0);
         if (checkIfBandChanged(a, computeA(lat1)) && !Double.isNaN(a))
             return null;
@@ -54,7 +55,7 @@ public class CprDecoder {
         }
         int zLong = (int) Math.rint(x0 * zLong1 - x1 * zLong0);
         double long0 = computeLongitude(zLong0, zLong, x0);
-        double long1 = computeLatitude(zLong1, zLong, x1);
+        double long1 = computeLongitude(zLong1, zLong, x1);
         if (mostRecent == 0) {
             if (isLatValid(lat0)) {
                 return createGeoPos(long0, lat0);
@@ -74,8 +75,9 @@ public class CprDecoder {
         lat = checkLongOrLat(lat);
         return lat;
     }
-    private static double computeLongitude(int zLongx, int zLong, double x){
-        double longitude = 1d / zLongx * (zLong + x);
+    private static double computeLongitude(int zLongx, int zLong, double x)
+    {
+        double longitude = (1d / zLongx) * (zLong + x);
         longitude = checkLongOrLat(longitude);
         return longitude;
     }
