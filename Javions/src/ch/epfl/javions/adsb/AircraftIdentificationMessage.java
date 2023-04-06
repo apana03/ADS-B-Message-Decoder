@@ -13,12 +13,20 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  */
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAdress,
                                             int category, CallSign callSign) implements Message {
+    private static final int START_POSITION = 48;
+    private static final int CHARACTER_SIZE = 6;
+    private static final int TYPE_CODE_SIZE = 3;
+    private static final int LETTER_START = 1;
+    private static final int LETTER_END = 26;
+    private static final int ASCII_LETTER_INDEX = 'A' - 1;
+    private static final int ASCII_NUMBER_START = 48;
+    private static final int ASCII_NUMBER_END = 57;
+    private static final int ASCII_SPACE_INDEX = 32;
     public AircraftIdentificationMessage {
         Preconditions.checkArgument(timeStampNs >= 0);
         if (icaoAdress == null || callSign == null)
             throw new NullPointerException();
     }
-
     /**
      * method that creates an AircraftIdentificationMessage from a RawMessage
      *
@@ -28,16 +36,15 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
         long me = rawMessage.payload();
         StringBuilder callString = new StringBuilder();
-        int count = 0;
         for (int i = 42; i >= 0; i -= 6) {
-            int a = Bits.extractUInt(me, i, 6);
-            if (a >= 1 && a <= 26)
-                callString.append((char) (a + 'A' - 1));
-            else if ((48 <= a && a <= 57) || a == 32)
+            int a = Bits.extractUInt(me, i, CHARACTER_SIZE);
+            if (isLetter(a))
+                callString.append((char) (a + ASCII_LETTER_INDEX));
+            else if (isNumberOrSpace(a))
                 callString.append((char) a);
             else return null;
         }
-        int category = (14 - rawMessage.typeCode() << 4) | Bits.extractUInt(me, 48, 3);
+        int category = (14 - rawMessage.typeCode() << 4) | Bits.extractUInt(me, START_POSITION, TYPE_CODE_SIZE);
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
                 category, new CallSign(callString.toString().trim()));
     }
@@ -52,4 +59,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         return icaoAdress;
     }
 
+    private static boolean isLetter(int a){return a >= LETTER_START && a <= LETTER_END;}
+    private static boolean isNumberOrSpace(int a){
+        return (ASCII_NUMBER_START <= a && a <= ASCII_NUMBER_END) || a == ASCII_SPACE_INDEX;
+    }
 }

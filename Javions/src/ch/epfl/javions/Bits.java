@@ -9,8 +9,7 @@ package ch.epfl.javions;
  */
 
 public class Bits {
-    private Bits() {
-    }
+    private Bits() {}
 
     /**
      * extracts from the 64-bit vector "value" the range of "size" bits

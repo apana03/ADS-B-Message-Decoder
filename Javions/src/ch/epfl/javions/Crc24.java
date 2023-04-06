@@ -13,6 +13,10 @@ public final class Crc24 {
     public static int GENERATOR = 16774153;
     private final int generator;
     private final int[] table;
+    private static final int GENERATOR_MASK = 0xFFFFFF;
+    private static final int BYTE_MASK = 0xFF;
+    private static final int SEVENTH_BIT_MASK = 0x1000000;
+    private static final int TABLE_SIZE = 256;
 
     /**
      * Public constructor for the Crc24 class
@@ -22,7 +26,7 @@ public final class Crc24 {
      */
 
     public Crc24(int generator) {
-        this.generator = generator & 0xFFFFFF;
+        this.generator = generator & GENERATOR_MASK;
         table = buildTable(this.generator);
     }
 
@@ -35,7 +39,7 @@ public final class Crc24 {
     public int crc(byte[] bytes) {
         int crc = 0;
         for (byte b : bytes) {
-            int a = b & 0xFF;
+            int a = b & BYTE_MASK;
             crc = ((crc << 8) | a) ^ table[getMostSignificantByte(crc)];
         }
         for (int i = 0; i < 3; i++) {
@@ -52,28 +56,28 @@ public final class Crc24 {
      * @return the CRC24
      */
     private static int crc_bitwise(int generator, byte[] data) {
-        int crc = 0x000000;
+        int crc = 0;
         for (byte b : data) {
-            crc ^= (b & 0xFF) << 16;
+            crc ^= (b & BYTE_MASK) << 16;
             for (int i = 0; i < 8; i++) {
                 crc <<= 1;
-                if ((crc & 0x1000000) != 0) {
+                if ((crc & SEVENTH_BIT_MASK) != 0) {
                     crc ^= generator;
                 }
             }
         }
-        return crc & 0xFFFFFF;
+        return crc & GENERATOR_MASK;
     }
 
     private static int[] buildTable(int generator) {
-        int[] table = new int[256];
-        for (int i = 0; i < 256; i++) {
+        int[] table = new int[TABLE_SIZE];
+        for (int i = 0; i < TABLE_SIZE; i++) {
             table[i] = crc_bitwise(generator, new byte[]{(byte) i});
         }
         return table;
     }
 
     private static int getMostSignificantByte(int value) {
-        return ((value >> 16) & 0xFF);
+        return ((value >> 16) & BYTE_MASK);
     }
 }

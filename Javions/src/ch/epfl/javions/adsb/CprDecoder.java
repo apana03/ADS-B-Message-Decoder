@@ -41,8 +41,8 @@ public class CprDecoder {
             zLat1 = zLat;
         }
         double lat0, lat1;
-        lat0 = computeLatitude(zLat0, y0, DELTA0);
-        lat1 = computeLatitude(zLat1, y1, DELTA1);
+        lat0 = computeLatOrLong(zLat0, y0, DELTA0);
+        lat1 = computeLatOrLong(zLat1, y1, DELTA1);
         double a = computeA(lat0);
         if (checkIfBandChanged(a, computeA(lat1)) && !Double.isNaN(a))
             return null;
@@ -54,8 +54,8 @@ public class CprDecoder {
             zLong1 = zLong0 - 1;
         }
         int zLong = (int) Math.rint(x0 * zLong1 - x1 * zLong0);
-        double long0 = computeLongitude(zLong0, zLong, x0);
-        double long1 = computeLongitude(zLong1, zLong, x1);
+        double long0 = computeLatOrLong(zLong, x0, 1d / zLong0);
+        double long1 = computeLatOrLong(zLong, x1, 1d / zLong1);
         if (mostRecent == 0) {
             if (isLatValid(lat0)) {
                 return createGeoPos(long0, lat0);
@@ -70,16 +70,10 @@ public class CprDecoder {
             }
         }
     }
-    private static double computeLatitude(int zLat, double y, double delta){
+    private static double computeLatOrLong(int zLat, double y, double delta){
         double lat = delta * (zLat + y);
         lat = checkLongOrLat(lat);
         return lat;
-    }
-    private static double computeLongitude(int zLongx, int zLong, double x)
-    {
-        double longitude = (1d / zLongx) * (zLong + x);
-        longitude = checkLongOrLat(longitude);
-        return longitude;
     }
     private static boolean isLatValid(double lat) {
         return GeoPos.isValidLatitudeT32((int) Math.rint(Units.convert(lat, Units.Angle.TURN, Units.Angle.T32)));

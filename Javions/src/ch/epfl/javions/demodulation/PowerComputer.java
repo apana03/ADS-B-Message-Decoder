@@ -55,13 +55,14 @@ public final class PowerComputer {
                 j = 0;
             current8bytes[j] = signedBatch[i];
             current8bytes[j + 1] = signedBatch[i + 1];
-            batch[i / 2] = squareComputation(current8bytes);
+            batch[i / 2] = squareSumComputation(current8bytes);
         }
         return count / 2;
     }
-    private int squareComputation(int[] current8bytes) {
-        int a = current8bytes[0] - current8bytes[2] + current8bytes[4] - current8bytes[6];
-        int b = current8bytes[1] - current8bytes[3] + current8bytes[5] - current8bytes[7];
-        return a * a + b * b;
+    private int squareSumComputation(int[] current8bytes) {
+        return (current8bytes[0] - current8bytes[2] + current8bytes[4] - current8bytes[6])*
+                    (current8bytes[0] - current8bytes[2] + current8bytes[4] - current8bytes[6])+
+                        (current8bytes[1] - current8bytes[3] + current8bytes[5] - current8bytes[7])*
+                            (current8bytes[1] - current8bytes[3] + current8bytes[5] - current8bytes[7]);
     }
 }

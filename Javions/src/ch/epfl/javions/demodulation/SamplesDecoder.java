@@ -20,6 +20,7 @@ public final class SamplesDecoder {
     private InputStream stream;
     private int batchSize;
     private byte[] octets;
+    private static final int CORRECTION = 2048;
 
     /**
      * @param stream, batchSize
@@ -51,7 +52,7 @@ public final class SamplesDecoder {
         octets = stream.readNBytes(batchSize * 2);
         for (int i = 0; i < octets.length; i += 2) {
             var bytes = new ByteString(new byte[]{octets[i + 1], octets[i]});
-            batch[i / 2] = (short) (bytes.bytesInRange(0, 2) - 2048);
+            batch[i / 2] = (short) (bytes.bytesInRange(0, 2) - CORRECTION);
         }
         return octets.length / 2;
     }

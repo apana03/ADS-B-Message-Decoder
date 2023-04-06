@@ -23,6 +23,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int FORMAT_START = 34, FORMAT_LENGTH = 1;
     private static final int LAT_CPR_START = 17, LAT_CPR_LENGTH = 17;
     private static final int LONG_CPR_START = 0, LONG_CPR_LENGTH = 17;
+    private static final int EVEN = 0;
+    private static final int ODD = 1;
 
 
     /**
@@ -37,7 +39,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             throw new NullPointerException();
         }
         Preconditions.checkArgument(timeStampNs >= 0);
-        Preconditions.checkArgument(parity == 0 || parity == 1);
+        Preconditions.checkArgument(parity == EVEN || parity == ODD);
         Preconditions.checkArgument(x >= 0 && x < 1);
         Preconditions.checkArgument(y >= 0 && y < 1);
     }
