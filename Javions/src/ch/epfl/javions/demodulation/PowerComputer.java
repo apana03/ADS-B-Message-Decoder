@@ -14,7 +14,6 @@ import java.io.InputStream;
 public final class PowerComputer {
     private SamplesDecoder decoder;
     private short[] signedBatch;
-    private short[] samples = new short[8];
     private int[] current8bytes = new int[8];
     private int batchSize;
 

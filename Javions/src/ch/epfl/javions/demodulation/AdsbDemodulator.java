@@ -1,6 +1,7 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.ByteString;
+import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.demodulation.PowerWindow;
 
@@ -14,7 +15,7 @@ import java.util.Arrays;
  * @author Andrei Pana 361249
  * @author David Fota 355816
  */
-public class AdsbDemodulator {
+public final class AdsbDemodulator {
     PowerWindow window;
     private int sumPCurrent, sumPPrevious, sumPAfter, sumV;
     byte[] byteArray = new byte[14];
@@ -39,17 +40,16 @@ public class AdsbDemodulator {
      * @return message, which represents the calculated Raw Message
      */
     public RawMessage nextMessage() throws IOException {
+
         while (window.isFull()) {
             sumPAfter = computeSum(messageAfterIndexes);
             if (isEligibleForSumValleyCalculation()) {
                 sumV = computeSum(messageValleyIndexes);
                 if (isValid()) {
                     Arrays.fill(byteArray, (byte) 0);
-                    for (int i = 0; i < TOTAL_BYTES; i += Long.BYTES) {
-                        for (int j = 0; j < Long.BYTES; j++)
-                            if (window.get(PREAMBLE_SIZE + 10 * (i + j))
-                                    >= window.get(PREAMBLE_SIZE + 5 + 10 * (i + j)))
-                                byteArray[i >>> 3] |= (1 << (7 - j));
+                    for( int i = 0; i < TOTAL_BYTES; i += Long.BYTES)
+                    {
+                        fillByteArray(i);
                     }
                     var message = RawMessage.of(window.position() * NANO_PER_POS, byteArray);
                     if (message != null && message.downLinkFormat() == DOWNLINK_CORRECT_VALUE) {
@@ -72,6 +72,19 @@ public class AdsbDemodulator {
         for( int i : indexes)
             s += window.get(i);
         return s;
+    }
+    private void fillByteArray(int i)
+    {
+        for( int j = 0; j < Long.BYTES; j++)
+        {
+            byteArray[i / Long.BYTES] |= (testBitValue(i + j) << (7 - j));
+        }
+    }
+    private byte testBitValue(int index) {
+        if (window.get(PREAMBLE_SIZE + 10 * index) >= window.get((PREAMBLE_SIZE + 5) + 10 * index))
+            return 1;
+        else
+            return 0;
     }
     private boolean isEligibleForSumValleyCalculation(){
         return sumPCurrent > sumPPrevious && sumPCurrent > sumPAfter;
