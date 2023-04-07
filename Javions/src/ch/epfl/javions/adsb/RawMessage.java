@@ -17,11 +17,12 @@ import java.util.HexFormat;
 public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
-    private static final int MOST_SIG_5BITS_MASK = 0b11111000;
-
     private static final int ICAO_START = 1, ICAO_END = 4;
     private static final int ME_START = 4, ME_END = 11;
     private static final int TYPECODE_START = 51, TYPECODE_LENGTH = 5;
+    private static final int DOWNLINK_FORMAT_START = 3, DOWNLINK_FORMAT_LENGTH = 5;
+    private static final int VALID_DOWNLINK_FORMAT = 17;
+    private static final int DF_BYTE_INDEX = 0;
     private static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
     private static HexFormat hf = HexFormat.of().withUpperCase();
 
@@ -58,8 +59,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return size of the message
      */
     public static int size(byte byte0) {
-        byte0 = (byte) ((byte0 & MOST_SIG_5BITS_MASK) >> 3);
-        return (byte0 == 17) ? LENGTH : 0;
+        return (Bits.extractUInt(byte0, DOWNLINK_FORMAT_START, DOWNLINK_FORMAT_LENGTH) == VALID_DOWNLINK_FORMAT)
+                ? LENGTH : 0;
     }
 
     /**
@@ -73,8 +74,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public int downLinkFormat() {
-        int df = bytes.byteAt(0);
-        df = (df & MOST_SIG_5BITS_MASK) >> 3;
+        int df = bytes.byteAt(DF_BYTE_INDEX);
+        df = Bits.extractUInt(df, DOWNLINK_FORMAT_START, DOWNLINK_FORMAT_LENGTH);
         return df;
     }
 
