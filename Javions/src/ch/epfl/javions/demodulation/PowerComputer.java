@@ -50,7 +50,7 @@ public final class PowerComputer {
         int count = decoder.readBatch(signedBatch);
         for (int i = 0, j = 0; i < count; i += 2, j += 2)
         {
-            if( j == 8 )
+            if( j == Long.BYTES )
                 j = 0;
             current8bytes[j] = signedBatch[i];
             current8bytes[j + 1] = signedBatch[i + 1];

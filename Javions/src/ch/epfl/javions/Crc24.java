@@ -59,7 +59,7 @@ public final class Crc24 {
         int crc = 0;
         for (byte b : data) {
             crc ^= (b & BYTE_MASK) << 16;
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < Long.BYTES; i++) {
                 crc <<= 1;
                 if ((crc & SEVENTH_BIT_MASK) != 0) {
                     crc ^= generator;
