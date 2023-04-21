@@ -75,7 +75,7 @@ public final class AdsbDemodulator {
     }
     private void fillByteArray(int i)
     {
-        for( int j = 0; j < Long.BYTES; j++)
+        for( int j = 0; j < Long.BYTES; j++ )
         {
             byteArray[i / Long.BYTES] |= (testBitValue(i + j) << (7 - j));
         }

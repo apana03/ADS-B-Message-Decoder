@@ -15,7 +15,7 @@ import ch.epfl.javions.Units;
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     final T stateSetter;
     private final static long NANO_IN_NORMAL= (long) Math.pow(10, 9);
-    private static final int EVEN = 0;
+    private static final int EVEN = 0, ODD = 1;
     AirbornePositionMessage lastEvenMessage, lastOddMessage;
 
     /**
@@ -58,7 +58,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 if (apm.parity() == EVEN) {
                     if (lastOddMessage != null && apm.timeStampNs() - lastOddMessage.timeStampNs() <= 10 * NANO_IN_NORMAL) {
                         position = CprDecoder.decodePosition(apm.x(), apm.y(),
-                                lastOddMessage.x(), lastOddMessage.y(), 0);
+                                lastOddMessage.x(), lastOddMessage.y(), EVEN);
                         if (position != null)
                             stateSetter.setPosition(position);
                     }
@@ -66,7 +66,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 } else {
                     if (lastEvenMessage != null && apm.timeStampNs() - lastEvenMessage.timeStampNs() <= 10 * NANO_IN_NORMAL) {
                         position = CprDecoder.decodePosition(lastEvenMessage.x(),
-                                lastEvenMessage.y(), apm.x(), apm.y(), 1);
+                                lastEvenMessage.y(), apm.x(), apm.y(), ODD);
                         if (position != null)
                             stateSetter.setPosition(position);
                     }

@@ -63,7 +63,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         if (((altitude >> 4) & 1) == 1) {
             convertedAltitude = convertAltitude(altitude);
         } else {
-
             int untangledAlt = untangleAltitude(altitude);
 
             int grayLeastSigBits = untangledAlt & GRAY_LEAST_SIG_BITS_MASK;
@@ -75,8 +74,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             if (leastSig == 0 || leastSig == 5 || leastSig == 6) return null;
 
             convertedAltitude = computeAltitude(leastSig, mostSig);
-
-
         }
 
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
