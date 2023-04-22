@@ -37,14 +37,15 @@ public final class AircraftStateManager
             map.put(address, new AircraftStateAccumulator(new ObservableAircraftState(address, database.get(address))));
         }
         map.get(address).update(message);
-        if( ((ObservableAircraftState) map.get(address).stateSetter()).getPosition() != null )
-            states.add((ObservableAircraftState) map.get(address).stateSetter());
+        states.add((ObservableAircraftState) map.get(address).stateSetter());
     }
     public void purge(){
-        for( ObservableAircraftState state : states )
-            if(lastProcessedTimeStamp - state.getLastMessageTimeStampNs() > minuteInNs){
-                states.remove(state);
+        for( int i = 0; i < states.size(); i++ ){
+            if( lastProcessedTimeStamp - ((ObservableAircraftState) states.toArray()[i]).lastMessageTimeStampNsProperty().get() > minuteInNs
+            || ((ObservableAircraftState) states.toArray()[i]).getPosition() == null){
+                states.remove(states.toArray()[i]);
             }
+        }
     }
     public ObservableSet<ObservableAircraftState> states(){
         return statesNonModifiable;
