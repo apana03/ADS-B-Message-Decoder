@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class AircraftStateManagerTest {
+public class Main {
     private static String findArrow(double trackOrHeading) {
         if ((0 <= trackOrHeading && trackOrHeading <= 22.5) || (337.5 <= trackOrHeading && trackOrHeading <= 360)) {
             return "↑";
@@ -41,11 +41,9 @@ public class AircraftStateManagerTest {
         }
         return "";
     }
-
-    @Test
-    void generalTest() throws IOException, InterruptedException {
-        String d = getClass().getResource("/messages_20230318_0915.bin").getFile();
-        String f = getClass().getResource("/aircraft.zip").getFile();
+    public static void main(String[] args){
+        String d = Main.class.getResource("/messages_20230318_0915.bin").getFile();
+        String f = Main.class.getResource("/aircraft.zip").getFile();
         d = URLDecoder.decode(d, UTF_8);
         f = URLDecoder.decode(f, UTF_8);
         long startTime = System.nanoTime();
@@ -79,12 +77,18 @@ public class AircraftStateManagerTest {
                     System.out.print(state.getVelocity() * 3.6 + " ");
                     System.out.print(findArrow(Units.convertTo(state.trackOrHeadingProperty().get(), Units.Angle.DEGREE)) + " ");
                     System.out.println();
-                    Thread.sleep(10);
+                    Thread.sleep(100);
                 }
                 String CSI = "\u001B[";
                 String CLEAR_SCREEN = CSI + "2J";
                 System.out.print(CLEAR_SCREEN);
             }
-        } catch (EOFException e) { /* nothing to do */ }
+        } catch (EOFException e) { /* nothing to do */ } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
