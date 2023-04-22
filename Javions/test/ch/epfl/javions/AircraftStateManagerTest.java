@@ -81,6 +81,9 @@ public class AircraftStateManagerTest {
                     System.out.println();
                     Thread.sleep(10);
                 }
+                String CSI = "\u001B[";
+                String CLEAR_SCREEN = CSI + "2J";
+                System.out.print(CLEAR_SCREEN);
             }
         } catch (EOFException e) { /* nothing to do */ }
     }
