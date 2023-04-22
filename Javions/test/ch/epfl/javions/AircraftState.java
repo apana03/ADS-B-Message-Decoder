@@ -6,37 +6,23 @@ import ch.epfl.javions.adsb.CallSign;
 public class AircraftState implements AircraftStateSetter {
 
     @Override
-    public void setLastMessageTimeStampNs(long timeStampNs) {
-
-    }
+    public void setLastMessageTimeStampNs(long timeStampNs) {}
 
     @Override
-    public void setCategory(int category) {
-
-    }
+    public void setCategory(int category) {}
 
     @Override
-    public void setCallSign(CallSign callSign) {
-        System.out.println("indicatif : " + callSign);
-    }
+    public void setCallSign(CallSign callSign) {}
 
     @Override
-    public void setPosition(GeoPos position) {
-        System.out.println("position : " + position);
-    }
+    public void setPosition(GeoPos position) {}
 
     @Override
-    public void setAltitude(double altitude) {
-
-    }
+    public void setAltitude(double altitude) {}
 
     @Override
-    public void setVelocity(double velocity) {
-        System.out.println("velocity : " + velocity);
-    }
+    public void setVelocity(double velocity) {}
 
     @Override
-    public void setTrackOrHeading(double trackOrHeading) {
-
-    }
+    public void setTrackOrHeading(double trackOrHeading) {}
 }

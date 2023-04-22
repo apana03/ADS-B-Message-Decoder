@@ -103,7 +103,7 @@ public final class ObservableAircraftState implements AircraftStateSetter
 
     @Override
     public void setPosition(GeoPos position) {
-        if( !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) || trajectoryModifiable.isEmpty() )
+        if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
         {
             trajectoryModifiable.add( new AirbornePos(position, altitude.get()));
             lastTrajectoryTimeStamp = lastMessageTimeStampNs.get();
