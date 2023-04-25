@@ -47,12 +47,15 @@ public class Main {
         d = URLDecoder.decode(d, UTF_8);
         f = URLDecoder.decode(f, UTF_8);
         long startTime = System.nanoTime();
-        AircraftStateManager manager = null;
+        AircraftStateManager manager;
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
                         new FileInputStream(d)))) {
             byte[] bytes = new byte[RawMessage.LENGTH];
             manager = new AircraftStateManager(new AircraftDatabase(f));
+            String CSI = "\u001B[";
+            String MOVE_TO_TOP_LEFT = CSI + ";H";
+            String CLEAR_SCREEN = CSI + "2J";
             while (true) {
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
@@ -79,8 +82,7 @@ public class Main {
                     System.out.println();
                     Thread.sleep(100);
                 }
-                String CSI = "\u001B[";
-                String CLEAR_SCREEN = CSI + "2J";
+                System.out.println();
                 System.out.print(CLEAR_SCREEN);
             }
         } catch (EOFException e) { /* nothing to do */ } catch (FileNotFoundException e) {
