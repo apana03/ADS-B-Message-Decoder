@@ -33,19 +33,15 @@ public final class AircraftStateManager
     public void updateWithMessage(Message message) throws IOException{
         IcaoAddress address = message.icaoAddress();
         lastProcessedTimeStamp = message.timeStampNs();
-        if( !map.containsKey(address) ){
-            map.put(address, new AircraftStateAccumulator(new ObservableAircraftState(address, database.get(address))));
-        }
+        ObservableAircraftState observableAircraftState = new ObservableAircraftState(address, database.get(address));
+        map.putIfAbsent(address, new AircraftStateAccumulator(observableAircraftState));
         map.get(address).update(message);
-        states.add((ObservableAircraftState) map.get(address).stateSetter());
+        if(observableAircraftState.getPosition() != null)
+            states.add(observableAircraftState);
     }
     public void purge(){
-        for( int i = 0; i < states.size(); i++ ){
-            if( lastProcessedTimeStamp - ((ObservableAircraftState) states.toArray()[i]).lastMessageTimeStampNsProperty().get() > minuteInNs
-            || ((ObservableAircraftState) states.toArray()[i]).getPosition() == null){
-                states.remove(states.toArray()[i]);
-            }
-        }
+        states.removeIf(observableAircraftState ->
+                lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs);
     }
     public ObservableSet<ObservableAircraftState> states(){
         return statesNonModifiable;
