@@ -16,7 +16,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     final T stateSetter;
     private final static long NANO_IN_NORMAL= (long) Math.pow(10, 9);
     private static final int EVEN = 0, ODD = 1;
-    AirbornePositionMessage lastEvenMessage, lastOddMessage;
+    private AirbornePositionMessage lastEvenMessage, lastOddMessage;
 
     /**
      * Public constructor
