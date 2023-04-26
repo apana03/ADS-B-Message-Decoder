@@ -19,7 +19,7 @@ import static javafx.collections.FXCollections.unmodifiableObservableSet;
 public final class AircraftStateManager
 {
     private final static long minuteInNs = (long) 6e+10;
-    private Map<IcaoAddress, AircraftStateAccumulator> map;
+    private Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map;
     private ObservableSet<ObservableAircraftState> states;
     private ObservableSet<ObservableAircraftState> statesNonModifiable;
     private AircraftDatabase database;
@@ -33,15 +33,17 @@ public final class AircraftStateManager
     public void updateWithMessage(Message message) throws IOException{
         IcaoAddress address = message.icaoAddress();
         lastProcessedTimeStamp = message.timeStampNs();
-        ObservableAircraftState observableAircraftState = new ObservableAircraftState(address, database.get(address));
-        map.putIfAbsent(address, new AircraftStateAccumulator(observableAircraftState));
+        map.putIfAbsent(address,
+                new AircraftStateAccumulator<>(new ObservableAircraftState(address, database.get(address))));
         map.get(address).update(message);
-        if(observableAircraftState.getPosition() != null)
-            states.add(observableAircraftState);
+        if(map.get(address).stateSetter().getPosition() != null){
+            states.add(map.get(address).stateSetter());
+        }
     }
     public void purge(){
         states.removeIf(observableAircraftState ->
-                lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs);
+                lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs ||
+                        observableAircraftState.getPosition() == null);
     }
     public ObservableSet<ObservableAircraftState> states(){
         return statesNonModifiable;
