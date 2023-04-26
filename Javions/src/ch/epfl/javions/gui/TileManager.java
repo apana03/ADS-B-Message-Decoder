@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 public final class TileManager {
+
     public record TileId(int zoom, int x, int y){
         public boolean isValid(){
             return (x >= 0) && (x < (1 << zoom)) && (y >= 0) && (y < (1 << zoom));
