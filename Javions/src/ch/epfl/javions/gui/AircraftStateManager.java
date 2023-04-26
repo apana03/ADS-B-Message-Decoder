@@ -24,12 +24,23 @@ public final class AircraftStateManager
     private ObservableSet<ObservableAircraftState> statesNonModifiable;
     private AircraftDatabase database;
     private long lastProcessedTimeStamp;
+
+    /**
+     * Constructor for the AircraftStateManager
+     * @param database
+     */
     public AircraftStateManager(AircraftDatabase database){
         this.database = database;
         states = observableSet();
         statesNonModifiable = unmodifiableObservableSet(states);
         map = new HashMap<>();
     }
+
+    /**
+     * Updates the state of the aircraft with the message
+     * @param message
+     * @throws IOException
+     */
     public void updateWithMessage(Message message) throws IOException{
         IcaoAddress address = message.icaoAddress();
         lastProcessedTimeStamp = message.timeStampNs();
@@ -40,10 +51,14 @@ public final class AircraftStateManager
             states.add(map.get(address).stateSetter());
         }
     }
+
+    /**
+     * Purges the states that are too old
+     * @throws IOException
+     */
     public void purge(){
         states.removeIf(observableAircraftState ->
-                lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs ||
-                        observableAircraftState.getPosition() == null);
+                lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs);
     }
     public ObservableSet<ObservableAircraftState> states(){
         return statesNonModifiable;

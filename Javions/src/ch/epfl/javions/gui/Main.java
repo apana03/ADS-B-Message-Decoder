@@ -66,7 +66,7 @@ public class Main {
                 manager.purge();
                 System.out.print(CLEAR_SCREEN);
                 System.out.println("OACI   CallSign    Registration                Model                    Longitude             Latitude              Altitude               Speed             Direction");
-                System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 for (ObservableAircraftState state : manager.states()) {
                     System.out.printf(state.getAddress().string() + "  ");
                     if (state.getCallSign() != null)
@@ -90,7 +90,7 @@ public class Main {
                     System.out.print("|     " + findArrow(Units.convertTo(state.trackOrHeadingProperty().get(), Units.Angle.DEGREE)) + " ");
                     System.out.println();
                 }
-                Thread.sleep(100);
+                Thread.sleep(10);
                 System.out.print(MOVE_TO_TOP_LEFT);
                 System.out.println();
             }

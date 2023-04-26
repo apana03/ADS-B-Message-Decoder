@@ -99,6 +99,12 @@ public final class ObservableAircraftState implements AircraftStateSetter
         this.callSign.set(callSign);
     }
 
+    /**
+     * Sets the position of the aircraft.
+     * If the position is different from the last one, it is added to the trajectory.
+     * If the position is the same as the last one, the altitude of the last trajectory point is updated.
+     * @param position
+     */
     @Override
     public void setPosition(GeoPos position) {
         if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
@@ -109,6 +115,14 @@ public final class ObservableAircraftState implements AircraftStateSetter
         this.position.set(position);
     }
 
+    /**
+     * Sets the altitude of the aircraft.
+     * If the altitude is different from the last one, it is added to the trajectory.
+     * If the altitude is the same as the last one, the position of the last trajectory point is updated.
+     * If the last trajectory point is the same as the current position, the altitude of the last trajectory point is updated.
+     * If the last trajectory point is different from the current position, a new trajectory point is added.
+     * @param altitude
+     */
     @Override
     public void setAltitude(double altitude) {
         if( lastMessageTimeStampNs.get() == lastTrajectoryTimeStamp )
