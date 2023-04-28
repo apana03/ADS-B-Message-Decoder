@@ -32,7 +32,8 @@ public final class TileManager {
         if(cache.containsKey(tileId)){
             return cache.get(tileId);
         }
-        Path path = Path.of(tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png");
+        Path path = Path.of(localCache.toString(),tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png");
+        Path path1 = Path.of(tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png");
         if(cache.size() == MAX_CACHE_CAPACITY){
             cache.remove(cache.keySet().iterator().next());
         }
@@ -43,7 +44,7 @@ public final class TileManager {
                 return image;
         }
         }else{
-            URL u = new URL(serverUrl + "/" + tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png");
+            URL u = new URL("https://" + serverUrl + "/" +path1);
             URLConnection c = u.openConnection();
             Files.createDirectories(path.getParent());
             c.setRequestProperty("User-Agent", "Javions");
