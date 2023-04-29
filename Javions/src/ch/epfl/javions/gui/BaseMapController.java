@@ -10,12 +10,11 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 
 public final class BaseMapController {
-    TileManager tileManager;
-    MapParameters mapParameters;
+    private TileManager tileManager;
+    private MapParameters mapParameters;
     private Canvas canvas;
     private Pane pane;
     private boolean redrawNeeded;
-
     private double dragInitialX;
     private double dragInitialY;
 
@@ -28,13 +27,9 @@ public final class BaseMapController {
         canvas = new Canvas();
         pane = new Pane(canvas);
         canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
 
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-        });
-
-        addAllListeners(mapParameters.getZoom(),mapParameters.getMinX(),mapParameters.getMinY());
+        addAllListeners(mapParameters.getZoom(), mapParameters.getMinX(), mapParameters.getMinY());
         addAllMouseActions();
     }
 
@@ -45,10 +40,9 @@ public final class BaseMapController {
 
     public void centerOn(GeoPos point) {
         int zoomLvl = mapParameters.getZoomValue();
-        double x = WebMercator.x(zoomLvl, point.longitude());
-        double y = WebMercator.y(zoomLvl, point.latitude());
-        mapParameters = new MapParameters(zoomLvl, x - (canvas.getWidth() / 2), y - (canvas.getHeight() / 2));
-        redrawOnNextPulse();
+        double x = mapParameters.getMinXValue() - WebMercator.x(zoomLvl, point.longitude()) - (canvas.getWidth() / 2);
+        double y = mapParameters.getMinYValue() - WebMercator.y(zoomLvl, point.latitude()) - (canvas.getHeight() / 2);
+        mapParameters.scroll(x, y);
     }
 
     private void redrawIfNeeded() {
@@ -63,33 +57,38 @@ public final class BaseMapController {
     }
 
     private void drawMap(Pane pane) {
-        int minX = (int) Math.floor(mapParameters.getMinXValue() / PIXELS_IN_TILE);
-        int minY = (int) Math.floor(mapParameters.getMinYValue() / PIXELS_IN_TILE);
-        double firstTileXPixel = -(mapParameters.getMinXValue() % PIXELS_IN_TILE);
-        double firstTileYPixel = -(mapParameters.getMinYValue() % PIXELS_IN_TILE);
-        for (int i = minX; i < minX + Math.floor(pane.getWidth() / PIXELS_IN_TILE); i++) {
-            for (int j = minY; j < minY + Math.floor(pane.getHeight() / PIXELS_IN_TILE); j++) {
+        double minX = mapParameters.getMinXValue();
+        double minY = mapParameters.getMinYValue();
+        int tileX = (int) Math.floor(minX / PIXELS_IN_TILE);
+        int tileY = (int) Math.floor(minY / PIXELS_IN_TILE);
+
+        for (int i = tileX; i <= tileX + Math.floor(pane.getWidth() / PIXELS_IN_TILE); i++) {
+            for (int j = tileY; j <= tileY + Math.floor(pane.getHeight() / PIXELS_IN_TILE); j++) {
                 try {
                     canvas.getGraphicsContext2D().drawImage(
                             tileManager.imageForTileAt(new TileManager.TileId(mapParameters.getZoomValue(), i, j))
-                            , firstTileXPixel
-                            , firstTileYPixel);
+                            , i * PIXELS_IN_TILE - minX
+                            , j * PIXELS_IN_TILE - minY);
                 } catch (IOException e) {
 
                 }
-                firstTileXPixel += PIXELS_IN_TILE;
             }
-            firstTileYPixel += PIXELS_IN_TILE;
         }
     }
 
-    private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY){
+    private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY) {
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        });
         zoom.addListener((o, oV, nV) -> redrawOnNextPulse());
         minX.addListener((o, oV, nV) -> redrawOnNextPulse());
         minY.addListener((o, oV, nV) -> redrawOnNextPulse());
+        canvas.widthProperty().addListener((o, oV, nV) -> redrawOnNextPulse());
+        canvas.heightProperty().addListener((o, oV, nV) -> redrawOnNextPulse());
     }
 
-    private void addAllMouseActions(){
+    private void addAllMouseActions() {
         pane.setOnMousePressed(e -> {
             dragInitialX = e.getX();
             dragInitialY = e.getY();
@@ -97,7 +96,12 @@ public final class BaseMapController {
 
 
         pane.setOnMouseDragged(e -> {
-            mapParameters.scroll(dragInitialX - e.getX(), dragInitialY - e.getY());
+            double presentX = e.getX();
+            double presentY = e.getY();
+            mapParameters.scroll(dragInitialX - presentX, dragInitialY - presentY);
+            dragInitialX = presentX;
+            dragInitialY = presentY;
+
         });
 
         LongProperty minScrollTime = new SimpleLongProperty();
