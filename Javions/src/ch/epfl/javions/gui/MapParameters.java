@@ -49,18 +49,12 @@ public final class MapParameters {
         int previousZoom = zoom.get();
         zoom.set(Math2.clamp(MIN_ZOOM, previousZoom + zoomDifference, MAX_ZOOM));
         zoomDifference = previousZoom - zoom.get();
+        System.out.println(zoomDifference);
         adaptTopLeftCorner(zoomDifference);
     }
 
     private void adaptTopLeftCorner(int zoomDifference) {
-        double var;
-        if (zoomDifference > 0) {
-            var = Math.pow(2, zoomDifference);
-        } else if (zoomDifference < 0) {
-            var = 1 / Math.pow(2, zoomDifference);
-        } else {
-            var = 1;
-        }
+        double var = 1 / Math.pow(2, zoomDifference);
         minX.set(minX.get() * var);
         minY.set(minY.get() * var);
     }
