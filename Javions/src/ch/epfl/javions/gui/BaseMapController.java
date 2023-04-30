@@ -34,7 +34,6 @@ public final class BaseMapController {
     }
 
     public Pane pane() {
-        drawMap(pane);
         return pane;
     }
 

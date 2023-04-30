@@ -49,7 +49,6 @@ public final class MapParameters {
         int previousZoom = zoom.get();
         zoom.set(Math2.clamp(MIN_ZOOM, previousZoom + zoomDifference, MAX_ZOOM));
         zoomDifference = previousZoom - zoom.get();
-        System.out.println(zoomDifference);
         adaptTopLeftCorner(zoomDifference);
     }
 
