@@ -9,6 +9,7 @@ import java.util.List;
 
 
 public final class ColorRamp {
+
     public static final ColorRamp PLASMA = new ColorRamp(List.of(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
@@ -27,6 +28,9 @@ public final class ColorRamp {
             Color.valueOf("0xfccf25ff"), Color.valueOf("0xf9dd24ff"),
             Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff")));
 
+    public static Color colorFromPlasma(double altitude){
+        return PLASMA.at(Math.pow(altitude/12000, 1/3));
+    }
     private final List<Color> colors;
     private static final int MIN_COLORS_NB = 2;
 

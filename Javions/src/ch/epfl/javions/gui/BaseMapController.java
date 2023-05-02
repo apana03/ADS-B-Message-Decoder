@@ -61,8 +61,8 @@ public final class BaseMapController {
         int tileX = (int) Math.floor(minX / PIXELS_IN_TILE);
         int tileY = (int) Math.floor(minY / PIXELS_IN_TILE);
 
-        for (int i = tileX; i <= tileX + Math.floor(pane.getWidth() / PIXELS_IN_TILE); i++) {
-            for (int j = tileY; j <= tileY + Math.floor(pane.getHeight() / PIXELS_IN_TILE); j++) {
+        for (int i = tileX; i <= tileX + (pane.getWidth() / PIXELS_IN_TILE)+1; i++) {
+            for (int j = tileY; j <= tileY + (pane.getHeight() / PIXELS_IN_TILE)+1; j++) {
                 try {
                     canvas.getGraphicsContext2D().drawImage(
                             tileManager.imageForTileAt(new TileManager.TileId(mapParameters.getZoomValue(), i, j))
