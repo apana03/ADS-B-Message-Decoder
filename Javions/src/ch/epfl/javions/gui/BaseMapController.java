@@ -4,6 +4,7 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 
@@ -15,8 +16,8 @@ public final class BaseMapController {
     private Canvas canvas;
     private Pane pane;
     private boolean redrawNeeded;
-    private double dragInitialX;
-    private double dragInitialY;
+    private Point2D dragInitial;
+
 
     private static final int PIXELS_IN_TILE = 256;
 
@@ -61,8 +62,8 @@ public final class BaseMapController {
         int tileX = (int) Math.floor(minX / PIXELS_IN_TILE);
         int tileY = (int) Math.floor(minY / PIXELS_IN_TILE);
 
-        for (int i = tileX; i <= tileX + (pane.getWidth() / PIXELS_IN_TILE)+1; i++) {
-            for (int j = tileY; j <= tileY + (pane.getHeight() / PIXELS_IN_TILE)+1; j++) {
+        for (int i = tileX; i <= tileX + Math.ceil(pane.getWidth() / PIXELS_IN_TILE); i++) {
+            for (int j = tileY; j <= tileY + Math.ceil(pane.getHeight() / PIXELS_IN_TILE); j++) {
                 try {
                     canvas.getGraphicsContext2D().drawImage(
                             tileManager.imageForTileAt(new TileManager.TileId(mapParameters.getZoomValue(), i, j))
@@ -88,19 +89,21 @@ public final class BaseMapController {
     }
 
     private void addAllMouseActions() {
+        dragInitial = new Point2D(0,0);
         pane.setOnMousePressed(e -> {
-            dragInitialX = e.getX();
-            dragInitialY = e.getY();
+            dragInitial = new Point2D(e.getX(),e.getY());
         });
 
 
         pane.setOnMouseDragged(e -> {
             double presentX = e.getX();
             double presentY = e.getY();
-            mapParameters.scroll(dragInitialX - presentX, dragInitialY - presentY);
-            dragInitialX = presentX;
-            dragInitialY = presentY;
+            mapParameters.scroll( dragInitial.getX() - presentX, dragInitial.getY() - presentY);
+            dragInitial = new Point2D(presentX, presentY);
+        });
 
+        pane.setOnMouseReleased(e -> {
+            dragInitial = null;
         });
 
         LongProperty minScrollTime = new SimpleLongProperty();
