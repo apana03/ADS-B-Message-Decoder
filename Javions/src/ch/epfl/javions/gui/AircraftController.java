@@ -12,8 +12,8 @@ import javafx.scene.shape.SVGPath;
 
 
 public final class AircraftController {
-    private Pane pane;
-    private MapParameters mapParameters;
+    private final Pane pane;
+    private final MapParameters mapParameters;
     private ObservableSet<ObservableAircraftState> aircraftStates;
     private ObjectProperty<ObservableAircraftState> aircraftStateObjectProperty;
 
@@ -25,7 +25,7 @@ public final class AircraftController {
         this.aircraftStates = aircraftStates;
         this.aircraftStateObjectProperty = aircraftStateObjectProperty;
         pane = new Pane();
-        pane.getStylesheets().add("aircraft.css");
+        pane.getStylesheets().add("/aircraft.css");
 
         for(ObservableAircraftState state : aircraftStates){
             constructAircraftGroup(state);
@@ -48,19 +48,23 @@ public final class AircraftController {
         aircraftGroup.setId(state.getAddress().string());
         aircraftGroup.viewOrderProperty().bind(state.altitudeProperty().negate());
         Group iconAndTag = new Group(getSVG(state));
-
+        pane.getChildren().add(iconAndTag);
     }
 
 
     private Group createIconAndTagGroup(ObservableAircraftState state){
         Group iconAndTag = new Group(getSVG(state));
-        GeoPos position = state.getPosition();
         iconAndTag.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.x(mapParameters.getZoomValue(), position.longitude()) - mapParameters.getMinXValue())
-        );
+                WebMercator.x(mapParameters.getZoomValue(), state.getPosition().longitude()) - mapParameters.getMinXValue(),
+                mapParameters.getZoom(),
+                state.positionProperty(),
+                mapParameters.getMinX()));
+
         iconAndTag.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.y(mapParameters.getZoomValue(), position.latitude()) - mapParameters.getMinYValue())
-        );
+                WebMercator.y(mapParameters.getZoomValue(), state.getPosition().latitude()) - mapParameters.getMinYValue(),
+                mapParameters.getZoom(),
+                state.positionProperty(),
+                mapParameters.getMinY()));
         return iconAndTag;
     }
 
