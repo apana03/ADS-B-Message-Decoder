@@ -11,10 +11,10 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 
 public final class BaseMapController {
-    private TileManager tileManager;
-    private MapParameters mapParameters;
-    private Canvas canvas;
-    private Pane pane;
+    private final TileManager tileManager;
+    private final MapParameters mapParameters;
+    private  final Canvas canvas;
+    private final Pane pane;
     private boolean redrawNeeded;
     private Point2D dragInitial;
 
@@ -90,9 +90,8 @@ public final class BaseMapController {
 
     private void addAllMouseActions() {
         dragInitial = new Point2D(0,0);
-        pane.setOnMousePressed(e -> {
-            dragInitial = new Point2D(e.getX(),e.getY());
-        });
+
+        pane.setOnMousePressed(e -> dragInitial = new Point2D(e.getX(),e.getY()));
 
 
         pane.setOnMouseDragged(e -> {
@@ -102,9 +101,7 @@ public final class BaseMapController {
             dragInitial = new Point2D(presentX, presentY);
         });
 
-        pane.setOnMouseReleased(e -> {
-            dragInitial = null;
-        });
+        pane.setOnMouseReleased(e -> dragInitial = null);
 
         LongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(e -> {
