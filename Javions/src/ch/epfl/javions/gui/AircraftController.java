@@ -100,7 +100,7 @@ public final class AircraftController {
         iconPath.rotateProperty().bind(
                 Bindings.createDoubleBinding( () ->
                         (icon.getValue().canRotate()) ? Units.convertTo( state.getTrackOrHeading() , Units.Angle.DEGREE) : 0,
-                                icon));
+                                state.trackOrHeadingProperty()));
         return iconPath;
     }
 }
