@@ -38,13 +38,13 @@ public final class ObservableAircraftState implements AircraftStateSetter
     public ReadOnlyIntegerProperty categoryProperty(){
         return category;
     }
-    public ReadOnlyObjectProperty callSignProperty(){
+    public ReadOnlyObjectProperty<CallSign> callSignProperty(){
         return callSign;
     }
-    public ReadOnlyObjectProperty positionProperty(){
+    public ReadOnlyObjectProperty<GeoPos> positionProperty(){
         return position;
     }
-    public ObservableList trajectoryProperty(){
+    public ObservableList<AirbornePos> trajectoryProperty(){
         return trajectoryNonModifiable;
     }
     public ReadOnlyDoubleProperty altitudeProperty(){

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public record CallSign(String string) {
 
-    static Pattern er = Pattern.compile("[A-Z0-9 ]{0,8}");
+    private final static Pattern er = Pattern.compile("[A-Z0-9 ]{0,8}");
 
     /**
      * the compact constructor of the class

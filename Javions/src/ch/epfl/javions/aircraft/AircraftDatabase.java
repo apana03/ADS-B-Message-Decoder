@@ -38,27 +38,31 @@ public class AircraftDatabase {
      * extracted from the database
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        for (char c1 : map)
-            for (char c2 : map) {
-                name = "" + c1 + c2 + ".csv";
-                try (ZipFile z = new ZipFile(fileName);
-                     InputStream s = z.getInputStream(z.getEntry(name));
-                     Reader r = new InputStreamReader(s, StandardCharsets.UTF_8);
-                     BufferedReader b = new BufferedReader(r)) {
-                    String l = "";
-                    while ((l = b.readLine()) != null) {
-                        if (l.compareTo(address.string()) > 0 && !l.startsWith(address.string()))
-                            break;
-                        if (l.startsWith(address.string())) {
-                            data = l.split(",", -1);
-                            finalData = new AircraftData(new AircraftRegistration(data[1]),
-                                    new AircraftTypeDesignator(data[2]), data[3],
-                                    new AircraftDescription(data[4]), WakeTurbulenceCategory.of(data[5]));
-                            return finalData;
-                        }
-                    }
+
+        String crc = address.string();
+        String fileAddress = crc.substring(crc.length() - 2);
+
+        try (ZipFile fichierZip = new ZipFile(fileName);
+             InputStream stream = fichierZip.getInputStream(
+                     fichierZip.getEntry(fileAddress + ".csv"));
+             Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
+            String[] columns;
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.startsWith(address.string())) {
+                    columns = line.split(",", -1);
+
+                    return new AircraftData(new AircraftRegistration(columns[1]),
+                            new AircraftTypeDesignator(columns[2]), columns[3],
+                            new AircraftDescription(columns[4]),
+                            WakeTurbulenceCategory.of(columns[5]));
                 }
+                if (line.compareTo(address.toString()) > 0) return null;
             }
+        }
         return null;
     }
 }
