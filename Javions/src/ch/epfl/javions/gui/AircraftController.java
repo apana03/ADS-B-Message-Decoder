@@ -14,7 +14,9 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Text;
 
 
 public final class AircraftController {
@@ -55,16 +57,16 @@ public final class AircraftController {
     }
 
 
-    private Group createIconAndTagGroup(ObservableAircraftState state){
-        Group iconAndTag = new Group(getSVG(state));
+    private Group createIconAndTagGroup(ObservableAircraftState state) {
+        Group iconAndTag = new Group(getSVG(state), labelGroup(state));
         iconAndTag.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.x(mapParameters.getZoomValue(), state.getPosition().longitude()) - mapParameters.getMinXValue(),
+                        WebMercator.x(mapParameters.getZoomValue(), state.getPosition().longitude()) - mapParameters.getMinXValue(),
                 mapParameters.getZoom(),
                 state.positionProperty(),
                 mapParameters.getMinX()));
 
         iconAndTag.layoutYProperty().bind(Bindings.createDoubleBinding(() ->
-                WebMercator.y(mapParameters.getZoomValue(), state.getPosition().latitude()) - mapParameters.getMinYValue(),
+                        WebMercator.y(mapParameters.getZoomValue(), state.getPosition().latitude()) - mapParameters.getMinYValue(),
                 mapParameters.getZoom(),
                 state.positionProperty(),
                 mapParameters.getMinY()));
@@ -81,7 +83,7 @@ public final class AircraftController {
         AircraftDescription aircraftDescription = (aircraftData == null) ? new AircraftDescription("")
                 : aircraftData.description();
 
-        WakeTurbulenceCategory wakeTurbulenceCategory =  (aircraftData == null) ? WakeTurbulenceCategory.UNKNOWN
+        WakeTurbulenceCategory wakeTurbulenceCategory = (aircraftData == null) ? WakeTurbulenceCategory.UNKNOWN
                 : aircraftData.wakeTurbulenceCategory();
 
         SVGPath iconPath = new SVGPath();
@@ -94,17 +96,53 @@ public final class AircraftController {
         ));
 
         iconPath.getStyleClass().add("aircraft");
-        iconPath.contentProperty().bind(icon.map(AircraftIcon :: svgPath));
+        iconPath.contentProperty().bind(icon.map(AircraftIcon::svgPath));
         iconPath.fillProperty().bind(Bindings.createObjectBinding(() -> ColorRamp.colorFromPlasma(state.getAltitude()),
                 state.altitudeProperty()));
         iconPath.rotateProperty().bind(
-                Bindings.createDoubleBinding( () ->
-                        (icon.getValue().canRotate()) ? Units.convertTo( state.getTrackOrHeading() , Units.Angle.DEGREE) : 0,
-                                state.trackOrHeadingProperty()));
+                Bindings.createDoubleBinding(() ->
+                                (icon.getValue().canRotate()) ? Units.convertTo(state.getTrackOrHeading(), Units.Angle.DEGREE) : 0,
+                        state.trackOrHeadingProperty()));
         return iconPath;
     }
 
-    private Group labelGroup(){
-        return null;
+    private Group labelGroup(ObservableAircraftState state) {
+        Text text = new Text();
+        Rectangle rectangle = new Rectangle();
+
+        rectangle.widthProperty().bind(
+                text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
+
+        rectangle.heightProperty().bind(
+                text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
+
+        text.textProperty().bind(
+                Bindings.format("%s \n %s km/h\u2002%1.0f m",
+                        aircraftIdentification(state),
+                        velocity(state),
+                        state.altitudeProperty()
+                )
+        );
+
+        Group labelGroup = new Group(rectangle, text);
+        labelGroup.getStyleClass().add("label");
+
+        return labelGroup;
+    }
+
+    private String aircraftIdentification(ObservableAircraftState state) {
+        return (state.getData().registration() == null) ?
+                (state.getCallSign() == null) ? state.getAddress().string() : state.getCallSign().string()
+                : state.getData().registration().string();
+    }
+
+    private Object velocity(ObservableAircraftState state) {
+    return state.velocityProperty().map(v -> (v.doubleValue() != 0 || Double.isNaN(v.doubleValue())) ?
+                (int) Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR) : "?");
+    }
+
+    private String altitude(ObservableAircraftState state) {
+        return state.altitudeProperty().map(v -> (v.doubleValue() != 0 || !Double.isNaN(v.doubleValue())) ?
+                v.doubleValue() : "?").toString();
     }
 }
