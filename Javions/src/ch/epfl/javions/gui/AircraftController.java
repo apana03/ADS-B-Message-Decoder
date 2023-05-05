@@ -14,6 +14,7 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
@@ -97,7 +98,7 @@ public final class AircraftController {
 
         iconPath.getStyleClass().add("aircraft");
         iconPath.contentProperty().bind(icon.map(AircraftIcon::svgPath));
-        iconPath.fillProperty().bind(Bindings.createObjectBinding(() -> ColorRamp.colorFromPlasma(state.getAltitude()),
+        iconPath.fillProperty().bind(Bindings.createObjectBinding(() ->  ColorRamp.colorFromPlasma(state.altitudeProperty().get()),
                 state.altitudeProperty()));
         iconPath.rotateProperty().bind(
                 Bindings.createDoubleBinding(() ->
