@@ -103,4 +103,8 @@ public final class AircraftController {
                                 state.trackOrHeadingProperty()));
         return iconPath;
     }
+
+    private Group labelGroup(){
+        return null;
+    }
 }

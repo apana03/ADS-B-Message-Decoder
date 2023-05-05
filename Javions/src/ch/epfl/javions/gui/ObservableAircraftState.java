@@ -104,15 +104,12 @@ public final class ObservableAircraftState implements AircraftStateSetter
      * If the position is different from the last one, it is added to the trajectory.
      * If the position is the same as the last one, the altitude of the last trajectory point is updated.
      * @param position
+     *      the position
      */
     @Override
     public void setPosition(GeoPos position) {
-        if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
-        {
-            trajectoryModifiable.add( new AirbornePos(position, altitude.get()));
-            lastTrajectoryTimeStamp = lastMessageTimeStampNs.get();
-        }
         this.position.set(position);
+        updateTrajectory();
     }
 
     /**
@@ -122,14 +119,12 @@ public final class ObservableAircraftState implements AircraftStateSetter
      * If the last trajectory point is the same as the current position, the altitude of the last trajectory point is updated.
      * If the last trajectory point is different from the current position, a new trajectory point is added.
      * @param altitude
+     *      the altitude
      */
     @Override
     public void setAltitude(double altitude) {
-        if( lastMessageTimeStampNs.get() == lastTrajectoryTimeStamp )
-        {
-            trajectoryModifiable.set(trajectoryModifiable.size() - 1, new AirbornePos(position.get(), altitude));
-        }
         this.altitude.set(altitude);
+        updateTrajectory();
     }
 
     @Override
@@ -140,6 +135,16 @@ public final class ObservableAircraftState implements AircraftStateSetter
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set(trackOrHeading);
+    }
+
+    private void updateTrajectory(){
+        if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
+        {
+            trajectoryModifiable.add( new AirbornePos(getPosition(), getAltitude()));
+            lastTrajectoryTimeStamp = lastMessageTimeStampNs.get();
+        }else if( lastMessageTimeStampNs.get() == lastTrajectoryTimeStamp ){
+            trajectoryModifiable.set(trajectoryModifiable.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+        }
     }
 
 }
