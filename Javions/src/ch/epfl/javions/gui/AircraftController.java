@@ -124,15 +124,17 @@ public final class AircraftController {
                         state.altitudeProperty()
                 )
         );
-
         Group labelGroup = new Group(rectangle, text);
         labelGroup.getStyleClass().add("label");
+        labelGroup.visibleProperty().bind(
+                mapParameters.getZoom().greaterThanOrEqualTo(11)
+        );
 
         return labelGroup;
     }
 
     private String aircraftIdentification(ObservableAircraftState state) {
-        return (state.getData().registration() == null) ?
+        return (state.getData() == null) ?
                 (state.getCallSign() == null) ? state.getAddress().string() : state.getCallSign().string()
                 : state.getData().registration().string();
     }
