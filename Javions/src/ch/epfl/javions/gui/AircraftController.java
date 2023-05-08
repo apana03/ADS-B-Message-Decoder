@@ -14,7 +14,6 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;

@@ -1,18 +1,20 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.*;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.text.NumberFormat;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class AircraftTableController
 {
@@ -23,10 +25,12 @@ public final class AircraftTableController
     {
         this.states = states;
         this.selectedState = selectedState;
-        table = new TableView<ObservableAircraftState>();
+        table = new TableView<>();
         table.getStylesheets().add("/table.css");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         table.setTableMenuButtonVisible(true);
+
+        //listeners
         selectedState.addListener((observable, oldValue, newValue) -> {
             if(newValue != null) {
                 table.getSelectionModel().select(newValue);
@@ -52,58 +56,68 @@ public final class AircraftTableController
                 });
         constructAircraftColumns();
     }
+
+    /**
+     * How can I rewrite this as a private method which constructs every type of column?
+     * What parameters should i put in the method?
+     */
     private void constructAircraftColumns() {
-        NumberFormat formatter = NumberFormat.getInstance();
-        TableColumn<ObservableAircraftState, String> addressColumn = new TableColumn<>("OACI");
-        addressColumn.setPrefWidth(60);
-        addressColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getAddress()).map(IcaoAddress::string));
-        TableColumn<ObservableAircraftState, String> callsignColumn = new TableColumn<>("Indicatif");
-        callsignColumn.setCellValueFactory(cellData -> cellData.getValue().callSignProperty().map(CallSign::string));
-        callsignColumn.setPrefWidth(70);
-        TableColumn<ObservableAircraftState, String> immatriculationColumn = new TableColumn<>("Immatriculation");
-        immatriculationColumn.setPrefWidth(90);
-        immatriculationColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getData()).map(AircraftData::registration)
+        createAndAddTextColumns();
+        createAndAddNumericColumns();
+    }
+    public TableColumn<ObservableAircraftState, String> generateTextColumn(String name, int width,
+                                                                           Function<ObservableAircraftState,
+                                                                                   ObservableValue<String>> function)
+    {
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(name);
+        column.setPrefWidth(width);
+        column.setCellValueFactory(cellData -> function.apply(cellData.getValue()));
+        return column;
+    }
+    public TableColumn<ObservableAircraftState, String> generateNumericColumn(String name, int width,
+                                                                              Function<ObservableAircraftState,
+                                                                                      ObservableValue<String>> function)
+    {
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(name);
+        column.getStyleClass().add("numeric");
+        column.setPrefWidth(90);
+        column.setCellValueFactory(cellData -> function.apply(cellData.getValue()));
+        return column;
+    }
+    public void createAndAddTextColumns(){
+        TableColumn<ObservableAircraftState, String> addressColumn = generateTextColumn("OACI", 60,
+                cellData -> new ReadOnlyObjectWrapper<>(cellData.getAddress()).map(IcaoAddress::string));
+        TableColumn<ObservableAircraftState, String> callSignColumn = generateTextColumn("Indicatif", 70,
+                cellData -> cellData.callSignProperty().map(CallSign::string));
+        TableColumn<ObservableAircraftState, String> registrationColumn = generateTextColumn("Immatriculation",
+                90, cellData -> new ReadOnlyObjectWrapper<>(cellData.getData()).map(AircraftData::registration)
                         .map(AircraftRegistration::string));
-        TableColumn<ObservableAircraftState, String> modelColumn = new TableColumn<>("Modèle");
-        modelColumn.setPrefWidth(230);
-        modelColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getData()).map(AircraftData::model));
-        TableColumn<ObservableAircraftState, String> typeColumn = new TableColumn<>("Type");
-        typeColumn.setPrefWidth(50);
-        typeColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getData()).map(AircraftData::typeDesignator)
+        TableColumn<ObservableAircraftState, String> modelColumn = generateTextColumn("Modèle", 230,
+                cellData -> new ReadOnlyObjectWrapper<>(cellData.getData()).map(AircraftData::model));
+        TableColumn<ObservableAircraftState, String> typeColumn =generateTextColumn("Type", 50,
+                cellData -> new ReadOnlyObjectWrapper<>(cellData.getData()).map(AircraftData::typeDesignator)
                         .map(AircraftTypeDesignator::string));
-        TableColumn<ObservableAircraftState, String> descriptionColumn = new TableColumn<>("Description");
-        descriptionColumn.setPrefWidth(70);
-        descriptionColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getData()).map(AircraftData::description)
+        TableColumn<ObservableAircraftState, String> descriptionColumn = generateTextColumn("Description", 70,
+                cellData -> new ReadOnlyObjectWrapper<>(cellData.getData()).map(AircraftData::description)
                         .map(AircraftDescription::string));
-        TableColumn<ObservableAircraftState, String> longitudeColumn = new TableColumn<>("Longitude");
-        longitudeColumn.getStyleClass().add("numeric");
-        longitudeColumn.setPrefWidth(90);
+        table.getColumns().addAll(addressColumn, callSignColumn, registrationColumn, modelColumn, typeColumn,
+                descriptionColumn);
+    }
+    public void createAndAddNumericColumns(){
+        NumberFormat formatter = NumberFormat.getInstance();
+        NumberFormat velocityFormatter = NumberFormat.getInstance();
         formatter.setMaximumFractionDigits(4);
-        longitudeColumn.setCellValueFactory(cellData ->
-                cellData.getValue().positionProperty().map(GeoPos::longitude).map(formatter::format));
-        TableColumn<ObservableAircraftState, String> latitudeColumn = new TableColumn<>("Latitude");
-        latitudeColumn.getStyleClass().add("numeric");
-        latitudeColumn.setPrefWidth(90);
-        latitudeColumn.setCellValueFactory(cellData ->
-                cellData.getValue().positionProperty().map(GeoPos::latitude).map(formatter::format));
-        TableColumn<ObservableAircraftState, String> altitudeColumn = new TableColumn<>("Altitude");
-        altitudeColumn.getStyleClass().add("numeric");
-        altitudeColumn.setPrefWidth(90);
-        altitudeColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(formatter.format(cellData.getValue().altitudeProperty().doubleValue())));
-        TableColumn<ObservableAircraftState, String> velocityColumn = new TableColumn<>("Vitesse (km/h)");
-        velocityColumn.getStyleClass().add("numeric");
-        velocityColumn.setPrefWidth(90);
-        formatter.setMaximumFractionDigits(0);
-        velocityColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(formatter.format(cellData.getValue().velocityProperty().doubleValue())));
-        table.getColumns().addAll(addressColumn, callsignColumn, immatriculationColumn, modelColumn, typeColumn,
-                descriptionColumn, longitudeColumn, latitudeColumn, altitudeColumn, velocityColumn);
+        TableColumn<ObservableAircraftState, String> longitudeColumn = generateNumericColumn("Longitude", 90,
+                cellData -> cellData.positionProperty().map(k -> Units.convertTo(k.longitude(), Units.Angle.DEGREE))
+                        .map(formatter::format));
+        TableColumn<ObservableAircraftState, String> latitudeColumn = generateNumericColumn("Latitude", 90,
+                cellData -> cellData.positionProperty().map(k -> Units.convertTo(k.latitude(), Units.Angle.DEGREE))
+                        .map(formatter::format));
+        TableColumn<ObservableAircraftState, String> altitudeColumn = generateNumericColumn("Altitude (m)", 90,
+                cellData -> cellData.altitudeProperty().map(formatter::format));
+        TableColumn<ObservableAircraftState, String> velocityColumn = generateNumericColumn("Vitesse (km/h)", 90,
+                cellData -> cellData.velocityProperty().map(velocityFormatter::format));
+        table.getColumns().addAll(longitudeColumn, latitudeColumn, altitudeColumn, velocityColumn);
     }
     public TableView<ObservableAircraftState> pane()
     {
