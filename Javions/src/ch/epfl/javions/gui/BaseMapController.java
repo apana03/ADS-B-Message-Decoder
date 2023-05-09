@@ -59,8 +59,8 @@ public final class BaseMapController {
     private void drawMap(Pane pane) {
         double minX = mapParameters.getMinXValue();
         double minY = mapParameters.getMinYValue();
-        int tileX = (int) Math.floor(minX / PIXELS_IN_TILE);
-        int tileY = (int) Math.floor(minY / PIXELS_IN_TILE);
+        int tileX = (int) minX / PIXELS_IN_TILE;
+        int tileY = (int) minY / PIXELS_IN_TILE;
 
         for (int i = tileX; i <= tileX + Math.ceil(pane.getWidth() / PIXELS_IN_TILE); i++) {
             for (int j = tileY; j <= tileY + Math.ceil(pane.getHeight() / PIXELS_IN_TILE); j++) {
@@ -90,7 +90,6 @@ public final class BaseMapController {
 
     private void addAllMouseActions() {
         dragInitial = new Point2D(0,0);
-
         pane.setOnMousePressed(e -> dragInitial = new Point2D(e.getX(),e.getY()));
 
 
