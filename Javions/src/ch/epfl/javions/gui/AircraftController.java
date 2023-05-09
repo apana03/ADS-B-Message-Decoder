@@ -161,15 +161,17 @@ public final class AircraftController {
                 () -> state == aircraftStateObjectProperty.get(),
                 aircraftStateObjectProperty));
 
-        InvalidationListener invalidationListener = z -> redrawTrajectory(trajectoryGroup, state);
+        InvalidationListener listener = z -> redrawTrajectory(trajectoryGroup, state);
 
+
+        mapParameters.getZoom().addListener(listener);
 
         trajectoryGroup.visibleProperty().addListener((o, oV, nV) -> {
                 if(nV) {
                     redrawTrajectory(trajectoryGroup,state);
-                    state.trajectoryProperty().addListener(invalidationListener);
+                    state.trajectoryProperty().addListener(listener);
                 }else {
-                    state.trajectoryProperty().removeListener(invalidationListener);
+                    state.trajectoryProperty().removeListener(listener);
                 }
             });
         return trajectoryGroup;
@@ -193,20 +195,10 @@ public final class AircraftController {
     private Line createLine(ObservableAircraftState.AirbornePos pos1, ObservableAircraftState.AirbornePos pos2) {
         GeoPos firstPoint = pos1.position();
         GeoPos secondPoint = pos2.position();
-        Line line = new Line() ;
-
-        line.startXProperty().bind(Bindings.createDoubleBinding(()->
-                WebMercator.x(mapParameters.getZoomValue() , firstPoint.longitude()) ,
-                mapParameters.getZoom()));
-        line.startYProperty().bind(Bindings.createDoubleBinding(()->
-                        WebMercator.y(mapParameters.getZoomValue() , firstPoint.latitude()) ,
-                mapParameters.getZoom()));
-        line.endXProperty().bind(Bindings.createDoubleBinding(()->
-                        WebMercator.x(mapParameters.getZoomValue() , secondPoint.longitude()) ,
-                mapParameters.getZoom()));
-        line.endYProperty().bind(Bindings.createDoubleBinding(()->
-                        WebMercator.y(mapParameters.getZoomValue() , secondPoint.latitude()) ,
-                mapParameters.getZoom()));
+        Line line = new Line(WebMercator.x(mapParameters.getZoomValue() , firstPoint.longitude()),
+                WebMercator.y(mapParameters.getZoomValue() , firstPoint.latitude()),
+                WebMercator.x(mapParameters.getZoomValue() , secondPoint.longitude()),
+                WebMercator.y(mapParameters.getZoomValue() , secondPoint.latitude())) ;
 
         if(pos1.altitude() == pos2.altitude()){
             line.setStroke(ColorRamp.colorFromPlasma(pos1.altitude()));
