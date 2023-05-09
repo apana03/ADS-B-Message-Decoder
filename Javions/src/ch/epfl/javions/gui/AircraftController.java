@@ -57,7 +57,7 @@ public final class AircraftController {
                 });
 
 
-
+//
         mapParameters.getZoom().addListener(b -> {
             List<Node> children = pane.getChildren();
             Group wantedGroup = new Group();
