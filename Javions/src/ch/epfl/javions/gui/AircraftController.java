@@ -54,7 +54,7 @@ public final class AircraftController {
                     if(change.wasAdded())
                         constructAircraftGroup(change.getElementAdded());
                     else
-                        pane.getChildren().removeIf(children -> children.equals(change.getElementRemoved()));
+                        pane.getChildren().removeIf(children -> children.getId().equals(change.getElementRemoved().getAddress().string()));
                 });
 
     }

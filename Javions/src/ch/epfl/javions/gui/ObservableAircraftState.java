@@ -109,7 +109,7 @@ public final class ObservableAircraftState implements AircraftStateSetter
     @Override
     public void setPosition(GeoPos position) {
         this.position.set(position);
-        updateTrajectory();
+        trajectoryModifiable.set(trajectoryModifiable.size() - 1, new AirbornePos(getPosition(), getAltitude()));
     }
 
     /**
@@ -126,14 +126,17 @@ public final class ObservableAircraftState implements AircraftStateSetter
         this.altitude.set(altitude);
         updateTrajectory();
     }
+
     @Override
     public void setVelocity(double velocity) {
         this.velocity.set(velocity);
     }
+
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set(trackOrHeading);
     }
+
     private void updateTrajectory(){
         if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
         {

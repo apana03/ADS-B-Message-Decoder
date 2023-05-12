@@ -84,7 +84,6 @@ public final class AircraftTableController
      * Generates the numeric columns for the table
      * @param name  the name of the column
      * @param function  the function that will be applied to the cell data
-     * @param comparator    the comparator that will be applied to the cell data
      * @param unit  the unit of the column
      * @param formatter the formatter that will be applied to the cell data
      * @return  the generated column
@@ -92,15 +91,24 @@ public final class AircraftTableController
     private TableColumn<ObservableAircraftState, String> generateNumericColumn(String name,
                                                                               Function<ObservableAircraftState,
                                                                                       ObservableValue<Double>> function,
-                                                                              Comparator<String> comparator, double unit,
+                                                                               double unit,
                                                                                DecimalFormat formatter)
     {
+        Comparator<String> numberComparator = (o1, o2) -> {
+        try {
+            if( o1.isEmpty() || o2.isEmpty()) return o1.compareTo(o2);
+            else {
+                double dif = formatter.parse(o1).doubleValue() - formatter.parse(o2).doubleValue();
+                return (dif < 0) ? -1 : (dif > 0) ? 1 : 0;
+            }
+        } catch (ParseException e) {throw new Error(e);}
+    };
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(name);
         column.getStyleClass().add("numeric");
         column.setPrefWidth(NUMERIC_COLUMN_WIDTH);
         column.setCellValueFactory(cellData -> function.apply(cellData.getValue()).map(k -> Units.convertTo(k, unit))
                 .map(formatter::format));
-        column.setComparator(comparator);
+        column.setComparator(numberComparator);
         return column;
     }
 
@@ -133,37 +141,29 @@ public final class AircraftTableController
 
     /**
      * Creates and adds the numeric columns to the table
-     * @see #generateNumericColumn(String, Function, Comparator, double, DecimalFormat)
+     * @see #generateNumericColumn(String, Function, double, DecimalFormat)
      * @see #table
      */
     private void createAndAddNumericColumns(){
         DecimalFormat formatterLongitudeLatitude = new DecimalFormat("#.####");
         DecimalFormat formatterAltitudeAndVelocity = new DecimalFormat("#");
-        Comparator<String> numberComparator = (o1, o2) -> {
-            try {
-                double dif = formatterLongitudeLatitude.parse(o1).doubleValue() - formatterLongitudeLatitude.parse(o2).doubleValue();
-                return (dif < 0) ? -1 :
-                        (dif > 0) ? 1 : 0;
-            } catch (ParseException e) {throw new Error(e);}
-        };
-        TableColumn<ObservableAircraftState, String> longitudeColumn = generateNumericColumn("Longitude",
-                cellData -> cellData.positionProperty().map(GeoPos::longitude), numberComparator, Units.Angle.DEGREE,
+        TableColumn<ObservableAircraftState, String> longitudeColumn = generateNumericColumn("Longitude (°)",
+                cellData -> cellData.positionProperty().map(GeoPos::longitude), Units.Angle.DEGREE,
                 formatterLongitudeLatitude);
-        TableColumn<ObservableAircraftState, String> latitudeColumn = generateNumericColumn("Latitude",
-                cellData -> cellData.positionProperty().map(GeoPos::latitude), numberComparator, Units.Angle.DEGREE,
+        TableColumn<ObservableAircraftState, String> latitudeColumn = generateNumericColumn("Latitude (°)",
+                cellData -> cellData.positionProperty().map(GeoPos::latitude), Units.Angle.DEGREE,
                 formatterLongitudeLatitude);
         TableColumn<ObservableAircraftState, String> altitudeColumn = generateNumericColumn("Altitude (m)",
-                cellData -> cellData.altitudeProperty().map(Number::doubleValue), numberComparator, Units.Length.METER,
+                cellData -> cellData.altitudeProperty().map(Number::doubleValue), Units.Length.METER,
                 formatterAltitudeAndVelocity);
         TableColumn<ObservableAircraftState, String> velocityColumn = generateNumericColumn("Vitesse (km/h)",
-                cellData -> cellData.velocityProperty().map(Number::doubleValue), numberComparator,
+                cellData -> cellData.velocityProperty().map(Number::doubleValue),
                 Units.Speed.KILOMETER_PER_HOUR, formatterAltitudeAndVelocity);
         table.getColumns().addAll(longitudeColumn, latitudeColumn, altitudeColumn, velocityColumn);
     }
 
     /**
-     * Returns the pane of the table
-     * @return
+     * @return the pane of the table
      */
     public TableView<ObservableAircraftState> pane()
     {
@@ -172,9 +172,10 @@ public final class AircraftTableController
 
     /**
      * Sets the action to do when a row is double-clicked
-     * @param consumer
+     * @param consumer the action to do
      */
-    public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer){
+    public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer)
+    {
         table.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY){
                 ObservableAircraftState state = table.getSelectionModel().getSelectedItem();
