@@ -1,11 +1,10 @@
-package ch.epfl.javions.gui;
+package ch.epfl.javions;
 
-import ch.epfl.javions.ByteString;
-import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
-import org.junit.jupiter.api.Test;
+import ch.epfl.javions.gui.AircraftStateManager;
+import ch.epfl.javions.gui.ObservableAircraftState;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -13,7 +12,7 @@ import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class Main {
+public class TestEtape7 {
     private static String findArrow(double trackOrHeading) {
         if ((0 <= trackOrHeading && trackOrHeading <= 22.5) || (337.5 <= trackOrHeading && trackOrHeading <= 360)) {
             return "↑";
@@ -42,8 +41,8 @@ public class Main {
         return "";
     }
     public static void main(String[] args){
-        String d = Main.class.getResource("/messages_20230318_0915.bin").getFile();
-        String f = Main.class.getResource("/aircraft.zip").getFile();
+        String d = TestEtape7.class.getResource("/messages_20230318_0915.bin").getFile();
+        String f = TestEtape7.class.getResource("/aircraft.zip").getFile();
         d = URLDecoder.decode(d, UTF_8);
         f = URLDecoder.decode(f, UTF_8);
         long startTime = System.nanoTime();
