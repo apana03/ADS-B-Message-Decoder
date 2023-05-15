@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -30,6 +31,7 @@ public class Main extends Application
     public static void main(String[] args) { launch(args); }
     @Override
     public void start(Stage primaryStage) throws Exception {
+        long startTime = System.nanoTime();
 
         URL u = getClass().getResource("/aircraft.zip");
         assert u != null;
@@ -46,7 +48,7 @@ public class Main extends Application
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
 
         Path tileCache = Path.of("tile-cache");
-        TileManager tm = new TileManager(tileCache, "tile.openstreetmap.org");
+        TileManager tm = new TileManager(tileCache, "https://tile.openstreetmap.org/");
 
         BaseMapController bmc = new BaseMapController(tm, mp);
 
@@ -61,16 +63,7 @@ public class Main extends Application
         primaryStage.show();
         BorderPane bp = new BorderPane(atc.pane());
         bp.setTop(slc.pane());
-        SplitPane sp = new SplitPane(stp, bp);
-        sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
-        sp.getItems().addAll(stp, bp);
-        BorderPane root = new BorderPane(sp);
-        Scene scene = new Scene(root, 800, 600);
-        primaryStage.setTitle("Javions");
-        primaryStage.setMinHeight(600);
-        primaryStage.setMinWidth(800);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
         Thread thread;
 
         if(getParameters().getRaw().isEmpty()) {
@@ -93,8 +86,9 @@ public class Main extends Application
             thread = new Thread(() -> {
                 try {
                     for(RawMessage rmsg : readMessages(getParameters().getRaw().get(0))){
-                        if(System.nanoTime() < rmsg.timeStampNs())
-                            sleep((rmsg.timeStampNs() - System.nanoTime()));
+                        long currentTime = System.nanoTime() - startTime;
+                        if(currentTime < rmsg.timeStampNs())
+                            sleep((rmsg.timeStampNs() - currentTime) / 1_000_000L);
                         Message msg = MessageParser.parse(rmsg);
                         if(msg != null)
                             messageQueue.add(msg);
@@ -107,8 +101,19 @@ public class Main extends Application
             });
         }
 
-        thread.start();
         thread.setDaemon(true);
+        thread.start();
+
+        SplitPane sp = new SplitPane(stp, bp);
+        sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        BorderPane root = new BorderPane(sp);
+        Scene scene = new Scene(root, 800, 600);
+        primaryStage.setTitle("Javions");
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(800);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
         new AnimationTimer() {
             private long lastPurge = 0L;
             @Override
@@ -132,7 +137,7 @@ public class Main extends Application
 
     }
     private static List<RawMessage> readMessages(String name) throws IOException {
-        List<RawMessage> messages = List.of();
+        List<RawMessage> messages = new ArrayList<>();
         try(DataInputStream dis = new DataInputStream(
                 new BufferedInputStream(
                     new FileInputStream(name)))) {

@@ -40,8 +40,8 @@ public final class BaseMapController {
 
     public void centerOn(GeoPos point) {
         int zoomLvl = mapParameters.getZoomValue();
-        double x = mapParameters.getMinXValue() - WebMercator.x(zoomLvl, point.longitude()) - (canvas.getWidth() / 2);
-        double y = mapParameters.getMinYValue() - WebMercator.y(zoomLvl, point.latitude()) - (canvas.getHeight() / 2);
+        double x = mapParameters.getMinXValue() - WebMercator.x(zoomLvl, point.longitude()) - ((0.5 * canvas.getWidth()) - mapParameters.getMinXValue());
+        double y = mapParameters.getMinYValue() - WebMercator.y(zoomLvl, point.latitude()) - ((0.5 * canvas.getWidth()) - mapParameters.getMinYValue());
         mapParameters.scroll(x, y);
     }
 
@@ -79,6 +79,7 @@ public final class BaseMapController {
     private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY) {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
+            assert newS != null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
         zoom.addListener((o, oV, nV) -> redrawOnNextPulse());
