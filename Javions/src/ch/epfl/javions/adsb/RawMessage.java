@@ -23,8 +23,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final int DOWNLINK_FORMAT_START = 3, DOWNLINK_FORMAT_LENGTH = 5;
     private static final int VALID_DOWNLINK_FORMAT = 17;
     private static final int DF_BYTE_INDEX = 0;
-    private static Crc24 crc24 = new Crc24(Crc24.GENERATOR);
-    private static HexFormat hf = HexFormat.of().withUpperCase();
+    private static final Crc24 CRC24 = new Crc24(Crc24.GENERATOR);
+    private static final HexFormat HF = HexFormat.of().withUpperCase();
 
     /**
      * the compact constructor of the class
@@ -40,12 +40,12 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     /**
      * Generates the message
      *
-     * @param timeStampNs
-     * @param bytes
+     * @param timeStampNs the timestamp
+     * @param bytes bytes
      * @return the generated Raw Message
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
-        if (crc24.crc(bytes) != 0) {
+        if (CRC24.crc(bytes) != 0) {
             return null;
         } else {
             return new RawMessage(timeStampNs, new ByteString(bytes));
@@ -55,7 +55,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     /**
      * Calculates the size of the message
      *
-     * @param byte0
+     * @param byte0 the first byte
      * @return size of the message
      */
     public static int size(byte byte0) {
@@ -66,7 +66,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     /**
      * Calculates the type code
      *
-     * @param payload
+     * @param payload the payload
      * @return the extracted type code
      */
     public static int typeCode(long payload) {
@@ -86,7 +86,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public IcaoAddress icaoAddress() {
         long icao = bytes.bytesInRange(ICAO_START, ICAO_END);
-        return new IcaoAddress(hf.toHexDigits(icao, 6));
+        return new IcaoAddress(HF.toHexDigits(icao, 6));
     }
 
     /**
