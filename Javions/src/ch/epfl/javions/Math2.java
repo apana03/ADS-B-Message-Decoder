@@ -21,13 +21,8 @@ public final class Math2 {
      * @throws IllegalArgumentException
      */
     public static int clamp(int min, int v, int max) {
-        if (min > max)
-            throw new IllegalArgumentException();
-        if (v > max)
-            return max;
-        else if (v < min)
-            return min;
-        else return v;
+        Preconditions.checkArgument(max > min);
+        return Math.max(min, Math.min(max, v));
     }
 
     /**
@@ -36,6 +31,6 @@ public final class Math2 {
      * @param x the argument
      */
     public static double asinh(double x) {
-        return Math.log(x + Math.sqrt(1 + (x * x)));
+        return Math.log(x + Math.hypot(1, x));
     }
 }
