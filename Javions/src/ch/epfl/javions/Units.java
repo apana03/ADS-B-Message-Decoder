@@ -11,10 +11,6 @@ public final class Units {
     }
 
     /**
-     * SI units
-     */
-
-    /**
      * The conversion factor for centi- units (0.01).
      * Used to convert between centimeters and meters.
      */
@@ -35,7 +31,7 @@ public final class Units {
     /**
      * Angle related units
      */
-    public static class Angle {
+    public static final class Angle {
         private Angle() {
         }
 
@@ -66,7 +62,7 @@ public final class Units {
     /**
      * Time related units
      */
-    public static class Time {
+    public static final class Time {
         private Time() {
         }
 
@@ -98,7 +94,7 @@ public final class Units {
     /**
      * Length related units
      */
-    public static class Length {
+    public static final class Length {
         private Length() {
         }
 
@@ -141,7 +137,7 @@ public final class Units {
     /**
      * Speed related units
      */
-    public static class Speed {
+    public static final class Speed {
         private Speed() {
         }
 
@@ -172,8 +168,7 @@ public final class Units {
      * @param toUnit   end unit
      */
     public static double convert(double value, double fromUnit, double toUnit) {
-        double convertedValue = value * (fromUnit / toUnit);
-        return convertedValue;
+        return value * (fromUnit / toUnit);
     }
 
     /**
@@ -183,8 +178,7 @@ public final class Units {
      * @param fromUnit departure unit
      */
     public static double convertFrom(double value, double fromUnit) {
-        double convertedValue = value * fromUnit;
-        return convertedValue;
+        return value * fromUnit;
     }
 
     /**
@@ -194,7 +188,6 @@ public final class Units {
      * @param toUnit end unit
      */
     public static double convertTo(double value, double toUnit) {
-        double convertedValue = value * (1.00 / toUnit);
-        return convertedValue;
+        return value * (1.00 / toUnit);
     }
 }
