@@ -34,11 +34,11 @@ public final class Bits {
     }
 
     /**
-     * @param index
-     * @param value
+     * @param index the index
+     * @param value the given value
      * @throws IndexOutOfBoundsException if the index is
      *                                   not between 0 (inclusive) and 64 (exclusive).
-     * @returns true iff the given index value bit is 1
+     * @return true iff the given index value bit is 1
      */
     public static boolean testBit(long value, int index) {
         Objects.checkIndex(index, Long.SIZE);
