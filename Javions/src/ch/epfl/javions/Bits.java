@@ -1,5 +1,7 @@
 package ch.epfl.javions;
 
+import java.util.Objects;
+
 /**
  * contains methods to extract a subset of the 64 bits
  * from a value of type long
@@ -8,7 +10,7 @@ package ch.epfl.javions;
  * @author David Fota 355816
  */
 
-public class Bits {
+public final class Bits {
     private Bits() {}
 
     /**
@@ -26,10 +28,8 @@ public class Bits {
      *                                   between 0 (inclusive) and 64 (exclusive)
      */
     public static int extractUInt(long value, int start, int size) {
-        if (size <= 0 || size >= 32)
-            throw new IllegalArgumentException();
-        if (start < 0 || start >= 64 || (start + size - 1) >= 64)
-            throw new IndexOutOfBoundsException();
+        Preconditions.checkArgument(size > 0 && size < Integer.SIZE);
+        Objects.checkFromIndexSize(start, size, Long.SIZE);
         return (int) (((1 << size) - 1) & (value >>> start));
     }
 
@@ -41,10 +41,8 @@ public class Bits {
      * @returns true iff the given index value bit is 1
      */
     public static boolean testBit(long value, int index) {
-        if (index < 0 || index >= 64)
-            throw new IndexOutOfBoundsException();
-        if ((value & (1L << index)) != 0)
-            return true;
-        return false;
+        Objects.checkIndex(index, Long.SIZE);
+        return (value & (1L << index)) != 0;
+
     }
 }
