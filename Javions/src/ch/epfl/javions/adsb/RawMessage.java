@@ -45,11 +45,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return the generated Raw Message
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
-        if (CRC24.crc(bytes) != 0) {
-            return null;
-        } else {
-            return new RawMessage(timeStampNs, new ByteString(bytes));
-        }
+        return (CRC24.crc(bytes) != 0) ? null : new RawMessage(timeStampNs, new ByteString(bytes));
     }
 
     /**
