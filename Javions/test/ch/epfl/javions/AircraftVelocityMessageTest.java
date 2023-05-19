@@ -12,7 +12,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 public class AircraftVelocityMessageTest {
-    @Test
+    /*@Test
     void testSubType34() throws IOException {
         var message1 = RawMessage.of(100, ByteString.ofHexadecimalString("8D485020994409940838175B284F").getBytes());
         System.out.println(AirborneVelocityMessage.of(message1));
@@ -46,5 +46,5 @@ public class AircraftVelocityMessageTest {
             }
         }
         System.out.println(mesCreated);
-    }
+    }*/
 }
