@@ -18,7 +18,7 @@ import java.util.Arrays;
 public final class AdsbDemodulator {
     PowerWindow window;
     private int sumPCurrent, sumPPrevious, sumPAfter, sumV;
-    byte[] byteArray = new byte[14];
+    byte[] byteArray = new byte[RawMessage.LENGTH];
     private final int NANO_PER_POS = 100;
     private final int WINDOW_SIZE = 1200;
     private final int PREAMBLE_SIZE = 80;

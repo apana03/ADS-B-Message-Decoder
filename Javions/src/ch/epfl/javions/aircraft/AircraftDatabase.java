@@ -12,11 +12,7 @@ import java.util.zip.ZipFile;
  * @author Andrei Pana 361249
  */
 public class AircraftDatabase {
-    private String fileName, name;
-    private String[] data;
-    private AircraftData finalData;
-    private String d;
-    private char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private final String fileName;
 
     /**
      * The constructor of the class
@@ -38,29 +34,27 @@ public class AircraftDatabase {
      * extracted from the database
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-
         String crc = address.string();
         String fileAddress = crc.substring(crc.length() - 2);
-
-        try (ZipFile fichierZip = new ZipFile(fileName);
-             InputStream stream = fichierZip.getInputStream(
-                     fichierZip.getEntry(fileAddress + ".csv"));
-             Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-
-             BufferedReader bufferedReader = new BufferedReader(reader)) {
-            String[] columns;
+        try (ZipFile zf = new ZipFile(fileName);
+            InputStream stream = zf.getInputStream(zf.getEntry(fileAddress + ".csv"));
+            Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(reader)){
             String line;
-
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.startsWith(address.string())) {
-                    columns = line.split(",", -1);
-
-                    return new AircraftData(new AircraftRegistration(columns[1]),
-                            new AircraftTypeDesignator(columns[2]), columns[3],
+                    String[] columns = line.split(",", -1);
+                    return new AircraftData(
+                            new AircraftRegistration(columns[1]),
+                            new AircraftTypeDesignator(columns[2]),
+                            columns[3],
                             new AircraftDescription(columns[4]),
-                            WakeTurbulenceCategory.of(columns[5]));
+                            WakeTurbulenceCategory.of(columns[5])
+                    );
                 }
-                if (line.compareTo(address.toString()) > 0) return null;
+                if (line.compareTo(address.toString()) > 0) {
+                    return null;
+                }
             }
         }
         return null;

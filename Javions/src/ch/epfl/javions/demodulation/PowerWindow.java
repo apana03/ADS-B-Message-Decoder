@@ -12,10 +12,11 @@ import java.io.InputStream;
  * @author David Fota 355816
  */
 public final class PowerWindow {
-
+    /**the maximum size of the window*/
     private static final int WINDOW_MAX_SIZE = 1 << 16;
+    /** the size of the window*/
+    private final int windowSize;
 
-    private int windowSize;
     private long position = 0;
     private long samplesDecoded = 0;
     private int[] batch1;

@@ -40,10 +40,10 @@ public final class Crc24 {
         int crc = 0;
         for (byte b : bytes) {
             int a = b & BYTE_MASK;
-            crc = ((crc << 8) | a) ^ table[getMostSignificantByte(crc)];
+            crc = ((crc << Byte.SIZE) | a) ^ table[getMostSignificantByte(crc)];
         }
         for (int i = 0; i < 3; i++) {
-            crc = ((crc << 8)) ^ table[getMostSignificantByte(crc)];
+            crc = ((crc << Byte.SIZE)) ^ table[getMostSignificantByte(crc)];
         }
         return crc_bitwise(generator, bytes);
     }
@@ -58,7 +58,7 @@ public final class Crc24 {
     private static int crc_bitwise(int generator, byte[] data) {
         int crc = 0;
         for (byte b : data) {
-            crc ^= (b & BYTE_MASK) << 16;
+            crc ^= (b & BYTE_MASK) << (2 * Byte.SIZE);
             for (int i = 0; i < Long.BYTES; i++) {
                 crc <<= 1;
                 if ((crc & SEVENTH_BIT_MASK) != 0) {
@@ -78,6 +78,6 @@ public final class Crc24 {
     }
 
     private static int getMostSignificantByte(int value) {
-        return ((value >> 16) & BYTE_MASK);
+        return ((value >> (2*Byte.SIZE)) & BYTE_MASK);
     }
 }

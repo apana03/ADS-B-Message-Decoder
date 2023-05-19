@@ -98,8 +98,7 @@ public final class AircraftTableController
         try {
             if( o1.isEmpty() || o2.isEmpty()) return o1.compareTo(o2);
             else {
-                double dif = formatter.parse(o1).doubleValue() - formatter.parse(o2).doubleValue();
-                return (dif < 0) ? -1 : (dif > 0) ? 1 : 0;
+                return Double.compare(formatter.parse(o1).doubleValue(),formatter.parse(o2).doubleValue());
             }
         } catch (ParseException e) {throw new Error(e);}
     };

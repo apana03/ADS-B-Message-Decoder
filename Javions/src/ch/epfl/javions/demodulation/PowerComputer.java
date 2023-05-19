@@ -12,10 +12,10 @@ import java.io.InputStream;
  * @author Andrei Pana 361249
  */
 public final class PowerComputer {
-    private SamplesDecoder decoder;
+    private final SamplesDecoder decoder;
     private short[] signedBatch;
     private int[] current8bytes = new int[8];
-    private int batchSize;
+    private final int batchSize;
 
     /**
      * The constructor of the class
@@ -27,7 +27,7 @@ public final class PowerComputer {
      *                                  is not multiple of 8 or if it is negative
      */
     public PowerComputer(InputStream stream, int batchSize) {
-        Preconditions.checkArgument(batchSize % 8 == 0 && batchSize > 0);
+        Preconditions.checkArgument(batchSize % Byte.SIZE == 0 && batchSize > 0);
         SamplesDecoder decoder = new SamplesDecoder(stream, batchSize * 2);
         this.decoder = decoder;
         this.batchSize = batchSize;

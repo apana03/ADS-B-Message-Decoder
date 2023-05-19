@@ -28,6 +28,13 @@ import static java.lang.Thread.sleep;
 
 public class Main extends Application
 {
+    private static final long PURGE_INTERVAL = 1_000_000_000L;
+    private static final int ZOOM_LEVEL = 8;
+    private static final int MIN_X_VALUE = 33530;
+    private static final int MIN_Y_VALUE = 23070;
+    private static final long NANO_TO_MILI = 1_000_000L;
+    private static final int MIN_HEIGHT = 600;
+    private static final int MIN_WIDTH = 800;
     public static void main(String[] args) { launch(args); }
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -42,7 +49,7 @@ public class Main extends Application
 
         AircraftStateManager asm = new AircraftStateManager(database);
 
-        MapParameters mp = new MapParameters(8, 33530, 23070);
+        MapParameters mp = new MapParameters(ZOOM_LEVEL, MIN_X_VALUE, MIN_Y_VALUE);
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
 
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
@@ -59,8 +66,6 @@ public class Main extends Application
         slc.getAircraftCountProperty().bind(Bindings.size(asm.states()));
 
         StackPane stp = new StackPane(bmc.pane(), ac.pane());
-        primaryStage.setScene(new Scene(stp));
-        primaryStage.show();
         BorderPane bp = new BorderPane(atc.pane());
         bp.setTop(slc.pane());
 
@@ -68,7 +73,7 @@ public class Main extends Application
 
         if(getParameters().getRaw().isEmpty()) {
             thread = new Thread(() -> {
-                getParameters().getRaw().get(0);
+                getParameters().getRaw();
                 try{
                     AdsbDemodulator adsb = new AdsbDemodulator(System.in);
                     RawMessage rmsg = adsb.nextMessage();
@@ -88,7 +93,7 @@ public class Main extends Application
                     for(RawMessage rmsg : readMessages(getParameters().getRaw().get(0))){
                         long currentTime = System.nanoTime() - startTime;
                         if(currentTime < rmsg.timeStampNs())
-                            sleep((rmsg.timeStampNs() - currentTime) / 1_000_000L);
+                            sleep((rmsg.timeStampNs() - currentTime) / NANO_TO_MILI);
                         Message msg = MessageParser.parse(rmsg);
                         if(msg != null)
                             messageQueue.add(msg);
@@ -107,10 +112,10 @@ public class Main extends Application
         SplitPane sp = new SplitPane(stp, bp);
         sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
         BorderPane root = new BorderPane(sp);
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root);
         primaryStage.setTitle("Javions");
-        primaryStage.setMinHeight(600);
-        primaryStage.setMinWidth(800);
+        primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -125,7 +130,7 @@ public class Main extends Application
                         asm.updateWithMessage(msg);
                         slc.getMessageCountProperty().set(slc.getMessageCountProperty().get() + 1);
                     }
-                    if(now - lastPurge > 1_000_000_000L){
+                    if(now - lastPurge > PURGE_INTERVAL){
                         lastPurge = now;
                         asm.purge();
                     }

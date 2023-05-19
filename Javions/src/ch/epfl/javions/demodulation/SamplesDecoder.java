@@ -4,8 +4,6 @@ import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Preconditions;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.HexFormat;
 import java.util.Objects;
 
 /**
@@ -17,8 +15,8 @@ import java.util.Objects;
  * @author Andrei Pana 361249
  */
 public final class SamplesDecoder {
-    private InputStream stream;
-    private int batchSize;
+    private final InputStream stream;
+    private final int batchSize;
     private byte[] octets;
     private static final int CORRECTION = 2048;
 

@@ -79,7 +79,6 @@ public final class BaseMapController {
     private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY) {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
-            assert newS != null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
         zoom.addListener((o, oV, nV) -> redrawOnNextPulse());
