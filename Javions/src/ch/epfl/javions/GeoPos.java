@@ -9,10 +9,9 @@ package ch.epfl.javions;
 
 public record GeoPos(int longitudeT32, int latitudeT32) {
 
-    private static final int MIN_VALID_LATITUDE = -1073741824 , MAX_VALID_LATITUDE = 1073741824;
+    private static final int MIN_VALID_LATITUDE = - (1<<30) , MAX_VALID_LATITUDE = 1<<30;
     public GeoPos {
-        if (!isValidLatitudeT32(latitudeT32))
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
     }
 
     /**
@@ -22,10 +21,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @param latitudeT32 the given latitude
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
-        if (latitudeT32 < MIN_VALID_LATITUDE || latitudeT32 > MAX_VALID_LATITUDE) {
-            return false;
-        }
-        return true;
+        return !(latitudeT32 < MIN_VALID_LATITUDE || latitudeT32 > MAX_VALID_LATITUDE);
     }
 
     /**

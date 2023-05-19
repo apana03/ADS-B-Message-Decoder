@@ -8,7 +8,7 @@ package ch.epfl.javions;
  * @author David Fota 355816
  */
 
-public class WebMercator {
+public final class WebMercator {
     private WebMercator() {
     }
 
