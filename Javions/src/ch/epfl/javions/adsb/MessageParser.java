@@ -15,6 +15,8 @@ public class MessageParser {
     private final static int SECOND_AIRBORNE_POSITION_TYPECODE_START = 20, SECOND_AIRBORNE_POSITION_TYPECODE_END = 22;
     private final static int AIRBORNE_VELOCITY_TYPECODE = 19;
 
+    private MessageParser(){}
+
     /**
      * Transforms a raw message into the corresponding message
      *
