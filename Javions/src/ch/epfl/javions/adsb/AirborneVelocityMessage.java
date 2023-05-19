@@ -5,6 +5,8 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.Objects;
+
 /**
  * Represents a message transmitting the in flight speed of an airplane
  *
@@ -35,9 +37,7 @@ public record AirborneVelocityMessage(long timeStampNs,
      */
 
     public AirborneVelocityMessage {
-        if (icaoAddress == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument(timeStampNs >= 0);
         Preconditions.checkArgument(speed >= 0);
         Preconditions.checkArgument(trackOrHeading >= 0);
@@ -77,6 +77,7 @@ public record AirborneVelocityMessage(long timeStampNs,
 
                 vns = (dns == 0) ? (--vns) : (--vns) * (-1);
                 vew = (dew == 0) ? (--vew) : (--vew) * (-1);
+
 
                 speed = vectorsToSpeed(st, vns, vew);
                 trackOrHeading = getTrack(vns, vew);
