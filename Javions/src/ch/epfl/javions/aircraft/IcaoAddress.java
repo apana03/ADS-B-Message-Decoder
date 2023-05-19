@@ -1,5 +1,7 @@
 package ch.epfl.javions.aircraft;
 
+import ch.epfl.javions.Preconditions;
+
 import java.util.regex.Pattern;
 
 /**
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
 
 public record IcaoAddress(String string) {
 
-    static Pattern er = Pattern.compile("[0-9A-F]{6}");
+    private static final  Pattern ER = Pattern.compile("[0-9A-F]{6}");
 
     /**
      * the compact constructor of the class
@@ -19,9 +21,7 @@ public record IcaoAddress(String string) {
      * @throws IllegalArgumentException if the string does not respect the regular expression
      */
     public IcaoAddress {
-        if (!er.matcher(string).matches()) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkArgument(ER.matcher(string).matches());
     }
 
 }
