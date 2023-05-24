@@ -40,8 +40,8 @@ public final class BaseMapController {
 
     public void centerOn(GeoPos point) {
         int zoomLvl = mapParameters.getZoomValue();
-        double x = mapParameters.getMinXValue() - WebMercator.x(zoomLvl, point.longitude()) - ((0.5 * canvas.getWidth()) - mapParameters.getMinXValue());
-        double y = mapParameters.getMinYValue() - WebMercator.y(zoomLvl, point.latitude()) - ((0.5 * canvas.getWidth()) - mapParameters.getMinYValue());
+        double x = WebMercator.x(zoomLvl, point.longitude()) - mapParameters.getMinXValue() - (canvas.getWidth() / 2);
+        double y = WebMercator.y(zoomLvl, point.latitude()) - mapParameters.getMinYValue() - (canvas.getHeight() / 2);
         mapParameters.scroll(x, y);
     }
 

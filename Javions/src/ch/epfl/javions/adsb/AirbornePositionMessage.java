@@ -5,6 +5,8 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.Objects;
+
 /**
  * represents an ADS-B in-flight positioning message
  *
@@ -35,9 +37,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      *                                  or parity is different from 0 or 1, or x or y are not between 0 (included) and 1 (excluded)
      */
     public AirbornePositionMessage {
-        if (icaoAddress == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument(timeStampNs >= 0);
         Preconditions.checkArgument(parity == EVEN || parity == ODD);
         Preconditions.checkArgument(x >= 0 && x < 1);
@@ -60,7 +60,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         double y = Math.scalb(lat_cpr, -17);
         double convertedAltitude;
 
-        if (((altitude >> 4) & 1) == 1) {
+        if (Bits.testBit(altitude, 4)) {
             convertedAltitude = convertAltitude(altitude);
         } else {
             int untangledAlt = untangleAltitude(altitude);
@@ -68,8 +68,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             int grayLeastSigBits = untangledAlt & GRAY_LEAST_SIG_BITS_MASK;
             int grayMostSigBits = (untangledAlt & GRAY_MOST_SIG_BITS_MASK) >> 3;
 
-            int mostSig = decodeGrayMostSigBits(grayMostSigBits);
-            int leastSig = decodeGrayLeastSigBits(grayLeastSigBits);
+            int mostSig = decodeGrayMostOrLeastSigBits(grayMostSigBits);
+            int leastSig = decodeGrayMostOrLeastSigBits(grayLeastSigBits);
 
             if (leastSig == 0 || leastSig == 5 || leastSig == 6) return null;
 
@@ -107,16 +107,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         return untangledAlt;
     }
 
-    private static int decodeGrayMostSigBits(int grayMostSigBits) {
-        int mostSig = 0;
-        for (int i = 0; i < 9; i++) mostSig = mostSig ^ (grayMostSigBits >> i);
-        return mostSig;
-    }
-
-    private static int decodeGrayLeastSigBits(int grayLeastSigBits) {
-        int leastSig = 0;
-        for (int i = 0; i < 3; i++) leastSig = leastSig ^ (grayLeastSigBits >> i);
-        return leastSig;
+    private static int decodeGrayMostOrLeastSigBits(int grayMostSigBits) {
+        int b = 0;
+        for (int i = 0; i < 9; i++) b = b ^ (grayMostSigBits >> i);
+        return b;
     }
 
     private static double computeAltitude(int leastSig, int mostSig) {

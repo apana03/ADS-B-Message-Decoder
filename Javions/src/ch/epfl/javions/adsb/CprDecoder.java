@@ -12,10 +12,13 @@ import ch.epfl.javions.Units;
  */
 
 
-public class CprDecoder {
-
+public final class CprDecoder {
+    private static final double DELTA0 = 1d / 60;
+    private static final double DELTA1 = 1d / 59;
+    private static final int LATITUDE_ZONES_0 = 60;
+    private static final int LATITUDE_ZONES_1 = 59;
     /**
-     * which returns the geographical position corresponding to the given normalized local positions —
+     * Decodes the position of an aircraft from two CPR messages.
      *
      * @param x0 and y0 being the local longitude and latitude of an even message,
      * @param x1 and y1 those of an odd message — knowing that the most recent positions are those of
@@ -24,11 +27,6 @@ public class CprDecoder {
      * or if the position cannot be determined due to a change in latitude band or the decoded positions
      * @throws IllegalArgumentException if mostRecent is not 0 or 1.
      */
-    private static final double DELTA0 = 1d / 60;
-    private static final double DELTA1 = 1d / 59;
-    private static final int LATITUDE_ZONES_0 = 60;
-    private static final int LATITUDE_ZONES_1 = 59;
-
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 0 || mostRecent == 1);
         int zLat0, zLat1, zLong0, zLong1;
@@ -70,35 +68,69 @@ public class CprDecoder {
             }
         }
     }
+
+    /**
+     * Computes the latitude or longitude
+     * @param zLat latitude zone
+     * @param y latitude
+     * @param delta delta
+     * @return the latitude
+     */
     private static double computeLatOrLong(int zLat, double y, double delta){
         double lat = delta * (zLat + y);
         lat = checkLongOrLat(lat);
         return lat;
     }
+
+    /**
+     * Checks if the latitude is valid
+     * @param lat latitude
+     * @return true if the latitude is valid
+     */
     private static boolean isLatValid(double lat) {
         return GeoPos.isValidLatitudeT32((int) Math.rint(Units.convert(lat, Units.Angle.TURN, Units.Angle.T32)));
     }
 
+    /**
+     * Checks if the longitude or latitude is valid
+     * @param a computed in decodePosition
+     * @return the value of a after modification
+     */
     private static double checkLongOrLat(double a) {
         if (a >= 0.5)
             a--;
         return a;
     }
 
+    /**
+     * Creates a GeoPos
+     * @param a x coordinate
+     * @param b y coordinate
+     * @return the GeoPos
+     */
     private static GeoPos createGeoPos(double a, double b) {
         return new GeoPos((int) Math.rint(Units.convert(a, Units.Angle.TURN, Units.Angle.T32)),
                 (int) Math.rint(Units.convert(b, Units.Angle.TURN, Units.Angle.T32)));
     }
 
+    /**
+     * Computes the value of a
+     * @param lat0 latitude
+     * @return the value of a
+     */
     private static double computeA(double lat0) {
         return Math.acos(1 - ((1 - Math.cos(2 * Math.PI * DELTA0)) /
                 (Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)) *
                         Math.cos(Units.convertFrom(lat0, Units.Angle.TURN)))));
     }
 
+    /**
+     * Checks if the band changed
+     * @param a1 value of a computed for first coordinate
+     * @param a2 value of a computed for second coordinate
+     * @return true if the band changed
+     */
     private static boolean checkIfBandChanged(double a1, double a2) {
-        if (Math.floor((2 * Math.PI) / a1) != Math.floor((2 * Math.PI) / a2))
-            return true;
-        else return false;
+        return Math.floor((2 * Math.PI) / a1) != Math.floor((2 * Math.PI) / a2);
     }
 }

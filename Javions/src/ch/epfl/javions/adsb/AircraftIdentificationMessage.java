@@ -49,17 +49,38 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
                 category, new CallSign(callString.toString().trim()));
     }
 
+    /**
+     * method that returns the category of the aircraft
+     * @return
+     */
     @Override
     public long timeStampNs() {
         return timeStampNs;
     }
 
+    /**
+     * method that returns the category of the aircraft
+     * @return
+     */
     @Override
     public IcaoAddress icaoAddress() {
         return icaoAdress;
     }
 
+    /**
+     * returns true if the value corresponds to a letter according to the rules given
+     * in the project statement
+     * @param a
+     * @return
+     */
     private static boolean isLetter(int a){return a >= LETTER_START && a <= LETTER_END;}
+
+    /**
+     * returns true if the value corresponds to a number or a space according to the rules given
+     * in the project statement
+     * @param a
+     * @return
+     */
     private static boolean isNumberOrSpace(int a){
         return (ASCII_NUMBER_START <= a && a <= ASCII_NUMBER_END) || a == ASCII_SPACE_INDEX;
     }
