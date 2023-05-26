@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -40,8 +41,8 @@ public final class BaseMapController {
 
     public void centerOn(GeoPos point) {
         int zoomLvl = mapParameters.getZoomValue();
-        double x = WebMercator.x(zoomLvl, point.longitude()) - mapParameters.getMinXValue() - (canvas.getWidth() / 2);
-        double y = WebMercator.y(zoomLvl, point.latitude()) - mapParameters.getMinYValue() - (canvas.getHeight() / 2);
+        double x = WebMercator.x(zoomLvl, point.longitude()) - mapParameters.getMinXValue() - (canvas.getWidth() * 0.5);
+        double y = WebMercator.y(zoomLvl, point.latitude()) - mapParameters.getMinYValue() - (canvas.getHeight() * 0.5);
         mapParameters.scroll(x, y);
     }
 
@@ -57,20 +58,27 @@ public final class BaseMapController {
     }
 
     private void drawMap(Pane pane) {
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+
         double minX = mapParameters.getMinXValue();
         double minY = mapParameters.getMinYValue();
-        int tileX = (int) minX / PIXELS_IN_TILE;
-        int tileY = (int) minY / PIXELS_IN_TILE;
+        int firstTileX = (int) minX / PIXELS_IN_TILE;
+        int firstTileY = (int) minY / PIXELS_IN_TILE;
 
-        for (int i = tileX; i <= tileX + Math.ceil(pane.getWidth() / PIXELS_IN_TILE); i++) {
-            for (int j = tileY; j <= tileY + Math.ceil(pane.getHeight() / PIXELS_IN_TILE); j++) {
-                try {
-                    canvas.getGraphicsContext2D().drawImage(
-                            tileManager.imageForTileAt(new TileManager.TileId(mapParameters.getZoomValue(), i, j))
-                            , i * PIXELS_IN_TILE - minX
-                            , j * PIXELS_IN_TILE - minY);
-                } catch (IOException e) {
 
+        //de comentat math ceil
+        for (int i = firstTileX; i <= firstTileX + Math.ceil(pane.getWidth() / PIXELS_IN_TILE); i++) {
+            for (int j = firstTileY; j <= firstTileY + Math.ceil(pane.getHeight() / PIXELS_IN_TILE); j++) {
+                TileManager.TileId tile = new TileManager.TileId(mapParameters.getZoomValue(), i, j);
+                if(tile.isValid()){
+                    try {
+                        graphicsContext.drawImage(
+                                tileManager.imageForTileAt(tile)
+                                , i * PIXELS_IN_TILE - minX
+                                , j * PIXELS_IN_TILE - minY);
+                    } catch (IOException e) {
+                        System.out.println("fail " + i +" "+ j);
+                    }
                 }
             }
         }
@@ -90,6 +98,7 @@ public final class BaseMapController {
 
     private void addAllMouseActions() {
         dragInitial = new Point2D(0,0);
+
         pane.setOnMousePressed(e -> dragInitial = new Point2D(e.getX(),e.getY()));
 
 
@@ -117,6 +126,5 @@ public final class BaseMapController {
             mapParameters.changeZoomLevel(zoomDelta);
             mapParameters.scroll(-xTranslation, -yTranslation);
         });
-
     }
 }

@@ -28,9 +28,6 @@ public final class ColorRamp {
             Color.valueOf("0xfccf25ff"), Color.valueOf("0xf9dd24ff"),
             Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff")));
 
-    public static Color colorFromPlasma(double altitude){
-        return PLASMA.at(Math.pow(altitude/12000, 1d/3d));
-    }
     private final List<Color> colors;
     private static final int MIN_COLORS_NB = 2;
 
