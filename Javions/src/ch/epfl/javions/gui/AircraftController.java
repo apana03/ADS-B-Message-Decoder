@@ -34,10 +34,13 @@ import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 
 public final class AircraftController {
+    private final static int LABEL_BORDER_OFFSET = 4;
+    private final static int MIN_ZOOM_FOR_VISIBLE_TAGS = 11;
     private final Pane pane;
     private final MapParameters mapParameters;
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> aircraftStateObjectProperty;
+
 
 
     public AircraftController(MapParameters mapParameters,
@@ -130,10 +133,10 @@ public final class AircraftController {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
         rectangle.widthProperty().bind(
-                text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
+                text.layoutBoundsProperty().map(b -> b.getWidth() + LABEL_BORDER_OFFSET));
 
         rectangle.heightProperty().bind(
-                text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
+                text.layoutBoundsProperty().map(b -> b.getHeight() + LABEL_BORDER_OFFSET));
 
         text.textProperty().bind(
                 Bindings.format("%s \n %s km/h\u2002%s m",
@@ -148,7 +151,8 @@ public final class AircraftController {
         labelGroup.getStyleClass().add("label");
         labelGroup.visibleProperty().bind(
                 aircraftStateObjectProperty.isEqualTo(state)
-                        .or(mapParameters.getZoom().greaterThanOrEqualTo(11))
+                        .or(mapParameters.getZoom().greaterThanOrEqualTo(MIN_ZOOM_FOR_VISIBLE_TAGS))
+
         );
 
         return labelGroup;
