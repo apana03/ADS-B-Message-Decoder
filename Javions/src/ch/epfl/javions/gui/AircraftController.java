@@ -62,6 +62,7 @@ public final class AircraftController {
 
         this.mapParameters = mapParameters;
         this.aircraftStateObjectProperty = aircraftStateObjectProperty;
+
         pane = new Pane();
         pane.getStylesheets().add("/aircraft.css");
         pane.setPickOnBounds(false);
@@ -96,7 +97,7 @@ public final class AircraftController {
         Group aircraftGroup = new Group();
         aircraftGroup.setId(state.getAddress().string());
         aircraftGroup.viewOrderProperty().bind(state.altitudeProperty().negate());
-        aircraftGroup.getChildren().addAll(trajectoryGroup(state), createIconAndTagGroup(state));
+        aircraftGroup.getChildren().addAll(trajectoryGroup(state), iconAndTagGroup(state));
         pane.getChildren().add(aircraftGroup);
     }
 
@@ -107,7 +108,7 @@ public final class AircraftController {
      * @param state the observable aircraft state for which to create the icon and label group
      * @return the group containing the SVG icon and label for the aircraft
      */
-    private Group createIconAndTagGroup(ObservableAircraftState state) {
+    private Group iconAndTagGroup(ObservableAircraftState state) {
         Group iconAndTag = new Group(getSVG(state), labelGroup(state));
 
 
@@ -177,10 +178,12 @@ public final class AircraftController {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + LABEL_BORDER_OFFSET));
-
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + LABEL_BORDER_OFFSET));
 
-        text.textProperty().bind(Bindings.format("%s \n %s km/h\u2002%s m", aircraftIdentification(state), velocity(state), altitude(state)));
+        text.textProperty().bind(Bindings.format("%s \n %s km/h\u2002%s m",
+                aircraftIdentification(state),
+                velocity(state),
+                altitude(state)));
 
 
         Group labelGroup = new Group(rectangle, text);

@@ -22,7 +22,6 @@ public final class BaseMapController {
     private boolean redrawNeeded;
     private Point2D dragInitial;
 
-
     private static final int PIXELS_IN_TILE = 256;
 
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
@@ -69,9 +68,9 @@ public final class BaseMapController {
         int firstTileY = (int) minY / PIXELS_IN_TILE;
 
 
-        //de comentat math ceil
-        for (int i = firstTileX; i <= firstTileX + Math.ceil(pane.getWidth() / PIXELS_IN_TILE); i++) {
-            for (int j = firstTileY; j <= firstTileY + Math.ceil(pane.getHeight() / PIXELS_IN_TILE); j++) {
+        // added 1 for smoother drag transsition
+        for (int i = firstTileX; i <= firstTileX + (pane.getWidth() / PIXELS_IN_TILE) + 1; i++) {
+            for (int j = firstTileY; j <= firstTileY + (pane.getHeight() / PIXELS_IN_TILE) + 1; j++) {
                 TileManager.TileId tile = new TileManager.TileId(mapParameters.getZoomValue(), i, j);
                 if(tile.isValid()){
                     try {
@@ -79,9 +78,7 @@ public final class BaseMapController {
                                 tileManager.imageForTileAt(tile)
                                 , i * PIXELS_IN_TILE - minX
                                 , j * PIXELS_IN_TILE - minY);
-                    } catch (IOException e) {
-                        System.out.println("fail " + i +" "+ j);
-                    }
+                    } catch (IOException ignored) {}
                 }
             }
         }
