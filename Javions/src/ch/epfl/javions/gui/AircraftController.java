@@ -257,7 +257,7 @@ public final class AircraftController {
      *
      * @param pos1 the first position
      * @param pos2 the second position
-     * @return the line connecting the two positions
+     * @return the line connecting the positions
      */
 
     private Line createLine(ObservableAircraftState.AirbornePos pos1, ObservableAircraftState.AirbornePos pos2) {
