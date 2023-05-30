@@ -35,42 +35,34 @@ public class Main extends Application
     private static final long NANO_TO_MILI = 1_000_000L;
     private static final int MIN_HEIGHT = 600;
     private static final int MIN_WIDTH = 800;
+    private static final String SERVER_URL = "tile.openstreetmap.org";
+    private static final String TILE_CACHE = "tile-cache";
+    private static final String AIRCRAFT_FOLDER_ZIPPED = "/aircraft.zip";
+    private static final String TITLE = "Javions";
     public static void main(String[] args) { launch(args); }
     @Override
     public void start(Stage primaryStage) throws Exception {
         long startTime = System.nanoTime();
-
-        URL u = getClass().getResource("/aircraft.zip");
+        URL u = getClass().getResource(AIRCRAFT_FOLDER_ZIPPED);
         assert u != null;
         Path p = Path.of(u.toURI());
         AircraftDatabase database = new AircraftDatabase(p.toString());
-
         ConcurrentLinkedQueue<Message> messageQueue = new ConcurrentLinkedQueue<>();
-
         AircraftStateManager asm = new AircraftStateManager(database);
-
         MapParameters mp = new MapParameters(ZOOM_LEVEL, MIN_X_VALUE, MIN_Y_VALUE);
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
-
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
-
-        Path tileCache = Path.of("tile-cache");
-        TileManager tm = new TileManager(tileCache, "https://tile.openstreetmap.org/");
-
+        Path tileCache = Path.of(TILE_CACHE);
+        TileManager tm = new TileManager(tileCache, SERVER_URL);
         BaseMapController bmc = new BaseMapController(tm, mp);
-
         AircraftTableController atc = new AircraftTableController(asm.states(), sap);
         atc.setOnDoubleClick(s -> bmc.centerOn(s.getPosition()));
-
         StatusLineController slc = new StatusLineController();
         slc.getAircraftCountProperty().bind(Bindings.size(asm.states()));
-
         StackPane stp = new StackPane(bmc.pane(), ac.pane());
         BorderPane bp = new BorderPane(atc.pane());
         bp.setTop(slc.pane());
-
         Thread thread;
-
         if(getParameters().getRaw().isEmpty()) {
             thread = new Thread(() -> {
                 getParameters().getRaw();
@@ -105,20 +97,16 @@ public class Main extends Application
                 }
             });
         }
-
         thread.setDaemon(true);
         thread.start();
-
         SplitPane sp = new SplitPane(stp, bp);
         sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
-        BorderPane root = new BorderPane(sp);
-        Scene scene = new Scene(root);
-        primaryStage.setTitle("Javions");
+        Scene scene = new Scene(sp);
+        primaryStage.setTitle(TITLE);
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setScene(scene);
         primaryStage.show();
-
         new AnimationTimer() {
             private long lastPurge = 0L;
             @Override

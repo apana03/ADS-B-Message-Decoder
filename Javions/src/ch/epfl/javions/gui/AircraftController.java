@@ -39,7 +39,15 @@ public final class AircraftController {
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> aircraftStateObjectProperty;
 
-
+    /**
+     * Constructor for the aircraft controller
+     * Adds listeners to the aircraft states
+     * Calls the method to construct the aircraft group
+     * @see #constructAircraftGroup(ObservableAircraftState)
+     * @param mapParameters
+     * @param aircraftStates
+     * @param aircraftStateObjectProperty
+     */
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> aircraftStates,
                               ObjectProperty<ObservableAircraftState> aircraftStateObjectProperty) {
@@ -61,9 +69,20 @@ public final class AircraftController {
 
     }
 
+    /**
+     * @return the pane
+     */
     public Pane pane() {
         return pane;
     }
+
+    /**
+     * Constructs aircraft group
+     * Sets bindings for the aircraft group
+     * @see #createIconAndTagGroup(ObservableAircraftState)
+     * @see #trajectoryGroup(ObservableAircraftState)
+     * @param state
+     */
     private void constructAircraftGroup(ObservableAircraftState state) {
         Group aircraftGroup = new Group();
         aircraftGroup.setId(state.getAddress().string());
@@ -72,7 +91,14 @@ public final class AircraftController {
         pane.getChildren().add(aircraftGroup);
     }
 
-
+    /**
+     * Creates icon and tag group
+     * Sets bindings for the icon and tag group
+     * @see #getSVG(ObservableAircraftState)
+     * @see #labelGroup(ObservableAircraftState)
+     * @param state
+     * @return
+     */
     private Group createIconAndTagGroup(ObservableAircraftState state) {
         Group iconAndTag = new Group(getSVG(state), labelGroup(state));
 
@@ -94,6 +120,12 @@ public final class AircraftController {
         return iconAndTag;
     }
 
+    /**
+     * Computes the color of the plane depending on its altitude
+     * Computes the icon path depending on the category of the aircraft
+     * @param state
+     * @return the icon path depending on the altitude and category of the aircraft
+     */
     private SVGPath getSVG(ObservableAircraftState state) {
         AircraftData aircraftData = state.getData();
 
@@ -126,6 +158,12 @@ public final class AircraftController {
         return iconPath;
     }
 
+    /**
+     * Adds a label to the aircraft
+     * Sets the bindings for the label
+     * @param state
+     * @return label group for a given aircraft
+     */
     private Group labelGroup(ObservableAircraftState state) {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
@@ -154,6 +192,15 @@ public final class AircraftController {
         return labelGroup;
     }
 
+    /**
+     * Computes the aircraft trajectory
+     * Sets the bindings for the trajectory
+     * Adds listeners to the trajectory
+     * Draws the trajectory
+     * @see #redrawTrajectory(Group, ObservableAircraftState)
+     * @param state
+     * @return
+     */
     private Group trajectoryGroup(ObservableAircraftState state) {
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass().add("trajectory");
@@ -179,12 +226,21 @@ public final class AircraftController {
         return trajectoryGroup;
     }
 
+    /**
+     * Redraws the trajectory
+     * @see #getAllTrajectoryLines(List)
+     * @param trajectoryGroup
+     * @param state
+     */
     private void redrawTrajectory(Group trajectoryGroup, ObservableAircraftState state) {
         trajectoryGroup.getChildren().clear();
         trajectoryGroup.getChildren().addAll(getAllTrajectoryLines(state.getTrajectory()));
     }
 
-
+    /**
+     * @param airbornePositions
+     * @return a list of lines representing the trajectory
+     */
     private List<Line> getAllTrajectoryLines(List<ObservableAircraftState.AirbornePos> airbornePositions){
         ArrayList<Line> lines = new ArrayList<>();
         for(int i = 1; i<airbornePositions.size(); i++) {
@@ -194,6 +250,13 @@ public final class AircraftController {
         return lines;
     }
 
+    /**
+     * Creates a line between two points and gives it a certain color depending on the altitude
+     * @see #getPlaneColor(double)
+     * @param pos1
+     * @param pos2
+     * @return
+     */
     private Line createLine(ObservableAircraftState.AirbornePos pos1, ObservableAircraftState.AirbornePos pos2) {
         GeoPos firstPoint = pos1.position();
         GeoPos secondPoint = pos2.position();
@@ -213,6 +276,10 @@ public final class AircraftController {
         return line;
     }
 
+    /**
+     * @param state
+     * @return the aircraft identification
+     */
     private ObservableValue<String> aircraftIdentification(ObservableAircraftState state) {
         return (state.getData() != null) ? new SimpleStringProperty(state.getData().registration().string()) :
                 Bindings.when(state.callSignProperty().isNotNull())
@@ -220,16 +287,28 @@ public final class AircraftController {
                         .otherwise(state.getAddress().string());
     }
 
+    /**
+     * @param state
+     * @return velocity of the aircraft
+     */
     private ObservableValue<String> velocity(ObservableAircraftState state) {
         return state.velocityProperty().map(v -> (v.doubleValue() != 0 || !Double.isNaN(v.doubleValue())) ?
                 String.format("%.0f", Units.convertTo(v.doubleValue(), Units.Speed.KILOMETER_PER_HOUR)) : "?");
     }
 
+    /**
+     * @param state
+     * @return altitude of the aircraft
+     */
     private ObservableValue<String> altitude(ObservableAircraftState state) {
         return state.altitudeProperty().map(v -> (v.doubleValue() != 0 || !Double.isNaN(v.doubleValue())) ?
                 String.format("%.0f",v.doubleValue()) : "?");
     }
 
+    /**
+     * @param altitude
+     * @return color of the aircraft depending on the altitude
+     */
     private Color getPlaneColor(double altitude){
         return ColorRamp.PLASMA.at(Math.pow(altitude/12000, 1d/3d));
     }

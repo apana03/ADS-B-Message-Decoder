@@ -10,7 +10,7 @@ import java.io.*;
 
 public class ObservableTest
 {
-    /*public static void main(String[] args) throws IOException{
+   /* public static void main(String[] args) throws IOException{
         MessageParser parser = new MessageParser();
         try(DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
@@ -27,6 +27,6 @@ public class ObservableTest
                 System.out.printf("%13d: %s\n", timeStampNs, message);
             }
 
-        } catch (EOFException e) { *//* nothing to do *//* }
-    }*/
-}
+        } catch (EOFException e) { /* nothing to do  }
+    */
+    }

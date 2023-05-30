@@ -29,6 +29,17 @@ public final class AircraftTableController
     private static final int DESCRIPTION_COLUMN_WIDTH = 70;
     private static final int NUMERIC_COLUMN_WIDTH = 85;
     private final TableView<ObservableAircraftState> table;
+
+    /**
+     * Constructor for the table controller
+     * Adds listeners to the table
+     * Calls the methods to create the columns
+     * @see #createAndAddTextColumns()
+     * @see #createAndAddNumericColumns()
+     * @return the table
+     * @param states
+     * @param selectedState
+     */
     public AircraftTableController(ObservableSet<ObservableAircraftState> states, ObjectProperty<ObservableAircraftState> selectedState)
     {
         table = new TableView<>();
@@ -105,8 +116,8 @@ public final class AircraftTableController
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(name);
         column.getStyleClass().add("numeric");
         column.setPrefWidth(NUMERIC_COLUMN_WIDTH);
-        column.setCellValueFactory(cellData -> function.apply(cellData.getValue()).map(k -> Units.convertTo(k, unit))
-                .map(formatter::format));
+        column.setCellValueFactory(cellData -> function.apply(cellData.getValue()).map(k -> Double.isNaN(k.doubleValue())
+                ? "" : formatter.format(Units.convertTo(k, unit))));
         column.setComparator(numberComparator);
         return column;
     }

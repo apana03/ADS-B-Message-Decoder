@@ -15,7 +15,12 @@ import static javafx.collections.FXCollections.unmodifiableObservableList;
 
 public final class ObservableAircraftState implements AircraftStateSetter
 {
-    public record AirbornePos( GeoPos position, double altitude ) {}
+    /**
+     * Inner record for the airborne position
+     * @param position
+     * @param altitude
+     */
+    public record AirbornePos(GeoPos position, double altitude){}
     private final IcaoAddress address;
     private final AircraftData data;
     private long lastTrajectoryTimeStamp = 0;
@@ -23,14 +28,26 @@ public final class ObservableAircraftState implements AircraftStateSetter
         this.address = address;
         this.data = data;
     }
+
+    /**
+     * Declaration of the properties of the ObservableAircraftState
+     * lastMessageTimeStampNs : the time stamp of the last message received
+     * category : the category of the aircraft
+     * callSign : the call sign of the aircraft
+     * position : the position of the aircraft
+     * trajectoryModifiable : the trajectory of the aircraft (modifiable)
+     * altitude : the altitude of the aircraft
+     * velocity : the velocity of the aircraft
+     * trackOrHeading : the track or heading of the aircraft
+     */
     private final LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
     private final IntegerProperty category = new SimpleIntegerProperty();
     private final ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
     private final ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
     private final ObservableList<AirbornePos> trajectoryModifiable = observableArrayList();
     private final ObservableList<AirbornePos> trajectoryNonModifiable = unmodifiableObservableList(trajectoryModifiable);
-    private final DoubleProperty altitude = new SimpleDoubleProperty();
-    private final DoubleProperty velocity = new SimpleDoubleProperty();
+    private final DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
+    private final DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
     private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
     public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
         return lastMessageTimeStampNs;
@@ -89,10 +106,20 @@ public final class ObservableAircraftState implements AircraftStateSetter
         lastMessageTimeStampNs.set(timeStampNs);
     }
 
+    /**
+     * Sets the category of the aircraft.
+     * @param category the category value
+     */
+
     @Override
     public void setCategory(int category) {
         this.category.set(category);
     }
+
+    /**
+     * Sets the call sign of the aircraft.
+     * @param callSign the CallSign object representing the call sign
+     */
 
     @Override
     public void setCallSign(CallSign callSign) {

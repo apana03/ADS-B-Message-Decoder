@@ -12,16 +12,14 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 
 public final class BaseMapController {
+    public static final int DELAY = 200;
     private final TileManager tileManager;
     private final MapParameters mapParameters;
     private  final Canvas canvas;
     private final Pane pane;
     private boolean redrawNeeded;
     private Point2D dragInitial;
-
-
     private static final int PIXELS_IN_TILE = 256;
-
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
         this.tileManager = tileManager;
         this.mapParameters = mapParameters;
@@ -76,9 +74,7 @@ public final class BaseMapController {
                                 tileManager.imageForTileAt(tile)
                                 , i * PIXELS_IN_TILE - minX
                                 , j * PIXELS_IN_TILE - minY);
-                    } catch (IOException e) {
-                        System.out.println("fail " + i +" "+ j);
-                    }
+                    }catch(IOException e){}
                 }
             }
         }
@@ -118,7 +114,7 @@ public final class BaseMapController {
 
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
-            minScrollTime.set(currentTime + 200);
+            minScrollTime.set(currentTime + DELAY);
 
             double xTranslation = e.getX();
             double yTranslation = e.getY();
