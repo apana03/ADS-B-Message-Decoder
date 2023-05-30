@@ -1,8 +1,8 @@
 package ch.epfl.javions;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.HexFormat;
+import java.util.Objects;
 
 /**
  * Represents a sequence of Bytes

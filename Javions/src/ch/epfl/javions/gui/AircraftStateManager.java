@@ -1,12 +1,9 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.adsb.AirbornePositionMessage;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
-import javafx.beans.property.ReadOnlySetProperty;
-import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableSet;
 
 import java.io.IOException;

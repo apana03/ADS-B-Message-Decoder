@@ -2,14 +2,12 @@ package ch.epfl.javions.gui;
 
 import javafx.scene.image.Image;
 
-import javax.print.DocFlavor;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 public final class TileManager {
     /**

@@ -3,7 +3,10 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,14 +15,15 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 
 public final class BaseMapController {
-    public static final int DELAY = 200;
     private final TileManager tileManager;
     private final MapParameters mapParameters;
     private  final Canvas canvas;
     private final Pane pane;
     private boolean redrawNeeded;
     private Point2D dragInitial;
+
     private static final int PIXELS_IN_TILE = 256;
+
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
         this.tileManager = tileManager;
         this.mapParameters = mapParameters;
@@ -64,9 +68,9 @@ public final class BaseMapController {
         int firstTileY = (int) minY / PIXELS_IN_TILE;
 
 
-        //de comentat math ceil
-        for (int i = firstTileX; i <= firstTileX + Math.ceil(pane.getWidth() / PIXELS_IN_TILE); i++) {
-            for (int j = firstTileY; j <= firstTileY + Math.ceil(pane.getHeight() / PIXELS_IN_TILE); j++) {
+        // added 1 for smoother drag transsition
+        for (int i = firstTileX; i <= firstTileX + (pane.getWidth() / PIXELS_IN_TILE) + 1; i++) {
+            for (int j = firstTileY; j <= firstTileY + (pane.getHeight() / PIXELS_IN_TILE) + 1; j++) {
                 TileManager.TileId tile = new TileManager.TileId(mapParameters.getZoomValue(), i, j);
                 if(tile.isValid()){
                     try {
@@ -74,7 +78,7 @@ public final class BaseMapController {
                                 tileManager.imageForTileAt(tile)
                                 , i * PIXELS_IN_TILE - minX
                                 , j * PIXELS_IN_TILE - minY);
-                    }catch(IOException e){}
+                    } catch (IOException ignored) {}
                 }
             }
         }
@@ -114,7 +118,7 @@ public final class BaseMapController {
 
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
-            minScrollTime.set(currentTime + DELAY);
+            minScrollTime.set(currentTime + 200);
 
             double xTranslation = e.getX();
             double yTranslation = e.getY();
