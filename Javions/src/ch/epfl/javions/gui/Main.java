@@ -77,7 +77,7 @@ public class Main extends Application
                 try{
                     AdsbDemodulator adsb = new AdsbDemodulator(System.in);
                     RawMessage rmsg = adsb.nextMessage();
-                    while(rmsg != null) {
+                    while(true) {
                         Message msg = MessageParser.parse(rmsg);
                         if(msg != null)
                             messageQueue.add(msg);

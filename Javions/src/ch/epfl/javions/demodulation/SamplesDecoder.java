@@ -3,7 +3,8 @@ package ch.epfl.javions.demodulation;
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Preconditions;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 /**
