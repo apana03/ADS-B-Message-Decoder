@@ -70,9 +70,10 @@ public class Main extends Application
                     AdsbDemodulator adsb = new AdsbDemodulator(System.in);
                     RawMessage rmsg = adsb.nextMessage();
                     while(true) {
-                        Message msg = MessageParser.parse(rmsg);
-                        if(msg != null)
+                        if(rmsg != null){
+                            Message msg = MessageParser.parse(rmsg);
                             messageQueue.add(msg);
+                        }
                         rmsg = adsb.nextMessage();
                     }
                 }catch (IOException e) {
@@ -92,8 +93,7 @@ public class Main extends Application
                     }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
-                }catch(InterruptedException e) {
-                    e.printStackTrace();
+                }catch(InterruptedException ignored) {
                 }
             });
         }
@@ -135,6 +135,7 @@ public class Main extends Application
                 new BufferedInputStream(
                     new FileInputStream(name)))) {
             byte[] buffer = new byte[RawMessage.LENGTH];
+            //noinspection InfiniteLoopStatement
             while(true){
                 long tstp = dis.readLong();
                 int byteCount = dis.readNBytes(buffer, 0, buffer.length);

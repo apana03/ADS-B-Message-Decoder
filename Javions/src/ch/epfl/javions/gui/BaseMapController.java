@@ -15,6 +15,11 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 
 public final class BaseMapController {
+    /**
+     * Number Of Pixels in a map tile
+     */
+    private static final int PIXELS_IN_TILE = 256;
+
     private final TileManager tileManager;
     private final MapParameters mapParameters;
     private  final Canvas canvas;
@@ -22,8 +27,14 @@ public final class BaseMapController {
     private boolean redrawNeeded;
     private Point2D dragInitial;
 
-    private static final int PIXELS_IN_TILE = 256;
-
+    /**
+     * Constructs a public BaseMapController object.
+     * Initializes the canvas and pane, binds their size properties,
+     * adds listeners for zoom, minX, and minY properties, and adds mouse actions.
+     *
+     * @param tileManager   The object for managing map tiles.
+     * @param mapParameters The object containing map parameters.
+     */
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
         this.tileManager = tileManager;
         this.mapParameters = mapParameters;
@@ -33,34 +44,58 @@ public final class BaseMapController {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
-        addAllListeners(mapParameters.getZoom(), mapParameters.getMinX(), mapParameters.getMinY());
+        addAllListeners(mapParameters.zoomProperty(), mapParameters.minXProperty(), mapParameters.minYProperty());
         addAllMouseActions();
     }
 
+    /**
+     * Returns the Pane object containing the map.
+     *
+     * @return The Pane object.
+     */
     public Pane pane() {
         return pane;
     }
 
+
+    /**
+     * Centers the map view on the specified geographical position.
+     *
+     * @param point The geographical position to center the map on.
+     */
     public void centerOn(GeoPos point) {
         int zoomLvl = mapParameters.getZoomValue();
-        double x = WebMercator.x(zoomLvl, point.longitude()) - mapParameters.getMinXValue() - (canvas.getWidth() * 0.5);
-        double y = WebMercator.y(zoomLvl, point.latitude()) - mapParameters.getMinYValue() - (canvas.getHeight() * 0.5);
+        double x = WebMercator.x(zoomLvl, point.longitude()) - mapParameters.getMinXValue() - (canvas.getWidth() / 2);
+        double y = WebMercator.y(zoomLvl, point.latitude()) - mapParameters.getMinYValue() - (canvas.getHeight() / 2);
         mapParameters.scroll(x, y);
     }
 
+    /**
+     * Checks if redrawing the map is needed, and if so, triggers one on the next pulse.
+     */
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         drawMap(pane);
     }
 
+    /**
+     * Sets the flag to indicate redrawing the map is needed and requests it at the next pulse.
+     */
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
 
+
+    /**
+     * Draws the map on the given pane.
+     *
+     * @param pane The Pane object to draw the map on.
+     */
     private void drawMap(Pane pane) {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext.clearRect(0,0, pane.getWidth(), pane.getHeight());
 
         double minX = mapParameters.getMinXValue();
         double minY = mapParameters.getMinYValue();
@@ -68,7 +103,7 @@ public final class BaseMapController {
         int firstTileY = (int) minY / PIXELS_IN_TILE;
 
 
-        // added 1 for smoother drag transsition
+        // added 1 for smoother drag transition
         for (int i = firstTileX; i <= firstTileX + (pane.getWidth() / PIXELS_IN_TILE) + 1; i++) {
             for (int j = firstTileY; j <= firstTileY + (pane.getHeight() / PIXELS_IN_TILE) + 1; j++) {
                 TileManager.TileId tile = new TileManager.TileId(mapParameters.getZoomValue(), i, j);
@@ -84,6 +119,13 @@ public final class BaseMapController {
         }
     }
 
+    /**
+     * Adds listeners for zoom, minX, and minY properties and their changes.
+     *
+     * @param zoom The ReadOnlyIntegerProperty for zoom level.
+     * @param minX The ReadOnlyDoubleProperty for minimum X value.
+     * @param minY The ReadOnlyDoubleProperty for minimum Y value.
+     */
     private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY) {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
@@ -96,8 +138,10 @@ public final class BaseMapController {
         canvas.heightProperty().addListener((o, oV, nV) -> redrawOnNextPulse());
     }
 
+    /**
+     * Adds mouse actions for dragging and scrolling on the map pane.
+     */
     private void addAllMouseActions() {
-        dragInitial = new Point2D(0,0);
 
         pane.setOnMousePressed(e -> dragInitial = new Point2D(e.getX(),e.getY()));
 
@@ -120,6 +164,7 @@ public final class BaseMapController {
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
 
+            //makes sure the zoom is centered on the mouse cursor
             double xTranslation = e.getX();
             double yTranslation = e.getY();
             mapParameters.scroll(xTranslation, yTranslation);

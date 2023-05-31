@@ -173,5 +173,6 @@ public final class ObservableAircraftState implements AircraftStateSetter
             trajectoryModifiable.set(trajectoryModifiable.size() - 1, new AirbornePos(getPosition(), getAltitude()));
         }
     }
+    //TODO : update this algorithm and check equals
 
 }
