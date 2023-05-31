@@ -18,7 +18,7 @@ public final class Math2 {
      * @param v   the value
      * @param max maximum
      * @param min minimum
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if max is less than min
      */
     public static int clamp(int min, int v, int max) {
         Preconditions.checkArgument(max > min);

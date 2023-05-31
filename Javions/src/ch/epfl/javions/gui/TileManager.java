@@ -17,9 +17,9 @@ import java.util.LinkedHashMap;
 public final class TileManager {
     /**
      * Inner record representing a tileId with a zoom, x and y.
-     * @param zoom
-     * @param x
-     * @param y
+     * @param zoom the zoom level
+     * @param x the x coordinate
+     * @param y the y coordinate
      */
     public record TileId(int zoom, int x, int y){
         public boolean isValid(){
@@ -34,8 +34,8 @@ public final class TileManager {
 
     /**
      * Constructs a TileManager with the given localCache and serverUrl.
-     * @param localCache
-     * @param serverUrl
+     * @param localCache the local cache
+     * @param serverUrl the server url
      */
     public TileManager(Path localCache, String serverUrl) {
         this.localCache = localCache;
@@ -47,9 +47,9 @@ public final class TileManager {
      * Returns the image for the tile at the given tileId.
      * If the image is not in the cache, it is downloaded from the server and stored in the cache.
      * If the cache is full, the least recently used image is removed from the cache.
-     * @param tileId
-     * @return
-     * @throws IOException
+     * @param tileId the ID of the tile
+     * @return the image for the tile at the given tileId
+     * @throws IOException if an I/O error occurs
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
         if(cache.containsKey(tileId)){

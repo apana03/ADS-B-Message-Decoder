@@ -250,8 +250,6 @@ public final class AircraftController {
     private List<Line> getAllTrajectoryLines(List<ObservableAircraftState.AirbornePos> airbornePositions) {
         ArrayList<Line> lines = new ArrayList<>();
         for (int i = 1; i < airbornePositions.size(); i++) {
-            //TODO: update trajectory alghorthm
-            if (airbornePositions.get(i - 1).position() == null) continue;
             lines.add(createLine(airbornePositions.get(i - 1), airbornePositions.get(i)));
         }
         return lines;

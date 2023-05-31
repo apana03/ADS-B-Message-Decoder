@@ -15,7 +15,7 @@ public final class WebMercator {
     /**
      * @param zoomLevel given zoom level
      * @param longitude the longitude
-     * @returns the x coordinate corresponding to the given longitude
+     * @return the x coordinate corresponding to the given longitude
      * (in radians) at the given zoom level
      */
     public static double x(int zoomLevel, double longitude) {
@@ -25,7 +25,7 @@ public final class WebMercator {
     /**
      * @param zoomLevel given zoom level
      * @param latitude  the latitude
-     * @returns the y coordinate corresponding to the given latitude
+     * @return the y coordinate corresponding to the given latitude
      * (in radians) at the given zoom level
      */
     public static double y(int zoomLevel, double latitude) {

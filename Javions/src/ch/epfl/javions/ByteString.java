@@ -77,6 +77,11 @@ public final class ByteString {
         return result;
     }
 
+    /**
+     * Redefinition of the equals method
+     * @param thatO the object to be compared with
+     * @return true if the two objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object thatO) {
         if (thatO instanceof ByteString that) {
@@ -86,16 +91,28 @@ public final class ByteString {
         }
     }
 
+    /**
+     * Redefinition of the hashCode method
+     * @return the hash code of the object
+     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(byteString);
     }
 
+    /**
+     * Redefinition of the toString method
+     * @return the string representation of the object
+     */
     @Override
     public String toString() {
         return HF.formatHex(byteString);
     }
 
+    /**
+     * Getter for the byte array
+     * @return the byte array
+     */
     private byte[] getBytes() {
         return byteString;
     }
