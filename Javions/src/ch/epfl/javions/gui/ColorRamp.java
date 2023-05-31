@@ -5,9 +5,17 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
-
+/**
+ * Represents a final class that manages the color ramp of the map (zoom, minX, minY)
+ * The color ramp is used to color the aircraft according to their altitude
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public final class ColorRamp {
-
+    /**
+     * The list of colors
+     * The colors are in the order of the altitude
+     */
     public static final ColorRamp PLASMA = new ColorRamp(List.of(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
@@ -29,11 +37,20 @@ public final class ColorRamp {
     private final List<Color> colors;
     private static final int MIN_COLORS_NB = 2;
 
+    /**
+     * Constructor of the class
+     * @param colorList the list of colors
+     */
     public ColorRamp(List<Color> colorList) {
         Preconditions.checkArgument(colorList.size() >= MIN_COLORS_NB);
         colors = List.copyOf(colorList);
     }
 
+    /**
+     * Getter of the color at a certain index
+     * @param index the index of the color
+     * @return the color at the given index
+     */
     public Color at(double index) {
         if (index < 0)
             return colors.get(0);

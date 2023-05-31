@@ -37,7 +37,7 @@ public final class StatusLineController {
 
     /**
      * Getter for the pane of the StatusLineController
-     * @return
+     * @return the pane of the StatusLineController
      */
     public Pane pane(){
         return borderPane;
@@ -45,7 +45,7 @@ public final class StatusLineController {
 
     /**
      * Getter for the aircraftCountProperty
-     * @return
+     * @return the aircraftCountProperty
      */
     public IntegerProperty getAircraftCountProperty(){
         return aircraftCountProperty;
@@ -53,7 +53,7 @@ public final class StatusLineController {
 
     /**
      * Getter for the messageCountProperty
-     * @return
+     * @return the messageCountProperty
      */
     public LongProperty getMessageCountProperty(){
         return messageCountProperty;
@@ -62,7 +62,7 @@ public final class StatusLineController {
     /**
      * Creates a new Text representing the number of visible aircraft (Aéronefs visibles in French)
      * and binds it to the aircraftCountProperty
-     * @return
+     * @return the aircraftCountText
      */
     private Text aircraftCountText(){
         Text aircraftCountText = new Text();
@@ -73,7 +73,7 @@ public final class StatusLineController {
     /**
      * Creates a new Text representing the number of messages received (Messages reçus in French)
      * and binds it to the messageCountProperty
-     * @return
+     * @return the messageCountText
      */
     private Text messageCountText(){
         Text messageCountText = new Text();

@@ -14,6 +14,11 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 
+/**
+ * Represents a final class that controls the map's functionality.
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public final class BaseMapController {
     /**
      * Number Of Pixels in a map tile
