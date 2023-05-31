@@ -145,7 +145,7 @@ public final class ObservableAircraftState implements AircraftStateSetter
     @Override
     public void setPosition(GeoPos position) {
         this.position.set(position);
-        trajectoryModifiable.set(trajectoryModifiable.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+        updateTrajectory();
     }
 
     /**
@@ -185,14 +185,13 @@ public final class ObservableAircraftState implements AircraftStateSetter
      * If the last trajectory point is different from the current position, a new trajectory point is added.
      */
     private void updateTrajectory(){
-        if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
+        if(getPosition() == null || Double.isNaN(getAltitude())) return;
+        if( trajectoryModifiable.isEmpty() || lastTrajectoryTimeStamp != lastMessageTimeStampNs.get())
         {
-            trajectoryModifiable.add( new AirbornePos(getPosition(), getAltitude()));
+            trajectoryModifiable.add(new AirbornePos(getPosition(), getAltitude()));
             lastTrajectoryTimeStamp = lastMessageTimeStampNs.get();
-        }else if( lastMessageTimeStampNs.get() == lastTrajectoryTimeStamp ){
+        }else{
             trajectoryModifiable.set(trajectoryModifiable.size() - 1, new AirbornePos(getPosition(), getAltitude()));
         }
     }
-    //TODO : update this algorithm and check equals
-
 }

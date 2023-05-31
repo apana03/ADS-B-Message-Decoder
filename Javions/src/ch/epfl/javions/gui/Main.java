@@ -21,8 +21,10 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Supplier;
 
 import static java.lang.Thread.sleep;
 
@@ -47,21 +49,18 @@ public class Main extends Application
 
     /**
      * Main method of the application.
-     * @param args
+     * @param args the command line arguments
      */
     public static void main(String[] args) { launch(args); }
 
     /**
      * Starts the application.
      * @param primaryStage the primary stage for this application, onto which
-     * the application scene can be set.
-     * Applications may create other stages, if needed, but they will not be
-     * primary stages.
-     * @throws Exception
+     *        the application scene can be set.
+     * @throws Exception if something goes wrong
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        long startTime = System.nanoTime();
         URL u = getClass().getResource(AIRCRAFT_FOLDER_ZIPPED);
         assert u != null;
         Path p = Path.of(u.toURI());
@@ -81,56 +80,28 @@ public class Main extends Application
         StackPane stp = new StackPane(bmc.pane(), ac.pane());
         BorderPane bp = new BorderPane(atc.pane());
         bp.setTop(slc.pane());
+        SplitPane sp = new SplitPane(stp, bp);
+        sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        Scene scene = new Scene(sp);
+        configurePrimaryStage(primaryStage, scene);
         Thread thread;
         if(getParameters().getRaw().isEmpty()) {
+            Supplier<Message> supplier = stantardInputSupplier();
             thread = new Thread(() -> {
-                getParameters().getRaw();
-                try{
-                    AdsbDemodulator adsb = new AdsbDemodulator(System.in);
-                    RawMessage rmsg = adsb.nextMessage();
-                    while(true) {
-                        if(rmsg != null){
-                            Message msg = MessageParser.parse(rmsg);
-                            messageQueue.add(msg);
-                        }
-                        rmsg = adsb.nextMessage();
-                    }
-                }catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
+                getFromSupplier(supplier, messageQueue);
             });
         } else {
+            Supplier<Message> supplier = fileSupplier(getParameters().getRaw().get(0));
             thread = new Thread(() -> {
-                try {
-                    for(RawMessage rmsg : readMessages(getParameters().getRaw().get(0))){
-                        long currentTime = System.nanoTime() - startTime;
-                        if(currentTime < rmsg.timeStampNs())
-                            sleep((rmsg.timeStampNs() - currentTime) / NANO_TO_MILI);
-                        Message msg = MessageParser.parse(rmsg);
-                        if(msg != null)
-                            messageQueue.add(msg);
-                    }
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }catch(InterruptedException ignored) {
-                }
+                getFromSupplier(supplier, messageQueue);
             });
         }
         thread.setDaemon(true);
         thread.start();
-        SplitPane sp = new SplitPane(stp, bp);
-        sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
-        Scene scene = new Scene(sp);
-        primaryStage.setTitle(TITLE);
-        primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMinWidth(MIN_WIDTH);
-        primaryStage.setScene(scene);
-        primaryStage.show();
         new AnimationTimer() {
             private long lastPurge = 0L;
             @Override
             public void handle(long now) {
-                if(messageQueue.isEmpty()) return;
                 try{
                     while(!messageQueue.isEmpty()){
                         Message msg = messageQueue.remove();
@@ -150,12 +121,12 @@ public class Main extends Application
     }
     /**
      * Reads the messages from the file.
-     * @param name
-     * @return
-     * @throws IOException
+     * @param name the name of the file
+     * @return the list of messages
+     * @throws IOException if an I/O error occurs
      */
-    private static List<RawMessage> readMessages(String name) throws IOException {
-        List<RawMessage> messages = new ArrayList<>();
+    private static List<Message> readMessages(String name) throws IOException {
+        List<Message> messages = new ArrayList<>();
         try(DataInputStream dis = new DataInputStream(
                 new BufferedInputStream(
                     new FileInputStream(name)))) {
@@ -167,10 +138,88 @@ public class Main extends Application
                 assert byteCount == RawMessage.LENGTH;
                 ByteString bs = new ByteString(buffer);
                 RawMessage rmsg = new RawMessage(tstp, bs);
-                messages.add(rmsg);
+                messages.add(MessageParser.parse(rmsg));
             }
         }catch(EOFException e) {
             return messages;
         }
+    }
+
+    /**
+     * Creates supplier for the standard input.
+     * @return the supplier
+     * @throws IOException if an I/O error occurs
+     */
+    private static Supplier<Message> stantardInputSupplier() throws IOException {
+        AdsbDemodulator adsb = new AdsbDemodulator(System.in);
+        return () -> {
+            try {
+                while(true) {
+                    RawMessage rmsg = adsb.nextMessage();
+                    if (rmsg == null)
+                        return null;
+                    Message msg = MessageParser.parse(rmsg);
+                    if(msg != null)
+                        return msg;
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        };
+    }
+
+    /**
+     * Creates supplier for the file input.
+     * @param name the name of the file
+     * @return the supplier
+     * @throws IOException if an I/O error occurs
+     */
+    private static Supplier<Message> fileSupplier(String name) throws IOException {
+        long start_time = System.nanoTime();
+        List<Message> messages = readMessages(name);
+        Iterator<Message> iterator = messages.iterator();
+        return () -> {
+            try {
+                Message msg;
+                if(iterator.hasNext())
+                    msg = iterator.next();
+                else
+                    return null;
+                long messsageTimeStamp = msg.timeStampNs();
+                long currentTime = System.nanoTime() - start_time;
+                if(currentTime < messsageTimeStamp)
+                    sleep((messsageTimeStamp - currentTime) / NANO_TO_MILI);
+                return msg;
+            } catch(InterruptedException ignored) {
+                throw new Error();
+            }
+        };
+    }
+
+    /**
+     * Gets the message from the supplier and adds it to the queue.
+     * @param supplier the supplier
+     * @param messageQueue the queue
+     */
+    private void getFromSupplier(Supplier<Message> supplier, ConcurrentLinkedQueue<Message> messageQueue){
+        //noinspection InfiniteLoopStatement
+        while(true){
+            Message msg = supplier.get();
+            if(msg != null)
+                messageQueue.add(msg);
+        }
+    }
+
+    /**
+     * Configures the primary stage.
+     * @param primaryStage the primary stage
+     * @param scene the scene
+     */
+    private void configurePrimaryStage(Stage primaryStage, Scene scene) {
+        primaryStage.setTitle(TITLE);
+        primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setMinWidth(MIN_WIDTH);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 }
