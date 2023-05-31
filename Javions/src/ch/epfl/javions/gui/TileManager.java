@@ -20,7 +20,7 @@ public final class TileManager {
     private final String serverUrl;
     private final static int MAX_CACHE_CAPACITY = 100;
     private final static float LOAD_FACTOR = 0.75f;
-    private LinkedHashMap<TileId, Image> cache;
+    private final LinkedHashMap<TileId, Image> cache;
     public TileManager(Path localCache, String serverUrl) {
         this.localCache = localCache;
         this.serverUrl = serverUrl;

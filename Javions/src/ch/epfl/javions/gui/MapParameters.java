@@ -5,8 +5,8 @@ import ch.epfl.javions.Preconditions;
 import javafx.beans.property.*;
 
 public final class MapParameters {
-    private IntegerProperty zoom;
-    private DoubleProperty minX, minY;
+    private final IntegerProperty zoom;
+    private final DoubleProperty minX, minY;
     private final static int MIN_ZOOM = 6, MAX_ZOOM = 19;
 
     public MapParameters(int zoom, double minX, double minY) {
@@ -16,7 +16,7 @@ public final class MapParameters {
         this.minY = new SimpleDoubleProperty(minY);
     }
 
-    public ReadOnlyIntegerProperty getZoom() {
+    public ReadOnlyIntegerProperty zoomProperty() {
         return zoom;
     }
 
@@ -24,7 +24,7 @@ public final class MapParameters {
         return zoom.get();
     }
 
-    public ReadOnlyDoubleProperty getMinX() {
+    public ReadOnlyDoubleProperty minXProperty() {
         return minX;
     }
 
@@ -32,7 +32,7 @@ public final class MapParameters {
         return minX.get();
     }
 
-    public ReadOnlyDoubleProperty getMinY() {
+    public ReadOnlyDoubleProperty minYProperty() {
         return minY;
     }
 

@@ -16,15 +16,15 @@ import static javafx.collections.FXCollections.unmodifiableObservableSet;
 public final class AircraftStateManager
 {
     private final static long minuteInNs = (long) 6e+10;
-    private Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map;
-    private ObservableSet<ObservableAircraftState> states;
-    private ObservableSet<ObservableAircraftState> statesNonModifiable;
-    private AircraftDatabase database;
+    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> map;
+    private final ObservableSet<ObservableAircraftState> states;
+    private final ObservableSet<ObservableAircraftState> statesNonModifiable;
+    private final AircraftDatabase database;
     private long lastProcessedTimeStamp;
 
     /**
      * Constructor for the AircraftStateManager
-     * @param database
+     * @param database the database
      */
     public AircraftStateManager(AircraftDatabase database){
         this.database = database;
@@ -35,8 +35,7 @@ public final class AircraftStateManager
 
     /**
      * Updates the state of the aircraft with the message
-     * @param message
-     * @throws IOException
+     * @param message the message
      */
     public void updateWithMessage(Message message) throws IOException{
         IcaoAddress address = message.icaoAddress();
@@ -51,7 +50,6 @@ public final class AircraftStateManager
 
     /**
      * Purges the states that are too old
-     * @throws IOException
      */
     public void purge(){
         states.removeIf(observableAircraftState ->

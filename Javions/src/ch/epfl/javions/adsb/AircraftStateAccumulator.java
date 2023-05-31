@@ -55,6 +55,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             case AirbornePositionMessage apm -> {
                 stateSetter.setAltitude(apm.altitude());
                 if (apm.parity() == EVEN) {
+                    //TODO : Duplicated code here
                     if (lastOddMessage != null && apm.timeStampNs() - lastOddMessage.timeStampNs() <= 10 * NANO_IN_NORMAL) {
                         position = CprDecoder.decodePosition(apm.x(), apm.y(),
                                 lastOddMessage.x(), lastOddMessage.y(), EVEN);
