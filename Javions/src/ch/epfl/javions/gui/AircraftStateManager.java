@@ -60,6 +60,8 @@ public final class AircraftStateManager
     public void purge(){
         states.removeIf(observableAircraftState ->
                 lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs);
+        map.entrySet().removeIf(entry ->
+                lastProcessedTimeStamp - entry.getValue().stateSetter().getLastMessageTimeStampNs() > minuteInNs);
     }
     public ObservableSet<ObservableAircraftState> states(){
         return statesNonModifiable;
