@@ -13,6 +13,12 @@ import java.util.Map;
 import static javafx.collections.FXCollections.observableSet;
 import static javafx.collections.FXCollections.unmodifiableObservableSet;
 
+/**
+ * Represents a final class that manages the state of the aircraft (position, altitude, velocity, etc.)
+ *
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public final class AircraftStateManager
 {
     private final static long minuteInNs = (long) 6e+10;

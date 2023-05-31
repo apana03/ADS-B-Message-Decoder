@@ -26,6 +26,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Main class of the application.
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public class Main extends Application
 {
     private static final long PURGE_INTERVAL = 1_000_000_000L;
@@ -39,7 +44,21 @@ public class Main extends Application
     private static final String TILE_CACHE = "tile-cache";
     private static final String AIRCRAFT_FOLDER_ZIPPED = "/aircraft.zip";
     private static final String TITLE = "Javions";
+
+    /**
+     * Main method of the application.
+     * @param args
+     */
     public static void main(String[] args) { launch(args); }
+
+    /**
+     * Starts the application.
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         long startTime = System.nanoTime();
@@ -129,6 +148,12 @@ public class Main extends Application
         }.start();
 
     }
+    /**
+     * Reads the messages from the file.
+     * @param name
+     * @return
+     * @throws IOException
+     */
     private static List<RawMessage> readMessages(String name) throws IOException {
         List<RawMessage> messages = new ArrayList<>();
         try(DataInputStream dis = new DataInputStream(

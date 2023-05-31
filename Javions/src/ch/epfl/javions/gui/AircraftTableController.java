@@ -19,6 +19,11 @@ import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Final class that represents the controller of the table of aircraft
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public final class AircraftTableController
 {
     private static final int ICAO_ADDRESS_COLUMN_WIDTH = 60;
@@ -173,6 +178,7 @@ public final class AircraftTableController
     }
 
     /**
+     * Getter for the pane of the table
      * @return the pane of the table
      */
     public TableView<ObservableAircraftState> pane()

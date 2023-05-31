@@ -18,7 +18,7 @@ public class PrintIdentificationMessages
             AdsbDemodulator d = new AdsbDemodulator(s);
             RawMessage m;
             while ((m = d.nextMessage()) != null) {
-                System.out.println(m);
+                //System.out.println(m);
                 count++;
             }
             System.out.println(count);

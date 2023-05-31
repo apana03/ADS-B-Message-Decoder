@@ -9,6 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 
+/**
+ * Represents a final class that manages the tiles of the map.
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public final class TileManager {
     /**
      * Inner record representing a tileId with a zoom, x and y.

@@ -13,6 +13,12 @@ import java.util.List;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.unmodifiableObservableList;
 
+/**
+ * Final class that represents the observable state of an aircraft,
+ * implementing the #AircraftStateSetter interface
+ * @author David Fota 355816
+ * @author Andrei Pana 361249
+ */
 public final class ObservableAircraftState implements AircraftStateSetter
 {
     /**
@@ -49,6 +55,9 @@ public final class ObservableAircraftState implements AircraftStateSetter
     private final DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
     private final DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
     private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
+    /**
+     * Getters for the properties of the ObservableAircraftState
+     */
     public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
         return lastMessageTimeStampNs;
     }
@@ -141,12 +150,8 @@ public final class ObservableAircraftState implements AircraftStateSetter
 
     /**
      * Sets the altitude of the aircraft.
-     * If the altitude is different from the last one, it is added to the trajectory.
-     * If the altitude is the same as the last one, the position of the last trajectory point is updated.
-     * If the last trajectory point is the same as the current position, the altitude of the last trajectory point is updated.
-     * If the last trajectory point is different from the current position, a new trajectory point is added.
+     * @see #updateTrajectory()
      * @param altitude
-     *      the altitude
      */
     @Override
     public void setAltitude(double altitude) {
@@ -154,16 +159,31 @@ public final class ObservableAircraftState implements AircraftStateSetter
         updateTrajectory();
     }
 
+    /**
+     * Sets the velocity of the aircraft.
+     * @param velocity the velocity value
+     */
     @Override
     public void setVelocity(double velocity) {
         this.velocity.set(velocity);
     }
 
+    /**
+     * Sets the track or heading of the aircraft.
+     * @param trackOrHeading the track or heading value
+     */
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set(trackOrHeading);
     }
 
+    /**
+     * Updates the trajectory of the aircraft.
+     * If the altitude is different from the last one, it is added to the trajectory.
+     * If the altitude is the same as the last one, the position of the last trajectory point is updated.
+     * If the last trajectory point is the same as the current position, the altitude of the last trajectory point is updated.
+     * If the last trajectory point is different from the current position, a new trajectory point is added.
+     */
     private void updateTrajectory(){
         if( trajectoryModifiable.isEmpty() || !position.equals(trajectoryModifiable.get(trajectoryModifiable.size() - 1).position) )
         {
