@@ -15,7 +15,7 @@ public final class Crc24 {
     private final int[] table;
     private static final int GENERATOR_MASK = 0xFFFFFF;
     private static final int BYTE_MASK = 0xFF;
-    private static final int SEVENTH_BIT_MASK = 0x1000000;
+    private static final int CRC_BITS = 24;
     private static final int TABLE_SIZE = 256;
 
     /**
@@ -56,17 +56,21 @@ public final class Crc24 {
      * @return the CRC24
      */
     private static int crc_bitwise(int generator, byte[] data) {
+        int[] tab = {0, generator};
         int crc = 0;
-        for (byte b : data) {
-            crc ^= (b & BYTE_MASK) << (2 * Byte.SIZE);
-            for (int i = 0; i < Long.BYTES; i++) {
-                crc <<= 1;
-                if ((crc & SEVENTH_BIT_MASK) != 0) {
-                    crc ^= generator;
-                }
+
+        for(byte b : data){
+            for(int i = 7; i>=0 ; i--){
+                int bit = Bits.testBit(b, i) ? 1:0;
+
+                crc = ( (crc << 1) | bit) ^ tab[Bits.extractUInt(crc, (CRC_BITS - 1),1)];
             }
         }
-        return crc & GENERATOR_MASK;
+
+        for(int i = 0; i < CRC_BITS; i++)
+            crc = (crc << 1) ^ tab[Bits.extractUInt(crc, CRC_BITS - 1, 1)];
+
+        return Bits.extractUInt(crc, 0, CRC_BITS);
     }
 
     private static int[] buildTable(int generator) {
