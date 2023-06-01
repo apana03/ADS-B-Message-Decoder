@@ -43,6 +43,5 @@ public final class Bits {
     public static boolean testBit(long value, int index) {
         Objects.checkIndex(index, Long.SIZE);
         return (value & (1L << index)) != 0;
-
     }
 }
