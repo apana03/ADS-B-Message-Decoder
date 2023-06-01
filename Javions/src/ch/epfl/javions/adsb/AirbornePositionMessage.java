@@ -48,7 +48,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * method that creates an AircraftPositionMessage from a RawMessage
      *
      * @param rawMessage the raw message
-     * @returns the in-flight positioning message corresponding to the given raw message, or null if the altitude it contains is invalid
+     * @return the in-flight positioning message corresponding to the given raw message, or null if the altitude it contains is invalid
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         long payload = rawMessage.payload();

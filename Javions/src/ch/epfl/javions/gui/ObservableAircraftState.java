@@ -151,7 +151,7 @@ public final class ObservableAircraftState implements AircraftStateSetter
     /**
      * Sets the altitude of the aircraft.
      * @see #updateTrajectory()
-     * @param altitude
+     * @param altitude the altitude value that is to be set
      */
     @Override
     public void setAltitude(double altitude) {

@@ -17,7 +17,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -59,7 +58,7 @@ public class Main extends Application
      * Starts the application.
      * @param primaryStage the primary stage for this application, onto which
      *        the application scene can be set.
-     * @throws Exception if something goes wrong
+     * @throws Exception if something goes wrong during the start.
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -74,14 +73,10 @@ public class Main extends Application
         Thread thread;
         if(getParameters().getRaw().isEmpty()) {
             Supplier<Message> supplier = stantardInputSupplier();
-            thread = new Thread(() -> {
-                getFromSupplier(supplier, messageQueue);
-            });
+            thread = new Thread(() -> getFromSupplier(supplier, messageQueue));
         } else {
-            Supplier<Message> supplier = fileSupplier(getParameters().getRaw().get(0));
-            thread = new Thread(() -> {
-                getFromSupplier(supplier, messageQueue);
-            });
+            Supplier<Message> supplier = fromFileInputSupplier(getParameters().getRaw().get(0));
+            thread = new Thread(() -> getFromSupplier(supplier, messageQueue));
         }
         thread.setDaemon(true);
         thread.start();
@@ -161,7 +156,7 @@ public class Main extends Application
      * @return the supplier
      * @throws IOException if an I/O error occurs
      */
-    private static Supplier<Message> fileSupplier(String name) throws IOException {
+    private static Supplier<Message> fromFileInputSupplier(String name) throws IOException {
         long start_time = System.nanoTime();
         List<Message> messages = readMessages(name);
         Iterator<Message> iterator = messages.iterator();
@@ -189,7 +184,6 @@ public class Main extends Application
      * @param messageQueue the queue
      */
     private void getFromSupplier(Supplier<Message> supplier, ConcurrentLinkedQueue<Message> messageQueue){
-        //noinspection InfiniteLoopStatement
         while(true){
             Message msg = supplier.get();
             if(msg != null)
@@ -212,11 +206,11 @@ public class Main extends Application
 
     /**
      * Creates the scene.
-     * @param asm the aircraft state manager
-     * @param slc the status line controller
+     * @param asm the aircraft state manager.
+     * @param slc the status line controller.
      * @return the scene
      */
-    private Scene createScene( AircraftStateManager asm, StatusLineController slc){
+    private Scene createScene(AircraftStateManager asm, StatusLineController slc){
         MapParameters mp = new MapParameters(ZOOM_LEVEL, MIN_X_VALUE, MIN_Y_VALUE);
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
@@ -235,7 +229,7 @@ public class Main extends Application
     }
 
     /**
-     * Creates the database.
+     * Creates the database from the zip in "/aircraft.zip".
      * @return  the database
      * @throws URISyntaxException if the URI is invalid
      */

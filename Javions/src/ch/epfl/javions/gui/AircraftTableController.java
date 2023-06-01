@@ -12,8 +12,7 @@ import javafx.collections.SetChangeListener;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
-
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -44,7 +43,6 @@ public final class AircraftTableController
      * @param states the set of observable aircraft states
      * @param selectedState the selected state
      *                     (the one that is selected in the table)
-     * @return the table
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> states, ObjectProperty<ObservableAircraftState> selectedState)
     {
@@ -109,7 +107,7 @@ public final class AircraftTableController
                                                                               Function<ObservableAircraftState,
                                                                                       ObservableValue<Double>> function,
                                                                                double unit,
-                                                                               DecimalFormat formatter)
+                                                                               NumberFormat formatter)
     {
         Comparator<String> numberComparator = (o1, o2) -> {
         try {
@@ -157,12 +155,15 @@ public final class AircraftTableController
 
     /**
      * Creates and adds the numeric columns to the table
-     * @see #generateNumericColumn(String, Function, double, DecimalFormat)
+     * @see #generateNumericColumn(String, Function, double, NumberFormat)
      * @see #table
      */
     private void createAndAddNumericColumns(){
-        DecimalFormat formatterLongitudeLatitude = new DecimalFormat("#.####");
-        DecimalFormat formatterAltitudeAndVelocity = new DecimalFormat("#");
+        NumberFormat formatterLongitudeLatitude = NumberFormat.getInstance();
+        formatterLongitudeLatitude.setMinimumFractionDigits(4);
+        formatterLongitudeLatitude.setMaximumFractionDigits(4);
+        NumberFormat formatterAltitudeAndVelocity = NumberFormat.getInstance();
+        formatterAltitudeAndVelocity.setMaximumFractionDigits(0);
         TableColumn<ObservableAircraftState, String> longitudeColumn = generateNumericColumn("Longitude (°)",
                 cellData -> cellData.positionProperty().map(GeoPos::longitude), Units.Angle.DEGREE,
                 formatterLongitudeLatitude);

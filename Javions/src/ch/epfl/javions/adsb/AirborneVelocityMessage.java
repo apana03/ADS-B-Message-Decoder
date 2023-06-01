@@ -64,48 +64,38 @@ public record AirborneVelocityMessage(long timeStampNs,
         }
 
         switch (st) {
-            case 1, 2:
-
+            case 1, 2 -> {
                 int vns = Bits.extractUInt(stBits, VNS_START, VNS_LENGTH);
                 int dns = Bits.extractUInt(stBits, DNS_START, DNS_LENGTH);
                 int vew = Bits.extractUInt(stBits, VEW_START, VEW_LENGTH);
                 int dew = Bits.extractUInt(stBits, DEW_START, DEW_LENGTH);
-
                 if (vns == 0 || vew == 0) {
                     return null;
                 }
-
                 vns = (dns == 0) ? (--vns) : (--vns) * (-1);
                 vew = (dew == 0) ? (--vew) : (--vew) * (-1);
-
-
                 speed = vectorsToSpeed(st, vns, vew);
                 trackOrHeading = getTrack(vns, vew);
-
                 return new AirborneVelocityMessage(rawMessage.timeStampNs(),
                         rawMessage.icaoAddress(),
                         speed,
                         trackOrHeading);
-
-            case 3, 4:
-
+            }
+            case 3, 4 -> {
                 int as = Bits.extractUInt(stBits, AS_START, AS_LENGTH);
                 int hdg = Bits.extractUInt(stBits, HDG_START, HDG_LENGTH);
                 int sh = Bits.extractUInt(stBits, SH_START, SH_LENGTH);
-
                 if (sh == 0 || as == 0) {
                     return null;
                 }
                 as--;
-
-
                 speed = asToSpeed(st, as);
                 trackOrHeading = getHeading(hdg);
-
                 return new AirborneVelocityMessage(rawMessage.timeStampNs(),
                         rawMessage.icaoAddress(),
                         speed,
                         trackOrHeading);
+            }
         }
         return null;
     }
@@ -131,9 +121,8 @@ public record AirborneVelocityMessage(long timeStampNs,
     }
 
     private static double asToSpeed(int st, int as) {
-        double speed = (st == 3) ? Units.convertFrom(as, Units.Speed.KNOT) :
+        return (st == 3) ? Units.convertFrom(as, Units.Speed.KNOT) :
                 Units.convertFrom(4 * as, Units.Speed.KNOT);
-        return speed;
     }
 
 

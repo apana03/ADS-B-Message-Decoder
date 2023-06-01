@@ -50,7 +50,7 @@ public final class AircraftController {
     /**
      * Constructs an AircraftController with the given parameters.
      *
-     * @param mapParameters             the map parameters used for positioning aircrafts on the map
+     * @param mapParameters             the map parameters used for positioning aircraft on the map
      * @param aircraftStates            the set of observable aircraft states
      * @param aircraftStateObjectProperty the object property representing the current aircraft state
      */
@@ -78,7 +78,7 @@ public final class AircraftController {
     /**
      * Returns the Pane associated with the AircraftController.
      *
-     * @return the Pane object used for displaying the aircrafts
+     * @return the Pane object used for displaying the aircraft
      */
 
     public Pane pane() {
@@ -194,7 +194,7 @@ public final class AircraftController {
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + LABEL_BORDER_OFFSET));
 
         //text related bindings
-        text.textProperty().bind(Bindings.format("%s \n %s km/h\u2002%s m",
+        text.textProperty().bind(Bindings.format("%s \n%s km/h\u2002%s m",
                 aircraftIdentification(state),
                 velocity(state),
                 altitude(state)));

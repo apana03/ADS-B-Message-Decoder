@@ -30,8 +30,8 @@ public class AircraftDatabase {
      *                we are looking for
      *                This method iterates on every file present in the database
      *                in order to find and extract the required information
-     * @returns the desired aircraft's data, which is
-     * extracted from the database
+     * @return the desired aircraft's data, which is
+     *         extracted from the database
      */
     public AircraftData get(IcaoAddress address) throws IOException {
         String crc = address.string();
