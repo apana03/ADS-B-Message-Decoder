@@ -95,7 +95,7 @@ public class Main extends Application
                         asm.updateWithMessage(msg);
                         slc.getMessageCountProperty().set(slc.getMessageCountProperty().get() + 1);
                     }
-                    if(now - lastPurge > PURGE_INTERVAL){
+                    if(now - lastPurge >= PURGE_INTERVAL){
                         lastPurge = now;
                         asm.purge();
                     }

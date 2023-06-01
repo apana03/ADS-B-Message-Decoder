@@ -30,7 +30,7 @@ public final class TileManager {
     private final String serverUrl;
     private final static int MAX_CACHE_CAPACITY = 100;
     private final static float LOAD_FACTOR = 0.75f;
-    private LinkedHashMap<TileId, Image> cache;
+    private final LinkedHashMap<TileId, Image> cache;
 
     /**
      * Constructs a TileManager with the given localCache and serverUrl.
@@ -55,7 +55,7 @@ public final class TileManager {
         if(cache.containsKey(tileId)){
             return cache.get(tileId);
         }
-        Path path = Path.of(localCache.toString(),tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png");
+        Path path = Path.of(localCache.toString(),tileRelatedString(tileId));
         if(cache.size() == MAX_CACHE_CAPACITY){
             cache.remove(cache.keySet().iterator().next());
         }
@@ -64,21 +64,23 @@ public final class TileManager {
                 Image image = new Image(is);
                 cache.put(tileId,image);
                 return image;
-        }
+            }
         }else{
-            URL u = new URL("https://" + serverUrl + "/" + tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() +
-                    ".png" );
+            URL u = new URL("https://" + serverUrl + "/" + tileRelatedString(tileId));
             URLConnection c = u.openConnection();
             Files.createDirectories(path.getParent());
             c.setRequestProperty("User-Agent", "Javions");
-            try(InputStream is = c.getInputStream()){
+            try(InputStream is = c.getInputStream() ; FileOutputStream o  = new FileOutputStream(path.toFile())){
                 byte[] buffer = is.readAllBytes();
-                FileOutputStream o = new FileOutputStream(path.toFile());
                 o.write(buffer);
                 Image image = new Image(new ByteArrayInputStream(buffer));
                 cache.put(tileId , image);
                 return image;
             }
         }
+    }
+
+    private String tileRelatedString(TileId tileId){
+        return tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png";
     }
 }
