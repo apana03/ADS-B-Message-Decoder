@@ -54,23 +54,14 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             }
             case AirbornePositionMessage apm -> {
                 stateSetter.setAltitude(apm.altitude());
-                if (apm.parity() == EVEN) {
-                    //TODO : Duplicated code here
-                    if (lastOddMessage != null && apm.timeStampNs() - lastOddMessage.timeStampNs() <= 10 * NANO_IN_NORMAL) {
-                        position = CprDecoder.decodePosition(apm.x(), apm.y(),
-                                lastOddMessage.x(), lastOddMessage.y(), EVEN);
-                        if (position != null)
-                            stateSetter.setPosition(position);
-                    }
+                if (apm.parity() == EVEN)
                     lastEvenMessage = apm;
-                } else {
-                    if (lastEvenMessage != null && apm.timeStampNs() - lastEvenMessage.timeStampNs() <= 10 * NANO_IN_NORMAL) {
-                        position = CprDecoder.decodePosition(lastEvenMessage.x(),
-                                lastEvenMessage.y(), apm.x(), apm.y(), ODD);
-                        if (position != null)
-                            stateSetter.setPosition(position);
-                    }
+                else
                     lastOddMessage = apm;
+                if(lastOddMessage != null && lastEvenMessage != null && isPositionValid()) {
+                    position = CprDecoder.decodePosition(lastEvenMessage.x(),
+                            lastEvenMessage.y(), lastOddMessage.x(), lastOddMessage.y(), apm.parity());
+                    if (position != null) stateSetter.setPosition(position);
                 }
             }
             case AirborneVelocityMessage avm -> {
@@ -79,5 +70,8 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             }
             default -> throw new Error();
         }
+    }
+    private boolean isPositionValid(){
+        return Math.abs(lastOddMessage.timeStampNs() - lastEvenMessage.timeStampNs()) <= 10 * NANO_IN_NORMAL;
     }
 }
