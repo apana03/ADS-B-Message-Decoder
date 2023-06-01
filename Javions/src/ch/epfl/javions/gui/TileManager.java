@@ -66,20 +66,39 @@ public final class TileManager {
                 return image;
             }
         }else{
-            URL u = new URL("https://" + serverUrl + "/" + tileRelatedString(tileId));
-            URLConnection c = u.openConnection();
-            Files.createDirectories(path.getParent());
-            c.setRequestProperty("User-Agent", "Javions");
-            try(InputStream is = c.getInputStream() ; FileOutputStream o  = new FileOutputStream(path.toFile())){
-                byte[] buffer = is.readAllBytes();
-                o.write(buffer);
-                Image image = new Image(new ByteArrayInputStream(buffer));
-                cache.put(tileId , image);
-                return image;
-            }
+            return getImageFromWebsite(path, tileId);
         }
     }
 
+    /**
+     * Retrieves an image from a website given the URL constructed from the server URL and tile ID.
+     * The image is downloaded from the website and stored locally at the specified path.
+     *
+     * @param path    The path where the image will be stored.
+     * @param tileId  The tile ID used to construct the URL for retrieving the image.
+     * @return The downloaded image as an Image object.
+     * @throws IOException if an I/O error occurs while downloading or storing the image.
+     */
+
+    private Image getImageFromWebsite(Path path, TileId tileId) throws IOException{
+        URL u = new URL("https://" + serverUrl + "/" + tileRelatedString(tileId));
+        URLConnection c = u.openConnection();
+        Files.createDirectories(path.getParent());
+        c.setRequestProperty("User-Agent", "Javions");
+        try(InputStream is = c.getInputStream() ; FileOutputStream o  = new FileOutputStream(path.toFile())){
+            byte[] buffer = is.readAllBytes();
+            o.write(buffer);
+            Image image = new Image(new ByteArrayInputStream(buffer));
+            cache.put(tileId , image);
+            return image;
+        }
+    }
+    /**
+     * Constructs a string representation of the tile ID in the format "zoom/x/y.png".
+     *
+     * @param tileId The tile ID used to construct the string.
+     * @return The string representation of the tile ID.
+     */
     private String tileRelatedString(TileId tileId){
         return tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png";
     }
