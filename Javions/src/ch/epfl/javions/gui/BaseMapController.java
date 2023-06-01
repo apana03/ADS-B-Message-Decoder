@@ -131,7 +131,8 @@ public final class BaseMapController {
      * @param minX The ReadOnlyDoubleProperty for minimum X value.
      * @param minY The ReadOnlyDoubleProperty for minimum Y value.
      */
-    private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY) {
+    private void addAllListeners(ReadOnlyIntegerProperty zoom, ReadOnlyDoubleProperty minX, ReadOnlyDoubleProperty minY)
+    {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);

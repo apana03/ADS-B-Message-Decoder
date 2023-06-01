@@ -41,9 +41,10 @@ public final class AircraftTableController
      * Calls the methods to create the columns
      * @see #createAndAddTextColumns()
      * @see #createAndAddNumericColumns()
+     * @param states the set of observable aircraft states
+     * @param selectedState the selected state
+     *                     (the one that is selected in the table)
      * @return the table
-     * @param states
-     * @param selectedState
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> states, ObjectProperty<ObservableAircraftState> selectedState)
     {
@@ -121,8 +122,8 @@ public final class AircraftTableController
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(name);
         column.getStyleClass().add("numeric");
         column.setPrefWidth(NUMERIC_COLUMN_WIDTH);
-        column.setCellValueFactory(cellData -> function.apply(cellData.getValue()).map(k -> Double.isNaN(k.doubleValue())
-                ? "" : formatter.format(Units.convertTo(k, unit))));
+        column.setCellValueFactory(cellData -> function.apply(cellData.getValue()).
+                map(k -> Double.isNaN(k) ? "" : formatter.format(Units.convertTo(k, unit))));
         column.setComparator(numberComparator);
         return column;
     }

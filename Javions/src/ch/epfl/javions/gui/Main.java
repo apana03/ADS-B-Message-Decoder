@@ -17,7 +17,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -61,29 +63,14 @@ public class Main extends Application
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL u = getClass().getResource(AIRCRAFT_FOLDER_ZIPPED);
-        assert u != null;
-        Path p = Path.of(u.toURI());
-        AircraftDatabase database = new AircraftDatabase(p.toString());
+
         ConcurrentLinkedQueue<Message> messageQueue = new ConcurrentLinkedQueue<>();
-        AircraftStateManager asm = new AircraftStateManager(database);
-        MapParameters mp = new MapParameters(ZOOM_LEVEL, MIN_X_VALUE, MIN_Y_VALUE);
-        ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
-        AircraftController ac = new AircraftController(mp, asm.states(), sap);
-        Path tileCache = Path.of(TILE_CACHE);
-        TileManager tm = new TileManager(tileCache, SERVER_URL);
-        BaseMapController bmc = new BaseMapController(tm, mp);
-        AircraftTableController atc = new AircraftTableController(asm.states(), sap);
-        atc.setOnDoubleClick(s -> bmc.centerOn(s.getPosition()));
+        AircraftStateManager asm = new AircraftStateManager(database());
         StatusLineController slc = new StatusLineController();
-        slc.getAircraftCountProperty().bind(Bindings.size(asm.states()));
-        StackPane stp = new StackPane(bmc.pane(), ac.pane());
-        BorderPane bp = new BorderPane(atc.pane());
-        bp.setTop(slc.pane());
-        SplitPane sp = new SplitPane(stp, bp);
-        sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
-        Scene scene = new Scene(sp);
+
+        Scene scene = createScene(asm, slc);
         configurePrimaryStage(primaryStage, scene);
+
         Thread thread;
         if(getParameters().getRaw().isEmpty()) {
             Supplier<Message> supplier = stantardInputSupplier();
@@ -221,5 +208,41 @@ public class Main extends Application
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    /**
+     * Creates the scene.
+     * @param asm the aircraft state manager
+     * @param slc the status line controller
+     * @return the scene
+     */
+    private Scene createScene( AircraftStateManager asm, StatusLineController slc){
+        MapParameters mp = new MapParameters(ZOOM_LEVEL, MIN_X_VALUE, MIN_Y_VALUE);
+        ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
+        AircraftController ac = new AircraftController(mp, asm.states(), sap);
+        Path tileCache = Path.of(TILE_CACHE);
+        TileManager tm = new TileManager(tileCache, SERVER_URL);
+        BaseMapController bmc = new BaseMapController(tm, mp);
+        AircraftTableController atc = new AircraftTableController(asm.states(), sap);
+        atc.setOnDoubleClick(s -> bmc.centerOn(s.getPosition()));
+        slc.getAircraftCountProperty().bind(Bindings.size(asm.states()));
+        StackPane stp = new StackPane(bmc.pane(), ac.pane());
+        BorderPane bp = new BorderPane(atc.pane());
+        bp.setTop(slc.pane());
+        SplitPane sp = new SplitPane(stp, bp);
+        sp.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        return new Scene(sp);
+    }
+
+    /**
+     * Creates the database.
+     * @return  the database
+     * @throws URISyntaxException if the URI is invalid
+     */
+    private AircraftDatabase database() throws URISyntaxException{
+        URL u = getClass().getResource(AIRCRAFT_FOLDER_ZIPPED);
+        assert u != null;
+        Path p = Path.of(u.toURI());
+        return new AircraftDatabase(p.toString());
     }
 }

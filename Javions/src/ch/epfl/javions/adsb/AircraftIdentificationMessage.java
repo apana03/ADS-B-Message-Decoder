@@ -30,7 +30,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
      * method that creates an AircraftIdentificationMessage from a RawMessage
      *
      * @param rawMessage the raw message
-     * @returns the in-flight positioning message corresponding to the given raw message, or null if the altitude it contains is invalid
+     * @returns the in-flight positioning message corresponding to the given raw message, or null if the altitude
+     * it contains is invalid
      */
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
         long me = rawMessage.payload();
@@ -45,12 +46,12 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         }
         int category = (14 - rawMessage.typeCode() << 4) | Bits.extractUInt(me, START_POSITION, TYPE_CODE_SIZE);
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
-                category, new CallSign(callString.toString().trim()));
+                category, new CallSign(callString.toString().stripTrailing()));
     }
 
     /**
      * method that returns the category of the aircraft
-     * @return
+     * @return the category of the aircraft
      */
     @Override
     public long timeStampNs() {
@@ -59,7 +60,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
     /**
      * method that returns the category of the aircraft
-     * @return
+     * @return the category of the aircraft
      */
     @Override
     public IcaoAddress icaoAddress() {
@@ -69,16 +70,16 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
     /**
      * returns true if the value corresponds to a letter according to the rules given
      * in the project statement
-     * @param a
-     * @return
+     * @param a the value
+     * @return true if the value corresponds to a letter according to the rules given
      */
     private static boolean isLetter(int a){return a >= LETTER_START && a <= LETTER_END;}
 
     /**
      * returns true if the value corresponds to a number or a space according to the rules given
      * in the project statement
-     * @param a
-     * @return
+     * @param a the value
+     * @return true if the value corresponds to a number or a space according to the rules givenÒ
      */
     private static boolean isNumberOrSpace(int a){
         return (ASCII_NUMBER_START <= a && a <= ASCII_NUMBER_END) || a == ASCII_SPACE_INDEX;

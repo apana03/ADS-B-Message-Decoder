@@ -66,7 +66,8 @@ public final class TileManager {
                 return image;
         }
         }else{
-            URL u = new URL("https://" + serverUrl + "/" + tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() + ".png" );
+            URL u = new URL("https://" + serverUrl + "/" + tileId.zoom() + "/" + tileId.x() + "/" + tileId.y() +
+                    ".png" );
             URLConnection c = u.openConnection();
             Files.createDirectories(path.getParent());
             c.setRequestProperty("User-Agent", "Javions");

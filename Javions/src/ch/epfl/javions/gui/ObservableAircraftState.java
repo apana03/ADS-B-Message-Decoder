@@ -181,7 +181,8 @@ public final class ObservableAircraftState implements AircraftStateSetter
      * Updates the trajectory of the aircraft.
      * If the altitude is different from the last one, it is added to the trajectory.
      * If the altitude is the same as the last one, the position of the last trajectory point is updated.
-     * If the last trajectory point is the same as the current position, the altitude of the last trajectory point is updated.
+     * If the last trajectory point is the same as the current position, the altitude of the last trajectory point is
+     * updated.
      * If the last trajectory point is different from the current position, a new trajectory point is added.
      */
     private void updateTrajectory(){
