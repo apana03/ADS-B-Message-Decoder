@@ -58,12 +58,15 @@ public final class AircraftStateManager
      * Purges the states that are too old
      */
     public void purge(){
-        states.removeIf(observableAircraftState ->
-                lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs);
+        states.removeIf(this::hasReceivedRecentMessage);
         map.entrySet().removeIf(entry ->
-                lastProcessedTimeStamp - entry.getValue().stateSetter().getLastMessageTimeStampNs() > minuteInNs);
+                hasReceivedRecentMessage(entry.getValue().stateSetter()));
     }
     public ObservableSet<ObservableAircraftState> states(){
         return statesNonModifiable;
+    }
+
+    private boolean hasReceivedRecentMessage(ObservableAircraftState observableAircraftState){
+        return lastProcessedTimeStamp - observableAircraftState.getLastMessageTimeStampNs() > minuteInNs;
     }
 }

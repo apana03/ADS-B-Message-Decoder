@@ -85,6 +85,17 @@ public final class AircraftController {
         return pane;
     }
 
+
+    /**
+     * Returns the color of the aircraft based on its altitude.
+     *
+     * @param altitude the altitude of the aircraft
+     * @return the color representing the aircraft's altitude
+     */
+    private static Color getPlaneColor(double altitude) {
+        return ColorRamp.PLASMA.at(Math.pow(altitude / 12000, 1d / 3d));
+    }
+
     /**
      * Constructs the group for an aircraft and adds it to the pane.
      *
@@ -322,15 +333,5 @@ public final class AircraftController {
         return state.altitudeProperty().map(v ->
                 (v.doubleValue() != 0 || !Double.isNaN(v.doubleValue())) ?
                         String.format("%.0f", v.doubleValue()) : "?");
-    }
-
-    /**
-     * Returns the color of the aircraft based on its altitude.
-     *
-     * @param altitude the altitude of the aircraft
-     * @return the color representing the aircraft's altitude
-     */
-    private static Color getPlaneColor(double altitude) {
-        return ColorRamp.PLASMA.at(Math.pow(altitude / 12000, 1d / 3d));
     }
 }
