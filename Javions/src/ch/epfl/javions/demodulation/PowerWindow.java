@@ -4,6 +4,7 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * Represents a fixed-size window on a sequence of power samples produced by a power computer
@@ -23,7 +24,7 @@ public final class PowerWindow {
     private int[] batch2;
     private int index = 0;
 
-    private PowerComputer powerComputer;
+    private final PowerComputer powerComputer;
 
     /**
      * the constructor of the class
@@ -74,13 +75,11 @@ public final class PowerWindow {
      *
      * @param i the index
      * @return the power of the window at the given index
-     * @hrows IndexOutOfBoundsException if that index is not between 0 (inclusive) and window size (excluded)
+     * @throws IndexOutOfBoundsException if that index is not between 0 (inclusive) and window size (excluded)
      */
 
     public int get(int i) {
-        if (i < 0 || i >= windowSize) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkIndex(i,windowSize);
         if (i + index < WINDOW_MAX_SIZE)
             return batch1[index + i];
         else return batch2[i + index - WINDOW_MAX_SIZE];
@@ -89,7 +88,7 @@ public final class PowerWindow {
     /**
      * advances the window by one sample
      *
-     * @throws IOException
+     * @throws IOException if problem in power computer
      */
 
     public void advance() throws IOException {
@@ -111,8 +110,8 @@ public final class PowerWindow {
      * method had been called the given number of times
      *
      * @param offset the given number of samples
-     * @throws IOException
-     * @throw IllegalArgumentException if this number is not positive or zero
+     * @throws IOException if there is a problem in power computer
+     * @throws IllegalArgumentException if this number is not positive or zero
      */
 
     public void advanceBy(int offset) throws IOException {
